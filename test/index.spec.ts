@@ -24,16 +24,46 @@ describe("Mu", function() {
 
   describe(".mkEntity", function() {
     beforeEach(function() {
-      sinon.stub(Math, "random").returns(0.333);
       this.subject = Immutable.Map<number, Mu.Entity>();
     });
 
     it("should add entity", function() {
+      var mock = sinon.mock(Math)
+      mock.expects("random")
+        .once()
+        .withExactArgs()
+        .returns(0.333);
+
       expect(Mu.mkEntity(this.subject, Immutable.Map<string,Immutable.Map<string, any>>({ comp: Immutable.Map<string, any>({ foo: "bar" }) })))
         .to.equal(Immutable.Map().set(357556027, Immutable.fromJS({
           comp: { foo: "bar" },
           meta: new Mu.MetaComponent({ id: 357556027 }),
         })));
+      mock.verify();
+    });
+
+    it("should not duplicate id", function() {
+      var mock = sinon.mock(Math)
+      mock.expects("random")
+        .once()
+        .withExactArgs()
+        .returns(0.333);
+      mock.expects("random")
+        .once()
+        .withExactArgs()
+        .returns(0.111);
+      this.subject = this.subject.set(357556027 , Immutable.fromJS({
+        meta: new Mu.MetaComponent({ id: 357556027 }),
+      }));
+
+      expect(Mu.mkEntity(this.subject, Immutable.Map<string,Immutable.Map<string, any>>({ comp: Immutable.Map<string, any>({ foo: "bar" }) })))
+        .to.equal(Immutable.Map().set(357556027, Immutable.fromJS({
+          meta: new Mu.MetaComponent({ id: 357556027 }),
+        })).set(119185342, Immutable.fromJS({
+          comp: { foo: "bar" },
+          meta: new Mu.MetaComponent({ id: 119185342 }),
+        })));
+      mock.verify();
     });
   });
 
