@@ -1,0 +1,16 @@
+{
+  "name": "shmup",
+  "version": "0.1.0",
+  "description": "shmup game",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jjg1914/shmup.git"
+  },
+  "author": "John J. Glynn IV",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jjg1914/shmup/issues"
+  },
+  "homepage": "https://github.com/jjg1914/shmup#readme"
+}
