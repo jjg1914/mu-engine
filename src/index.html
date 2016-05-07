@@ -3,8 +3,14 @@
   <head>
     <meta charset="utf-8">
     <title>shmup</title>
+    {{#production}}
     <link href="index.css" rel="stylesheet">
     <script src="index.js"></script>
+    {{/production}}
+    {{^production}}
+    <link href="index.css" rel="stylesheet">
+    <script src="index.js"></script>
+    {{/production}}
   </head>
   <body>
     <h1>shmup</h1>
