@@ -86,7 +86,6 @@ gulp.task("html", function() {
 
 gulp.task("test", function(done) {
   new karma.Server({
-    singleRun: (process.env.NODE_ENV === "production"),
     configFile: path.join(__dirname, "karma.conf.js"),
   }).start();
 });

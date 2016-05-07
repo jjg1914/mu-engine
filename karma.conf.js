@@ -1,6 +1,7 @@
 module.exports = function(config) {
   config.set({
-    logLevel: "debug",
+    logLevel: "warn",
+    singleRun: (process.env.NODE_ENV === "production"),
     frameworks: [
       "browserify",
       "mocha",
