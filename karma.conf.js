@@ -12,16 +12,10 @@ module.exports = function(config) {
     browsers: [ "PhantomJS" ],
     files: [ "test/**/*.spec.ts" ],
     preprocessors: { "test/**/*.ts": [ "browserify" ] },
-    reporters: [ "progress", "coverage" ],
+    reporters: [ "progress" ],
     browserify: {
       debug: true,
       plugin: [ require("tsify") ],
-      transform: [
-        [ require("browserify-istanbul"), { ignore: [
-          "**/node_modules/**",
-          "**/test/**",
-        ] } ], 
-      ],
     }
   });
 };
