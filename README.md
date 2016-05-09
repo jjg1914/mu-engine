@@ -1,6 +1,4 @@
-# shmup
-
-![Build Status](https://travis-ci.org/jjg1914/shmup.svg?branch=master)
+# shmup [![Build Status](https://travis-ci.org/jjg1914/shmup.svg?branch=master)](https://travis-ci.org/jjg1914/shmup)
 
 ## License
 
