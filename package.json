@@ -16,7 +16,7 @@
   "scripts": {
     "postinstall": "typings install",
     "test": "karma start",
-    "posttest": "[[ \"$NODE_ENV\" = \"production\" ]] && coveralls < coverage/lcov"
+    "posttest": "[ \"$NODE_ENV\" = \"production\" ] && coveralls < coverage/lcov"
   },
   "dependencies": {
     "browserify": "^13.0.0",
