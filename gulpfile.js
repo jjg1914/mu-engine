@@ -10,6 +10,7 @@ var uglify = require("gulp-uglify");
 var cssmin = require("gulp-cssmin");
 var rename = require("gulp-rename");
 var gulpIf = require("gulp-if");
+var tslint = require("gulp-tslint");
 var source = require("vinyl-source-stream");
 var buffer = require("vinyl-buffer");
 var lazypipe = require("lazypipe");
@@ -39,14 +40,6 @@ function bundle() {
     .pipe(gulp.dest("public"));
 }
 
-if (process.env.NODE_ENV != "production") {
-  b = watchify(b);
-  b.on("update", bundle);
-  gulp.watch("src/**/*.scss", [ "css" ]);
-  gulp.watch("src/**/*.html", [ "html" ]);
-  gulp.watch("coverage/istanbul/coverage.json", [ "coverage" ]);
-}
-
 gulp.task("default", [ "server" ]);
 
 gulp.task("server", [ "build" ], function(done) {
@@ -57,7 +50,15 @@ gulp.task("server", [ "build" ], function(done) {
   }).on("quit", done);
 });
 
-gulp.task("build", [ "js", "css", "html" ]);
+gulp.task("build", [ "js", "css", "html" ], function() {
+  if (process.env.NODE_ENV != "production") {
+    b = watchify(b);
+    b.on("update", bundle);
+    gulp.watch("src/**/*.scss", [ "css" ]);
+    gulp.watch("src/**/*.html", [ "html" ]);
+    gulp.watch("coverage/istanbul/coverage.json", [ "coverage" ]);
+  }
+});
 
 gulp.task("js", bundle);
 b.on("log", function(msg) { console.log(msg); });
@@ -88,6 +89,12 @@ gulp.task("test", function(done) {
   new karma.Server({
     configFile: path.join(__dirname, "karma.conf.js"),
   }).start();
+});
+
+gulp.task("lint", function() {
+  return gulp.src("src/**/*.ts")
+    .pipe(tslint())
+    .pipe(tslint.report("verbose"));
 });
 
 gulp.task("clean", function() {

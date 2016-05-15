@@ -1,29 +1,27 @@
 import * as Immutable from "immutable";
+import { Callback } from "./runtime";
 
-function Interval(rate: number, callback: (any) => void): void {
-  const start = performance.now()
-  let now = start, last = start;
-  const interval = setInterval(function() {
+export default function Interval(rate: number, cb: Callback): void {
+  const start: number = performance.now();
+  let now: number = start;
+  let last: number = start;
+  const interval: number = setInterval((): void => {
     try {
       last = now;
       now = performance.now();
 
-      callback(new Interval.Event({ t: now - start, dt: now - last }));
+      cb(new Event({ t: now - start, dt: now - last }));
     } catch (err) {
       clearInterval(interval);
-      callback(err)
+      cb(err);
     }
   }, 1000 / rate);
 };
 
-module Interval {
-  export class Event extends Immutable.Record({
-    t: 0,
-    dt: 0,
-  }) {
-    public t: number;
-    public dt: number;
-  }
+export class Event extends Immutable.Record({
+  t: 0,
+  dt: 0,
+}) {
+  public t: number;
+  public dt: number;
 }
-
-export default Interval;

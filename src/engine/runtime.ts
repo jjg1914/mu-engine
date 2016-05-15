@@ -1,10 +1,19 @@
 import IO from "./io";
 
-class Runtime<T extends Runtime.Runable<T>> {
-  constructor(initial: T, f: Runtime.Impl) {
+export type Callback = (event: Object) => void;
+export type Impl = (cb: Callback) => void;
+
+export interface Runable {
+  run(event: Object): this | IO<this>;
+}
+
+export default class Runtime<T extends Runable> {
+  private state: T;
+
+  public constructor(initial: T, f: Impl) {
     this.state = initial;
 
-    f((event: any) => {
+    f((event: Object) => {
       if (event instanceof Error) {
         console.error(event);
       } else {
@@ -20,17 +29,4 @@ class Runtime<T extends Runtime.Runable<T>> {
       }
     });
   }
-
-  private state: T;
 }
-
-module Runtime {
-  export type Callback = (event: any) => void;
-  export type Impl = (cb: Callback) => void;
-
-  export interface Runable<T> {
-    run(any): T | IO<T>;
-  }
-}
-
-export default Runtime;

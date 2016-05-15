@@ -1,11 +1,7 @@
-import * as Runtime from "./engine/runtime";
+import Runtime, { Callback } from "./engine/runtime";
+import Interval from "./engine/interval";
+import Shmup from "./shmup";
 
-/*
-var Runtime = require("./engine/runtime");
-var Interval = require("./engine/interval");
-var Shmup = require("./shmup");
-
-Runtime(Shmup(), function(callback) {
-  Interval(30, callback);
+let _runtime = new Runtime(Shmup(), (cb: Callback): void => {
+  Interval(30, cb);
 });
-*/

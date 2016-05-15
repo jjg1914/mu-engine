@@ -4,12 +4,12 @@ import * as sinon from "sinon";
 import { expect } from "chai";
 import * as Immutable from "immutable";
 
-import Runtime from "../../src/engine/runtime";
+import Runtime, { Runable } from "../../src/engine/runtime";
 import IO from "../../src/engine/io";
 
-class Fixture implements Runtime.Runable<Fixture> {
-  run(any): Fixture {
-    return null;
+class Fixture implements Runable {
+  run(any): this {
+    return this;
   }
 }
 

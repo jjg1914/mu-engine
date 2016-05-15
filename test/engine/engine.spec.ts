@@ -83,8 +83,8 @@ describe("Engine", function() {
     });
   });
 
-  describe("#runState", function() {
-    it("should run state", function() {
+  describe("#run", function() {
+    it("should run top state", function() {
       let subject = new Engine(Immutable.fromJS({
         entities: {},
         state: Immutable.Stack([ "a", "b", "c" ]),
@@ -92,7 +92,7 @@ describe("Engine", function() {
       }));
       sinon.stub(subject, "runSystem").returns("return-value");
 
-      expect(subject.runState("event-value")).to.equal("return-value");
+      expect(subject.run("event-value")).to.equal("return-value");
       expect(subject.runSystem)
         .to.have.been.calledWithExactly("a", "event-value");
     });

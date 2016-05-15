@@ -4,7 +4,7 @@ import * as sinon from "sinon";
 import { expect } from "chai";
 import * as Immutable from "immutable";
 
-import Interval from "../../src/engine/interval";
+import Interval, { Event } from "../../src/engine/interval";
 
 describe("Interval", function() {
   let clock;
@@ -29,7 +29,7 @@ describe("Interval", function() {
     (<any> performance.now).returns(1105);
     clock.tick(100);
 
-    expect(stub).to.have.been.calledWithExactly(new Interval.Event({
+    expect(stub).to.have.been.calledWithExactly(new Event({
       t: 105,
       dt: 105,
     }));
@@ -38,7 +38,7 @@ describe("Interval", function() {
     (<any> performance.now).returns(1195);
     clock.tick(100);
 
-    expect(stub).to.have.been.calledWithExactly(new Interval.Event({
+    expect(stub).to.have.been.calledWithExactly(new Event({
       t: 195,
       dt: 90,
     }));
@@ -49,7 +49,7 @@ describe("Interval", function() {
     clock.tick(100);
 
     expect(stub.args).to.eql([
-      [ new Interval.Event({ t: 300, dt: 105, }) ],
+      [ new Event({ t: 300, dt: 105, }) ],
       [ error ]
     ]);
     stub.reset();

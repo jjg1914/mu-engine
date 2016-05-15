@@ -1,12 +1,12 @@
-var Engine = require("./engine/engine.js");
+import Engine from "./engine/engine";
+import { Event } from "./engine/interval";
 
-module.exports = function Shmup() {
-  return Engine().pushState(function(engine, event) {
-    switch (event.type) {
-    case "interval":
-      return engine.runSystem(RenderSystem)
-    default:
-      return engine;
+export default function Shmup(): Engine {
+  return new Engine().pushState((engine: Engine, event: Object): Engine => {
+    if (event instanceof Event) {
+      console.log(event.dt);
     }
+
+    return engine;
   });
-};
+}

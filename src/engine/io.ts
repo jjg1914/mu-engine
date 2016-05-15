@@ -1,5 +1,43 @@
-class IO<T> {
-  constructor(f: IO.Impl<T>) {
+export type Impl<T> =
+  (_get: () => T, _set: (t: T) => void, _cb: (t: T) => void) => void;
+
+export default class IO<T> {
+  private _f: Impl<T>;
+
+  public static Put<T>(t: T): IO<T> {
+    return new IO((_get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
+      set(t);
+      cb(t);
+    });
+  }
+
+  public static Get<T>(): IO<T> {
+    return new IO((get: () => T, _set: (t: T) => void, cb: (t: T) => void) => {
+      cb(get());
+    });
+  }
+
+  public static Delay<T>(n: Number): IO<T> {
+    return new IO((get: () => T, _set: (t: T) => void, cb: (t: T) => void) => {
+      setTimeout(() => cb(get()), n);
+    });
+  }
+
+  public static All<T>(ios: IO<T>[]): IO<T> {
+    return new IO((get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
+      let counter = 0;
+
+      for (const io of ios) {
+        io.run(get, set, (t: T) => {
+          if (++counter === ios.length) {
+            cb(t);
+          }
+        });
+      }
+    });
+  }
+
+  public constructor(f: Impl<T>) {
     this._f = f;
   }
 
@@ -18,46 +56,4 @@ class IO<T> {
   public run(get: () => T, set: (t: T) => void, cb: (t: T) => void): void {
     this._f(get, set, cb);
   }
-
-  private _f: IO.Impl<T>;
 }
-
-module IO {
-  export type Impl<T> =
-    (get: () => T, set: (t: T) => void, cb: (t: T) => void) => void;
-
-  export function Put<T>(t: T): IO<T> {
-    return new IO((get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
-      set(t);
-      cb(t);
-    });
-  }
-
-  export function Get<T>(): IO<T> {
-    return new IO((get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
-      cb(get());
-    });
-  }
-
-  export function Delay<T>(n: Number): IO<T> {
-    return new IO((get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
-      setTimeout(() => cb(get()), n);
-    });
-  }
-
-  export function All<T>(ios: IO<T>[]): IO<T> {
-    return new IO((get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
-      let counter = 0;
-
-      for (const io of ios) {
-        io.run(get, set, (t: T) => {
-          if (++counter == ios.length) {
-            cb(t);
-          }
-        });
-      }
-    })
-  }
-}
-
-export default IO;
