@@ -12,11 +12,22 @@ module.exports = function(config) {
     ],
     browsers: [ "PhantomJS" ],
     files: [ "test/**/*.spec.ts" ],
-    preprocessors: { "test/**/*.ts": [ "browserify" ] },
-    reporters: [ "progress" ],
+    preprocessors: { "test/**/*.ts": [ "browserify", "coverage" ] },
+    reporters: [ "progress", "coverage" ],
     browserify: {
       debug: true,
       plugin: [ require("tsify") ],
+      transform: [
+        require("browserify-istanbul"),
+      ]
+    },
+    coverageReporter: {
+      dir: "coverage",
+      reporters: [
+        { type: "text-summary" },
+        { type: "lcovonly", subdir: ".", file: "lcov" },
+        { type: "json", subdir: ".", file: "coverage.json" },
+      ],
     }
   });
 };

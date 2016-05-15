@@ -15,12 +15,15 @@
   "homepage": "https://github.com/jjg1914/shmup#readme",
   "scripts": {
     "postinstall": "typings install",
-    "test": "karma start"
+    "test": "karma start",
+    "posttest": "[[ \"$NODE_ENV\" = \"production\" ]] && coveralls < coverage/lcov"
   },
   "dependencies": {
     "browserify": "^13.0.0",
+    "browserify-istanbul": "^2.0.0",
     "chai": "^3.5.0",
     "chai-immutable": "^1.5.4",
+    "coveralls": "^2.11.9",
     "del": "^2.2.0",
     "express": "^4.13.4",
     "gulp": "^3.9.1",
@@ -34,10 +37,12 @@
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-uglify": "^1.5.3",
     "immutable": "^3.8.1",
+    "istanbul": "^0.4.3",
     "karma": "^0.13.22",
     "karma-browserify": "^5.0.4",
     "karma-chai": "^0.1.0",
     "karma-chai-immutable": "^1.0.2",
+    "karma-coverage": "^1.0.0",
     "karma-mocha": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-sinon": "^1.0.4",
