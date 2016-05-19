@@ -28,6 +28,10 @@ var b = browserify({
   plugin: [ tsify ],
 });
 
+if (process.env.NODE_ENV != "production") {
+  b = watchify(b);
+}
+
 function bundle() {
   return b.bundle()
     .pipe(source("index.js"))
@@ -52,8 +56,8 @@ gulp.task("server", [ "build" ], function(done) {
 
 gulp.task("build", [ "js", "css", "html" ], function() {
   if (process.env.NODE_ENV != "production") {
-    b = watchify(b);
     b.on("update", bundle);
+    b.on("log", function(msg) { console.log(msg); });
     gulp.watch("src/**/*.scss", [ "css" ]);
     gulp.watch("src/**/*.html", [ "html" ]);
     gulp.watch("coverage/istanbul/coverage.json", [ "coverage" ]);
@@ -61,7 +65,6 @@ gulp.task("build", [ "js", "css", "html" ], function() {
 });
 
 gulp.task("js", bundle);
-b.on("log", function(msg) { console.log(msg); });
 
 gulp.task("css", function() {
   return gulp.src("src/index.scss")
