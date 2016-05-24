@@ -1,10 +1,11 @@
 import * as Immutable from "immutable";
 import { Runable } from "./runtime";
+import IO from "./io";
 
 export type Value = string | number | Function;
 export type Component = Immutable.Map<string, Value>;
 export type Entity = Immutable.Map<string,Component>;
-export type System = (engine: Engine, event: Object) => Engine;
+export type System = (engine: Engine, event: Object) => Engine | IO<Engine>;
 export type Iterator<T> = (value: T, entity: Entity) => T;
 
 export class MetaComponent extends Immutable.Record({ id: 0 }) {
@@ -48,11 +49,11 @@ export default class Engine extends Immutable.Record({
     return <Engine> this.set("state", this.state.pop());
   };
 
-  public run(event: Object): this {
-    return <this> this.runSystem(this.state.peek(), event);
+  public run(event: Object): this | IO<this> {
+    return <this | IO<this>> this.runSystem(this.state.peek(), event);
   };
 
-  public runSystem(system: System, event: Object): Engine {
+  public runSystem(system: System, event: Object): Engine | IO<Engine> {
     return system(this, event);
   };
 

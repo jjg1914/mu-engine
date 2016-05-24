@@ -13,10 +13,10 @@ export default function Render(stage: HTMLCanvasElement): Renderer {
   let stageCtx = stage.getContext("2d");
   let bufferCtx = buffer.getContext("2d");
 
-  let width = parseInt(window.getComputedStyle(stage).width, 10);
   let height = parseInt(window.getComputedStyle(stage).height, 10);
-  buffer.width = stage.width = width;
   buffer.height = stage.height = height;
+  let width = (3 / 4) * height;
+  stage.style.width = (buffer.width = stage.width = width) + "px";
 
   let timeout;
 
@@ -24,10 +24,10 @@ export default function Render(stage: HTMLCanvasElement): Renderer {
     if (timeout == undefined) {
       timeout = setTimeout(() => {
         timeout = undefined;
-        width = parseInt(window.getComputedStyle(stage).width, 10);
         height = parseInt(window.getComputedStyle(stage).height, 10);
-        buffer.width = stage.width = width;
         buffer.height = stage.height = height;
+        width = (3 / 4) * height;
+        stage.style.width = (buffer.width = stage.width = width) + "px";
       }, 10);
     }
   });

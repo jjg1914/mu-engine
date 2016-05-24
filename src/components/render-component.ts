@@ -1,6 +1,8 @@
 import * as Immutable from "immutable";
 
 export default Immutable.Record({
-  fill: "#FFF",
-  stroke: "#000",
+  fill: undefined,
+  stroke: undefined,
+  strokeWidth: 1,
+  shape: undefined,
 }, "RenderComponent");

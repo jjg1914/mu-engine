@@ -8,18 +8,15 @@ import RenderComponent from "../components/render-component";
 
 const shape = new Path2D();
 
-shape.moveTo(0, 32);
-shape.lineTo(32, 32);
-shape.lineTo(15, 0);
-shape.lineTo(0, 32);
+shape.moveTo(0, 0);
+shape.arc(3, 3, 3, 0, 2 * Math.PI);
 
 export default Immutable.Record({
   meta: undefined,
-  position: new PositionComponent({ x: 32, y: 32, width: 32, height: 32 }),
+  position: new PositionComponent({ width: 6, height: 6 }),
   render: new RenderComponent({
     shape: shape,
-    stroke: "#00b6E4",
-    strokeWidth: 2,
+    fill: "#00b6E4",
   }),
-  movement: new MovementComponent(),
+  movement: new MovementComponent({ ySpeed: -256 }),
 }, "TestEntity");

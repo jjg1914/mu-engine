@@ -34,6 +34,9 @@ if (process.env.NODE_ENV != "production") {
 
 function bundle() {
   return b.bundle()
+    .on("error", function(error) {
+      console.log(error);
+    })
     .pipe(source("index.js"))
     .pipe(buffer())
     .pipe(sourcemaps.init({ loadMaps: true }))
