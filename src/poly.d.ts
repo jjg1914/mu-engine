@@ -33,7 +33,7 @@ declare var Path2D: Path2DConstructor;
 // Extend CanvasRenderingContext2D
 interface CanvasRenderingContext2D {
     mozImageSmoothingEnabled: boolean;
-    imageSmoothingEnabled: boolean;    
+    imageSmoothingEnabled: boolean;
     fill(path: Path2D): void;
     stroke(path: Path2D): void;
     clip(path: Path2D, fillRule?: string): void;
