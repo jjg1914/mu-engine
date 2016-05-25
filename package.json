@@ -15,8 +15,7 @@
   "homepage": "https://github.com/jjg1914/shmup#readme",
   "scripts": {
     "postinstall": "typings install",
-    "test": "gulp test lint",
-    "posttest": "[ \"$NODE_ENV\" = \"production\" ] && coveralls < coverage/lcov && gulp deploy"
+    "test": "gulp test lint"
   },
   "dependencies": {
     "browserify": "^13.0.0",
