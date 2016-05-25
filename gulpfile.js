@@ -104,16 +104,10 @@ gulp.task("lint", function() {
     .pipe(tslint.report("verbose"));
 });
 
-gulp.task("deploy", function() {
-  var key = process.env.GITHUB_API_KEY;
-  var remoteUrl;
-  if (key) {
-    remoteUrl = "https://jjg1914:" + key + "@github.com/jjg1914/shmup.git";
-  }
-
+gulp.task("deploy", [ "build" ], function() {
   return gulp.src("public/**/*")
     .pipe(ghPages({
-      remoteUrl: remoteUrl,
+      remoteUrl: process.env.GHPAGES_REMOTE_URL,
     }));
 });
 
