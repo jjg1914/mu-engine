@@ -8,10 +8,10 @@ import RenderComponent from "../components/render-component";
 
 const shape = new Path2D();
 
-shape.moveTo(0, 32);
-shape.lineTo(32, 32);
-shape.lineTo(15, 0);
-shape.lineTo(0, 32);
+shape.moveTo(0, 20);
+shape.lineTo(20, 20);
+shape.lineTo(10, 0);
+shape.lineTo(0, 20);
 
 export default Immutable.Record({
   meta: undefined,

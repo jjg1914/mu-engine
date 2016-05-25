@@ -8,7 +8,12 @@ import Shmup from "./shmup";
 document.addEventListener("DOMContentLoaded", () => {
   let _runtime = new Runtime(Shmup(), (cb: Callback): void => {
     let stage = <HTMLCanvasElement> document.getElementById("stage");
-    let renderer = Render(stage);
+    let renderer = Render(stage, {
+      width: 208,
+      height: 256,
+      scale: 2,
+      smoothing: false,
+    });
 
     Interval(30, renderer(cb));
     Input(stage, cb);
