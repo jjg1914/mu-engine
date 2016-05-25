@@ -4,4 +4,4 @@ node_js:
   - "5"
 after_success:
   - ./node_modules/.bin/coveralls < coverage/lcov
-  - gulp deploy
+  - 'gulp deploy &> /dev/null'
