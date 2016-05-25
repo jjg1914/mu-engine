@@ -108,7 +108,7 @@ gulp.task("deploy", function() {
   var key = process.env.GITHUB_API_KEY;
   var remoteUrl;
   if (key) {
-    remoteUrl = "jjg1914:" + key + "@github.com:jjg1914/shmup.git";
+    remoteUrl = "https://jjg1914:" + key + "@github.com/jjg1914/shmup.git";
   }
 
   return gulp.src("public/**/*")
