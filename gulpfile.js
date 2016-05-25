@@ -11,6 +11,7 @@ var cssmin = require("gulp-cssmin");
 var rename = require("gulp-rename");
 var gulpIf = require("gulp-if");
 var tslint = require("gulp-tslint");
+var ghPages = require("gulp-gh-pages");
 var source = require("vinyl-source-stream");
 var buffer = require("vinyl-buffer");
 var lazypipe = require("lazypipe");
@@ -101,6 +102,11 @@ gulp.task("lint", function() {
   return gulp.src("src/**/*.ts")
     .pipe(tslint())
     .pipe(tslint.report("verbose"));
+});
+
+gulp.task("deploy", function() {
+  return gulp.src("public/**/*")
+    .pipe(ghPages());
 });
 
 gulp.task("clean", function() {

@@ -2,3 +2,4 @@ node_modules/
 public/
 typings/
 coverage/
+.publish
