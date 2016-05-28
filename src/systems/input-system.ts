@@ -20,8 +20,6 @@ export default function InputSystem(engine: Engine,
   let xSpeed = entity.getIn([ "movement", "xSpeed" ]);
   let ySpeed = entity.getIn([ "movement", "ySpeed" ]);
 
-  console.log(event.which);
-
   switch (event.which) {
     case Keys.ARROW_LEFT:
       xSpeed += -64 * coeff;
