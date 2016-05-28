@@ -15,7 +15,7 @@ shape.lineTo(0, 20);
 
 export default Immutable.Record({
   meta: undefined,
-  position: new PositionComponent({ x: 32, y: 32, width: 32, height: 32 }),
+  position: new PositionComponent({ x: 32, y: 32, width: 20, height: 20 }),
   render: new RenderComponent({
     shape: shape,
     stroke: "#00b6E4",
