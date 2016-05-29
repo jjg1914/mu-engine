@@ -4,6 +4,24 @@ export type Impl<T> =
 export default class IO<T> {
   private _f: Impl<T>;
 
+  public static Wrap<T>(t: T | IO<T>): IO<T> {
+    if (t instanceof IO) {
+      return t;
+    } else {
+      return new IO((_get: () => T,
+                     _set: (t: T) => void,
+                     cb: (t: T) => void) => {
+        cb(t);
+      });
+    }
+  }
+
+  public static Thread<T>(funcs: ((t: T) => T | IO<T>)[]): IO<T> {
+    return funcs.reduce((memo: IO<T>, value: (t: T) => T | IO<T>): IO<T> => {
+      return memo.bind((t: T) => IO.Wrap(value(t)));
+    }, IO.Wrap<T>(undefined));
+  }
+
   public static Put<T>(t: T): IO<T> {
     return new IO((_get: () => T, set: (t: T) => void, cb: (t: T) => void) => {
       set(t);
