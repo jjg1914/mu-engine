@@ -1,22 +1,21 @@
-import "../poly.d.ts";
-
 import * as Immutable from "immutable";
+
+import { Circle } from "../engine/shape";
 
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
+import DamageComponent from "../components/damage-component";
 import RenderComponent from "../components/render-component";
 
-const shape = new Path2D();
-
-shape.moveTo(0, 0);
-shape.arc(3, 3, 3, 0, 2 * Math.PI);
+const mask = new Circle(1.5);
 
 export default Immutable.Record({
   meta: undefined,
-  position: new PositionComponent({ width: 6, height: 6 }),
+  position: (new PositionComponent(mask.dimensions())).set("mask", mask),
   render: new RenderComponent({
-    shape: shape,
+    shape: mask.path(),
     fill: "#00b6E4",
   }),
   movement: new MovementComponent({ ySpeed: -256 }),
-}, "TestEntity");
+  damage: new DamageComponent({ value: 1 }),
+}, "BulletEntity");

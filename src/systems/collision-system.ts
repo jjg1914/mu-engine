@@ -1,15 +1,20 @@
 import Engine, { Entity } from "../engine/engine";
 import Collision, { query } from "../engine/collision";
 
-export default function CollisionSystem(engine: Engine,
-                                        entity: Entity): Engine {
-  let collisions = query(Collision(engine, 208, 256), entity);
+export default function CollisionSystem(engine: Engine): Engine {
+  let tree = Collision(engine, 208, 256);
 
-  if (collisions.size > 0) {
-    entity = entity.setIn([ "render", "stroke" ], "#f33c6d");
-  } else {
-    entity = entity.setIn([ "render", "stroke" ], "#00b6E4");
-  }
+  return engine.runIterator([ "target" ], (value: Engine,
+                                          entity: Entity): Engine => {
+    return query(tree, entity).filter((e: Entity) => {
+      return e.has("damage");
+    }).reduce((m: Engine, e: Entity): Engine => {
+      let v = entity.getIn([ "target", "value" ]);
+      let damage = e.getIn([ "damage", "value" ]);
 
-  return engine.upEntity(entity);
+      entity = entity.setIn([ "target", "value" ], v - damage);
+
+      return m.upEntity(entity).rmEntity(e);
+    }, value);
+  });
 }

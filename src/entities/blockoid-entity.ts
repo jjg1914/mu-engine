@@ -4,21 +4,21 @@ import { Polygon } from "../engine/shape";
 
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
+import TargetComponent from "../components/target-component";
 import RenderComponent from "../components/render-component";
-
-const mask = new Polygon([
-  [ 0, 20 ],
-  [ 20, 20 ],
-  [ 10, 0 ],
-]);
 
 export default Immutable.Record({
   meta: undefined,
-  position: (new PositionComponent(mask.dimensions())).set("mask", mask),
-  render: new RenderComponent({
-    shape: mask.path(),
-    stroke: "#00b6E4",
-    strokeWidth: 2,
+  position: new PositionComponent({
+    width: 24,
+    height: 24,
   }),
-  movement: new MovementComponent(),
-}, "TestEntity");
+  render: new RenderComponent({
+    stroke: "#aeea1c",
+    strokeWidth: 1,
+  }),
+  movement: new MovementComponent({
+    ySpeed: 32,
+  }),
+  target: new TargetComponent(),
+}, "BlockoidEntity");

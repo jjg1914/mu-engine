@@ -35,10 +35,16 @@ export default class Engine extends Immutable.Record({
     return <Engine> this.setIn([ "entities", id  ], entity);
   };
 
-  public rmEntity(entity: Entity): Engine {
-    let id = entity.getIn([ "meta", "id" ]);
+  public rmEntity(entity: Entity | number): Engine {
+    let id;
 
-    return <Engine> this.deleteIn([ "entities", id ]);
+    if (typeof entity === "number") {
+      id = entity
+    } else {
+      id = entity.getIn([ "meta", "id" ]);
+    }
+
+    return <Engine> this.deleteIn([ "entities", id.toString() ]);
   };
 
   public pushState(state: System): Engine {

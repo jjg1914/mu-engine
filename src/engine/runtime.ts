@@ -10,8 +10,14 @@ export interface Runable {
 export default class Runtime<T extends Runable> {
   private state: T;
 
-  public constructor(initial: T, f: Impl) {
-    this.state = initial;
+  public constructor(initial: T | IO<T>, f: Impl) {
+    if (initial instanceof IO) {
+      initial.run(() => this.state,
+                  (t: T) => this.state = t,
+                  (t: T) => this.state = t);
+    } else {
+      this.state = initial;
+    }
 
     f((event: Object) => {
       if (event instanceof Error) {
