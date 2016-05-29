@@ -3,9 +3,89 @@ import { Record, List } from "immutable";
 
 export type vec2 = [ number, number ];
 
-export default class Polygon extends Record({
+export interface Shape {
+  translate(x: number, y: number): Shape;
+  project(axis: vec2): vec2;
+  dimensions(): Dimensions;
+  bounds(): Bounds;
+  path(): Path2D;
+}
+
+export class Circle extends Record({
+  radius: 0,
+  x: 0,
+  y: 0,
+}) implements Shape {
+  public radius: number;
+  public x: number;
+  public y: number;
+
+  public constructor(radius: number) {
+    super({ radius: radius, x: radius, y: radius });
+  }
+
+  public translate(x: number, y: number): Shape {
+    return <Circle> this.set("x", this.x + x).set("y", this.y + y);
+  }
+
+  public normals(other: Shape): List<vec2> {
+    if (other instanceof Circle) {
+      let x = other.x - this.x;
+      let y = other.y - this.y;
+
+      return List<vec2>([ <vec2> [ x, y ] ]);
+    } else if (other instanceof Polygon) {
+      let vertex = other.verticies.map((e: vec2): [ vec2, number ] => {
+        let x = e[0] - this.x;
+        let y = e[1] - this.y;
+
+        return [ [ x, y ], Math.sqrt(x * x + y * y) ];
+      }).reduce((m: [ vec2, number ],
+                 v: [ vec2, number ]): [ vec2, number ] => {
+        return (v[1] < m[1]) ? v : m;
+      });
+
+      return List<vec2>([ <vec2> vertex[0] ]);
+    } else {
+      throw new Error("unsupported shape");
+    }
+  }
+
+  public project(axis: vec2): vec2 {
+    let dot = axis[0] * this.x + axis[1] * this.y;
+
+    return <vec2> [ dot - this.radius, dot + this.radius ];
+  }
+
+  public dimensions(): Dimensions {
+    return {
+      width: this.radius * 2,
+      height: this.radius * 2,
+    };
+  }
+
+  public bounds(): Bounds {
+    return {
+      left: this.x - this.radius,
+      right: this.x + this.radius,
+      top: this.y - this.radius,
+      bottom: this.y + this.radius,
+    };
+  }
+
+  public path(): Path2D {
+    let path = new Path2D();
+
+    path.moveTo(this.x + this.radius, this.y);
+    path.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+
+    return path;
+  }
+}
+
+export class Polygon extends Record({
   verticies: List<vec2>(),
-}) {
+}) implements Shape {
   public verticies: List<vec2>;
 
   public constructor(verticies: vec2[] | List<vec2>) {
@@ -16,7 +96,7 @@ export default class Polygon extends Record({
     }
   }
 
-  public translate(x: number, y: number): Polygon {
+  public translate(x: number, y: number): Shape {
     return new Polygon(this.verticies.map((e: vec2): vec2 => {
       return <vec2> [ e[0] + x, e[1] + y ];
     }).toList());

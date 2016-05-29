@@ -1,16 +1,14 @@
+import "../poly.d.ts";
+
 import * as Immutable from "immutable";
 
-import { Polygon } from "../engine/shape";
+import { Circle } from "../engine/shape";
 
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
 import RenderComponent from "../components/render-component";
 
-const mask = new Polygon([
-  [ 0, 20 ],
-  [ 20, 20 ],
-  [ 10, 0 ],
-]);
+const mask = new Circle(10);
 
 export default Immutable.Record({
   meta: undefined,
@@ -22,3 +20,4 @@ export default Immutable.Record({
   }),
   movement: new MovementComponent(),
 }, "TestEntity");
+

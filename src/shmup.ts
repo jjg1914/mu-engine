@@ -5,6 +5,7 @@ import { Event as IntervalEvent } from "./engine/interval";
 import IO from "./engine/io";
 
 import TestEntity from "./entities/test-entity";
+import Test2Entity from "./entities/test2-entity";
 
 import BackgroundSystem from "./systems/background-system";
 import RenderSystem from "./systems/render-system";
@@ -17,7 +18,7 @@ export default function Shmup(): Engine {
   let entity: Entity = (new TestEntity())
     .setIn([ "position", "x" ], 32)
     .setIn([ "position", "y" ], 32);
-  let entity2: Entity = (new TestEntity())
+  let entity2: Entity = (new Test2Entity())
     .setIn([ "position", "x" ], 128)
     .setIn([ "position", "y" ], 128);
 

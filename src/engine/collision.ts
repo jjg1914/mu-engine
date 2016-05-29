@@ -1,6 +1,6 @@
 import * as Immutable from "immutable";
 import Engine, { Entity } from "./engine";
-import Polygon, { vec2, Bounds } from "./polygon";
+import { vec2, Bounds, Shape, Polygon, Circle } from "./shape";
 
 export default function Collision(engine: Engine,
                                   width: number,
@@ -93,15 +93,9 @@ function checkMasks(value: Entity, entity: Entity): boolean {
     let mask1 = getMasks(entity);
     let mask2 = getMasks(value);
 
-    let normals1 = mask1.normals();
-    let normals2 = mask2.normals();
+    let normals = getNormals(mask1, mask2);
 
-    return normals1.every((e: vec2): boolean => {
-      let proj1 = mask1.project(e);
-      let proj2 = mask2.project(e);
-
-      return proj1[0] <= proj2[1] && proj1[1] >= proj2[0];
-    }) && normals2.every((e: vec2): boolean => {
+    return normals.every((e: vec2): boolean => {
       let proj1 = mask1.project(e);
       let proj2 = mask2.project(e);
 
@@ -122,10 +116,33 @@ function getBounds(entity: Entity): Bounds {
   };
 }
 
-function getMasks(entity: Entity): Polygon {
+function getNormals(shape1: Shape, shape2: Shape): Immutable.List<vec2> {
+  let normals1;
+  let normals2;
+
+  if (shape1 instanceof Polygon) {
+    normals1 = shape1.normals();
+  } else if (shape1 instanceof Circle) {
+    normals1 = shape1.normals(shape2);
+  }
+
+  if (shape2 instanceof Polygon) {
+    normals2 = shape2.normals();
+  } else if (shape2 instanceof Circle) {
+    normals2 = shape2.normals(shape1);
+  }
+
+  return normals1.concat(normals2).map((e: vec2): vec2 => {
+    let mag = Math.sqrt((e[0] * e[0]) + e[1] * e[1]);
+
+    return [ e[0] / mag, e[1] / mag ];
+  }).toList();
+}
+
+function getMasks(entity: Entity): Shape {
   let mask = entity.getIn([ "position", "mask" ]);
 
-  if (mask instanceof Polygon) {
+  if (mask instanceof Polygon || mask instanceof Circle) {
     let x = Number(entity.getIn([ "position", "x" ]));
     let y = Number(entity.getIn([ "position", "y" ]));
 
