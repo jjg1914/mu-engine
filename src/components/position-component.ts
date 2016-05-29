@@ -5,4 +5,5 @@ export default Immutable.Record({
   y: 0,
   width: 0,
   height: 0,
+  mask: undefined,
 }, "PositionComponent");

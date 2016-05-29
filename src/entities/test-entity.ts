@@ -2,22 +2,23 @@ import "../poly.d.ts";
 
 import * as Immutable from "immutable";
 
+import Polygon from "../engine/polygon";
+
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
 import RenderComponent from "../components/render-component";
 
-const shape = new Path2D();
-
-shape.moveTo(0, 20);
-shape.lineTo(20, 20);
-shape.lineTo(10, 0);
-shape.lineTo(0, 20);
+const mask = new Polygon([
+  [ 0, 20 ],
+  [ 20, 20 ],
+  [ 10, 0 ],
+]);
 
 export default Immutable.Record({
   meta: undefined,
-  position: new PositionComponent({ x: 32, y: 32, width: 20, height: 20 }),
+  position: (new PositionComponent(mask.dimensions())).set("mask", mask),
   render: new RenderComponent({
-    shape: shape,
+    shape: mask.path(),
     stroke: "#00b6E4",
     strokeWidth: 2,
   }),

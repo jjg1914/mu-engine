@@ -1,5 +1,6 @@
 import * as Immutable from "immutable";
 import Engine, { Entity } from "./engine";
+import Polygon, { vec2, Bounds } from "./polygon";
 
 export default function Collision(engine: Engine,
                                   width: number,
@@ -24,7 +25,7 @@ export function query(tree: Node,
     return tree.entities.reduce((memo: Immutable.Map<string, Entity>,
                                  value: Entity) => {
       if (entity.getIn([ "meta", "id" ]) !== value.getIn([ "meta", "id" ])
-          && checkBounds(value, entity)) {
+          && checkBounds(value, entity) && checkMasks(value, entity)) {
         return memo.set(value.getIn([ "meta", "id" ]), value);
       } else {
         return memo;
@@ -84,6 +85,31 @@ function checkBounds(value: Node | Entity, entity: Entity): boolean {
       && entityBounds.bottom >= valueBounds.top;
 }
 
+function checkMasks(value: Entity, entity: Entity): boolean {
+  if (value.getIn([ "position", "mask" ]) == undefined
+      && entity.getIn([ "position", "mask" ]) == undefined) {
+    return true;
+  } else {
+    let mask1 = getMasks(entity);
+    let mask2 = getMasks(value);
+
+    let normals1 = mask1.normals();
+    let normals2 = mask2.normals();
+
+    return normals1.every((e: vec2): boolean => {
+      let proj1 = mask1.project(e);
+      let proj2 = mask2.project(e);
+
+      return proj1[0] <= proj2[1] && proj1[1] >= proj2[0];
+    }) && normals2.every((e: vec2): boolean => {
+      let proj1 = mask1.project(e);
+      let proj2 = mask2.project(e);
+
+      return proj1[0] <= proj2[1] && proj1[1] >= proj2[0];
+    });
+  }
+}
+
 function getBounds(entity: Entity): Bounds {
   let left = entity.getIn([ "position", "x" ]);
   let top = entity.getIn([ "position", "y" ]);
@@ -96,11 +122,27 @@ function getBounds(entity: Entity): Bounds {
   };
 }
 
-interface Bounds {
-  top: number;
-  bottom: number;
-  left: number;
-  right: number;
+function getMasks(entity: Entity): Polygon {
+  let mask = entity.getIn([ "position", "mask" ]);
+
+  if (mask instanceof Polygon) {
+    let x = Number(entity.getIn([ "position", "x" ]));
+    let y = Number(entity.getIn([ "position", "y" ]));
+
+    return mask.translate(x, y);
+  } else {
+    let x = Number(entity.getIn([ "position", "x" ]));
+    let y = Number(entity.getIn([ "position", "y" ]));
+    let width = Number(entity.getIn([ "position", "width" ]));
+    let height = Number(entity.getIn([ "position", "height" ]));
+
+    return new Polygon([
+      [ x, y ],
+      [ x + width, y ],
+      [ x + width, y + height ],
+      [ x, y + height ],
+    ]);
+  }
 }
 
 class Node extends Immutable.Record({
