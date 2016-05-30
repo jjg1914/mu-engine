@@ -1,7 +1,5 @@
 import * as Immutable from "immutable";
 
-import { Polygon } from "../engine/shape";
-
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
 import AnimateComponent from "../components/animate-component";

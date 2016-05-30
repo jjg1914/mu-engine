@@ -57,7 +57,8 @@ function addEntity(node: Node,
     }));
   } else {
     if (checkBounds(node, bounds)) {
-      return <Node> node.set("entities", node.entities.push([ bounds, entity ]));
+      return <Node> node.set("entities",
+                             node.entities.push([ bounds, entity ]));
     } else {
       return node;
     }
@@ -136,7 +137,7 @@ function getMasks(entity: Entity): Shape {
     let y = Number(entity.getIn([ "position", "y" ]));
     let rotate = Number(entity.getIn([ "position", "rotate" ]));
 
-    return mask.translate(x, y);
+    return mask.rotate(rotate).translate(x, y);
   } else {
     let x = Number(entity.getIn([ "position", "x" ]));
     let y = Number(entity.getIn([ "position", "y" ]));

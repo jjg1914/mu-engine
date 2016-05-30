@@ -1,4 +1,4 @@
-import Engine, { Entity } from "../engine/engine";
+import Engine from "../engine/engine";
 import IO from "../engine/io";
 
 import BlockoidEntity from "../entities/blockoid-entity";

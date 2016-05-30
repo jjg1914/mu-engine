@@ -19,8 +19,10 @@ export default function CollisionSystem(engine: Engine,
           (_e: Engine) => IO.Put<Engine>(i),
           (_e: Engine) => IO.Delay<Engine>(50),
           (e: Engine) => {
-            return IO.Put(e.patchEntity(entity, { render: { stroke: stroke } }));
-          }
+            return IO.Put(e.patchEntity(entity, {
+              render: { stroke: stroke },
+            }));
+          },
         ]);
       }
     }

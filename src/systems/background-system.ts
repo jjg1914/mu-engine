@@ -5,7 +5,7 @@ export default function RenderSystem(event: Event): void {
   event.ctx.strokeStyle = "#005399";
   event.ctx.fillRect(0, 0, event.width, event.height);
 
-  let offset = 8; //(event.width % 16) / 2;
+  let offset = 8;
 
   for (let i = offset; i < event.width; i += 16) {
     event.ctx.beginPath();

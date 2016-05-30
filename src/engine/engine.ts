@@ -47,7 +47,7 @@ export default class Engine extends Immutable.Record({
     let id;
 
     if (typeof entity === "number") {
-      id = entity
+      id = entity;
     } else {
       id = entity.getIn([ "meta", "id" ]);
     }
@@ -59,7 +59,7 @@ export default class Engine extends Immutable.Record({
     let id;
 
     if (typeof entity === "number") {
-      id = entity
+      id = entity;
     } else {
       id = entity.getIn([ "meta", "id" ]);
     }

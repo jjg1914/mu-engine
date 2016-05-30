@@ -26,8 +26,8 @@ export default function StageState(value: Engine): IO<Engine> {
   let newValue = value.mkEntity(entity);
   let id = newValue.get("id").toString();
 
-  let tmp = newValue.pushState((engine: Engine,
-                             event: Object): Engine | IO<Engine> => {
+  let tmp2 = newValue.pushState((engine: Engine,
+                                event: Object): Engine | IO<Engine> => {
     if (event instanceof RenderEvent) {
       BackgroundSystem(event);
       RenderSystem(engine, event);
@@ -47,5 +47,5 @@ export default function StageState(value: Engine): IO<Engine> {
     return engine;
   });
 
-  return IO.Put(tmp).bind((e: Engine) => Stage1());
+  return IO.Put(tmp2).bind((_e: Engine) => Stage1());
 }
