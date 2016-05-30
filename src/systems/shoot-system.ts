@@ -10,8 +10,8 @@ export default function ShootSystem(engine: Engine,
   if (event.type === EventType.KEY_DOWN &&
       event.which === Keys.SPACE) {
     let bullet = (new BulletEntity())
-      .setIn([ "position", "x" ], entity.getIn([ "position", "x"]) + 16)
-      .setIn([ "position", "y" ], entity.getIn([ "position", "y"]) + 32);
+      .setIn([ "position", "x" ], entity.getIn([ "position", "x"]) + 8.5)
+      .setIn([ "position", "y" ], entity.getIn([ "position", "y"]) + 4);
     let newEngine = engine.mkEntity(bullet);
     let id = newEngine.get("id");
 

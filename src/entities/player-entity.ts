@@ -19,5 +19,5 @@ export default Immutable.Record({
     shape: mask.path(),
     stroke: "#00b6E4",
   }),
-  movement: new MovementComponent(),
+  movement: new MovementComponent({ restict: true }),
 }, "PlayerEntity");
