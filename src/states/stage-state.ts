@@ -14,6 +14,7 @@ import MovementSystem from "../systems/movement-system";
 import AnimateSystem from "../systems/animate-system";
 import CollisionSystem from "../systems/collision-system";
 import TargetSystem from "../systems/target-system";
+import FlashSystem from "../systems/flash-system";
 
 import Stage1 from "../stages/stage-1.ts";
 
@@ -38,7 +39,9 @@ export default function StageState(value: Engine): IO<Engine> {
       tmp = AnimateSystem(tmp, event);
       tmp = CollisionSystem(tmp);
       tmp = TargetSystem(tmp);
-      return tmp;
+      return IO.Put(tmp).bind((e: Engine) => {
+        return FlashSystem(e, engine);
+      });
     }
 
     return engine;
