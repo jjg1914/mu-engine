@@ -1,18 +1,13 @@
 import Engine from "../engine/engine";
 import IO from "../engine/io";
+import Timeline from "../engine/timeline";
 
 import { Blockoid } from "../helpers/enemy-helper";
 
 export default function Stage1(): IO<Engine> {
-  return IO.All<Engine>([
-    IO.Delay(2000).bind((e: Engine): IO<Engine> => {
-      return Blockoid(e, 92);
-    }),
-    IO.Delay(2500).bind((e: Engine): IO<Engine> => {
-      return Blockoid(e, 40);
-    }),
-    IO.Delay(3000).bind((e: Engine): IO<Engine> => {
-      return Blockoid(e, 168);
-    }),
+  return Timeline<Engine>([
+    [ 2000, (e: Engine): IO<Engine> => Blockoid(e, 92) ],
+    [ 500, (e: Engine): IO<Engine> => Blockoid(e, 40) ],
+    [ 500, (e: Engine): IO<Engine> => Blockoid(e, 168) ],
   ]);
 }
