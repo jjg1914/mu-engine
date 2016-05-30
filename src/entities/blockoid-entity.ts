@@ -4,6 +4,7 @@ import { Polygon } from "../engine/shape";
 
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
+import AnimateComponent from "../components/animate-component";
 import TargetComponent from "../components/target-component";
 import RenderComponent from "../components/render-component";
 
@@ -12,6 +13,7 @@ export default Immutable.Record({
   position: new PositionComponent({
     width: 24,
     height: 24,
+    rotate: Math.PI / 4,
   }),
   render: new RenderComponent({
     stroke: "#aeea1c",
@@ -20,5 +22,8 @@ export default Immutable.Record({
   movement: new MovementComponent({
     ySpeed: 32,
   }),
-  target: new TargetComponent(),
+  animate: new AnimateComponent({
+    rotateSpeed: Math.PI / 4,
+  }),
+  target: new TargetComponent({ value: 3 }),
 }, "BlockoidEntity");

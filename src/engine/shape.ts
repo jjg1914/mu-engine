@@ -5,6 +5,7 @@ export type vec2 = [ number, number ];
 
 export interface Shape {
   translate(x: number, y: number): Shape;
+  rotate(r: number): Shape;
   project(axis: vec2): vec2;
   dimensions(): Dimensions;
   bounds(): Bounds;
@@ -26,6 +27,10 @@ export class Circle extends Record({
 
   public translate(x: number, y: number): Shape {
     return <Circle> this.set("x", this.x + x).set("y", this.y + y);
+  }
+
+  public rotate(_r: number): Shape {
+    return this;
   }
 
   public normals(other: Shape): List<vec2> {
@@ -99,6 +104,24 @@ export class Polygon extends Record({
   public translate(x: number, y: number): Shape {
     return new Polygon(this.verticies.map((e: vec2): vec2 => {
       return <vec2> [ e[0] + x, e[1] + y ];
+    }).toList());
+  }
+
+  public rotate(r: number): Shape {
+    let dim = this.dimensions();
+    let x = dim.width / 2;
+    let y = dim.height / 2;
+    let c = Math.cos(r);
+    let s = Math.sin(r);
+
+    let const1 = -c * x + s * y + x;
+    let const2 = -s * x - c * y + y;
+
+    return new Polygon(this.verticies.map((e: vec2): vec2 => {
+      return <vec2> [
+        c * e[0] - s * e[1] + const1,
+        s * e[0] + c * e[1] + const2,
+      ];
     }).toList());
   }
 

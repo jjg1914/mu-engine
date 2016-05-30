@@ -6,16 +6,21 @@ export default function Collision(engine: Engine,
                                   width: number,
                                   height: number): Node {
   return engine.runIteratorOn([ "position" ], (root: Node, entity: Entity) => {
-    return addEntity(root, entity);
+    return addEntity(root, entity, getMasks(entity).bounds());
   }, new Node({ bottom: height, right: width }));
 }
 
 export function query(tree: Node,
-                      entity: Entity): Immutable.Map<string, Entity> {
+                      entity: Entity,
+                      bounds?: Bounds): Immutable.Map<string, Entity> {
+  let hasNPhase1 = hasNPhase(entity);
+  let mask1 = getMasks(entity);
+  bounds = bounds || mask1.bounds();
+
   if (tree.children) {
     return tree.children.reduce((memo: Immutable.Map<string, Entity>,
                                  node: Node) => {
-      if (checkBounds(node, entity)) {
+      if (checkBounds(node, bounds)) {
         return memo.merge(query(node, entity));
       } else {
         return memo;
@@ -23,10 +28,14 @@ export function query(tree: Node,
     }, Immutable.Map<string, Entity>());
   } else {
     return tree.entities.reduce((memo: Immutable.Map<string, Entity>,
-                                 value: Entity) => {
-      if (entity.getIn([ "meta", "id" ]) !== value.getIn([ "meta", "id" ])
-          && checkBounds(value, entity) && checkMasks(value, entity)) {
-        return memo.set(value.getIn([ "meta", "id" ]), value);
+                                 value: [ Bounds, Entity ]) => {
+      let hasNPhase2 = hasNPhase(value[1]);
+      let narrowPhase = hasNPhase1 || hasNPhase2;
+
+      if (entity.getIn([ "meta", "id" ]) !== value[1].getIn([ "meta", "id" ])
+          && checkBounds(value[0], bounds)
+          && (!narrowPhase || checkMasks(mask1, getMasks(value[1])))) {
+        return memo.set(value[1].getIn([ "meta", "id" ]), value[1]);
       } else {
         return memo;
       }
@@ -34,18 +43,21 @@ export function query(tree: Node,
   }
 }
 
-function addEntity(node: Node, entity: Entity, depth: number = 0): Node {
+function addEntity(node: Node,
+                   entity: Entity,
+                   bounds: Bounds,
+                   depth: number = 0): Node {
   if (depth < 8 && node.children == undefined && node.entities.size > 4) {
     node = rebalanceNode(node);
   }
 
   if (node.children) {
     return <Node> node.set("children", node.children.map((e: Node) => {
-      return addEntity(e, entity, depth + 1);
+      return addEntity(e, entity, bounds, depth + 1);
     }));
   } else {
-    if (checkBounds(node, entity)) {
-      return <Node> node.set("entities", node.entities.push(entity));
+    if (checkBounds(node, bounds)) {
+      return <Node> node.set("entities", node.entities.push([ bounds, entity ]));
     } else {
       return node;
     }
@@ -70,50 +82,27 @@ function rebalanceNode(node: Node): Node {
     });
 
     return newNode.set("entities", node.entities.filter((f) => {
-      return checkBounds(newNode, f);
+      return checkBounds(newNode, f[0]);
     }));
   }));
 }
 
-function checkBounds(value: Node | Entity, entity: Entity): boolean {
-  let entityBounds = getBounds(entity);
-  let valueBounds = (value instanceof Node) ? value : getBounds(value);
-
-  return entityBounds.left <= valueBounds.right
-      && entityBounds.right >= valueBounds.left
-      && entityBounds.top <= valueBounds.bottom
-      && entityBounds.bottom >= valueBounds.top;
+function checkBounds(value: Bounds, entity: Bounds): boolean {
+  return entity.left <= value.right
+      && entity.right >= value.left
+      && entity.top <= value.bottom
+      && entity.bottom >= value.top;
 }
 
-function checkMasks(value: Entity, entity: Entity): boolean {
-  if (value.getIn([ "position", "mask" ]) == undefined
-      && entity.getIn([ "position", "mask" ]) == undefined) {
-    return true;
-  } else {
-    let mask1 = getMasks(entity);
-    let mask2 = getMasks(value);
+function checkMasks(mask1: Shape, mask2: Shape): boolean {
+  let normals = getNormals(mask1, mask2);
 
-    let normals = getNormals(mask1, mask2);
+  return normals.every((e: vec2): boolean => {
+    let proj1 = mask1.project(e);
+    let proj2 = mask2.project(e);
 
-    return normals.every((e: vec2): boolean => {
-      let proj1 = mask1.project(e);
-      let proj2 = mask2.project(e);
-
-      return proj1[0] <= proj2[1] && proj1[1] >= proj2[0];
-    });
-  }
-}
-
-function getBounds(entity: Entity): Bounds {
-  let left = entity.getIn([ "position", "x" ]);
-  let top = entity.getIn([ "position", "y" ]);
-
-  return {
-    left: left,
-    right: left + entity.getIn([ "position", "width" ]),
-    top: top,
-    bottom: top + entity.getIn([ "position", "height" ]),
-  };
+    return proj1[0] <= proj2[1] && proj1[1] >= proj2[0];
+  });
 }
 
 function getNormals(shape1: Shape, shape2: Shape): Immutable.List<vec2> {
@@ -145,6 +134,7 @@ function getMasks(entity: Entity): Shape {
   if (mask instanceof Polygon || mask instanceof Circle) {
     let x = Number(entity.getIn([ "position", "x" ]));
     let y = Number(entity.getIn([ "position", "y" ]));
+    let rotate = Number(entity.getIn([ "position", "rotate" ]));
 
     return mask.translate(x, y);
   } else {
@@ -152,14 +142,20 @@ function getMasks(entity: Entity): Shape {
     let y = Number(entity.getIn([ "position", "y" ]));
     let width = Number(entity.getIn([ "position", "width" ]));
     let height = Number(entity.getIn([ "position", "height" ]));
+    let rotate = Number(entity.getIn([ "position", "rotate" ]));
 
     return new Polygon([
-      [ x, y ],
-      [ x + width, y ],
-      [ x + width, y + height ],
-      [ x, y + height ],
-    ]);
+      [ 0, 0 ],
+      [ width, 0 ],
+      [ width, height ],
+      [ 0, height ],
+    ]).rotate(rotate).translate(x, y);
   }
+}
+
+function hasNPhase(entity: Entity): boolean {
+  return (entity.getIn([ "position", "mask"]) instanceof Polygon)
+         || (entity.getIn([ "position", "mask"]) instanceof Circle);
 }
 
 class Node extends Immutable.Record({
@@ -167,7 +163,7 @@ class Node extends Immutable.Record({
   bottom: 0,
   left: 0,
   right: 0,
-  entities: Immutable.List<Entity>(),
+  entities: Immutable.List<[ Bounds, Entity ]>(),
   children: undefined,
 }) implements Bounds {
   public top: number;
@@ -175,5 +171,5 @@ class Node extends Immutable.Record({
   public left: number;
   public right: number;
   public children: Immutable.List<Node>;
-  public entities: Immutable.List<Entity>;
+  public entities: Immutable.List<[ Bounds, Entity ]>;
 }

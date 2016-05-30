@@ -11,6 +11,7 @@ import RenderSystem from "../systems/render-system";
 import InputSystem from "../systems/input-system";
 import ShootSystem from "../systems/shoot-system";
 import MovementSystem from "../systems/movement-system";
+import AnimateSystem from "../systems/animate-system";
 import CollisionSystem from "../systems/collision-system";
 import TargetSystem from "../systems/target-system";
 
@@ -34,8 +35,10 @@ export default function StageState(value: Engine): IO<Engine> {
       return ShootSystem(tmp, tmp.getIn([ "entities", id ]), event);
     } else if (event instanceof IntervalEvent) {
       let tmp = MovementSystem(engine, event);
+      tmp = AnimateSystem(tmp, event);
       tmp = CollisionSystem(tmp);
-      return TargetSystem(tmp);
+      tmp = TargetSystem(tmp);
+      return tmp;
     }
 
     return engine;

@@ -8,21 +8,31 @@ export default function RenderSystem(engine: Engine,
   engine.runIterator([ "position", "render" ],
                      (memo: Engine, entity: Entity): Engine => {
     let shape = entity.getIn([ "render", "shape" ]);
+    let x = entity.getIn([ "position", "x" ]);
+    let y = entity.getIn([ "position", "y" ]);
+    let width = entity.getIn([ "position", "width" ]);
+    let height = entity.getIn([ "position", "height" ]);
+    let rotate = entity.getIn([ "position", "rotate" ]);
 
     if (!(shape instanceof Path2D)) {
       shape = new Path2D();
 
       shape.moveTo(0, 0);
-      shape.lineTo(entity.getIn(["position", "width"]), 0);
-      shape.lineTo(entity.getIn(["position", "width"]),
-                   entity.getIn(["position", "height"]));
-      shape.lineTo(0, entity.getIn(["position", "height"]));
+      shape.lineTo(width, 0);
+      shape.lineTo(width, height);
+      shape.lineTo(0, height);
       shape.lineTo(0, 0);
     }
 
     event.ctx.save();
-    event.ctx.translate(entity.getIn(["position", "x"]),
-                      entity.getIn(["position", "y"]));
+
+    event.ctx.translate(x, y);
+
+    if (rotate !== 0) {
+      event.ctx.translate(width / 2, height / 2);
+      event.ctx.rotate(rotate);
+      event.ctx.translate(-width / 2, -height / 2);
+    }
 
     event.ctx.lineWidth = entity.getIn(["render", "strokeWidth"]);
 
