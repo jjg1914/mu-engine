@@ -5,7 +5,7 @@ html, body, #stage {
 
 body {
   color: #F8F8F8;
-  background: #282828;
+  background: #484848;
   font-family: sans-serif;
   margin: 0;
 }
@@ -13,4 +13,9 @@ body {
 #stage {
   display: block;
   margin: 0 auto;
+}
+
+#stage:focus {
+  outline: none;
+  box-shadow: 0 0 1em #00b6e4;
 }

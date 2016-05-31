@@ -15,6 +15,7 @@ import AnimateSystem from "../systems/animate-system";
 import CollisionSystem from "../systems/collision-system";
 import TargetSystem from "../systems/target-system";
 import FlashSystem from "../systems/flash-system";
+import PathSystem from "../systems/path-system";
 
 import Stage1 from "../stages/stage-1.ts";
 
@@ -36,6 +37,7 @@ export default function StageState(value: Engine): IO<Engine> {
       return ShootSystem(tmp, tmp.getIn([ "entities", id ]), event);
     } else if (event instanceof IntervalEvent) {
       let tmp = MovementSystem(engine, event);
+      tmp = PathSystem(tmp, event);
       tmp = AnimateSystem(tmp, event);
       tmp = CollisionSystem(tmp);
       tmp = TargetSystem(tmp);

@@ -13,12 +13,11 @@ export default function ShootSystem(engine: Engine,
       .setIn([ "position", "x" ], entity.getIn([ "position", "x"]) + 8.5)
       .setIn([ "position", "y" ], entity.getIn([ "position", "y"]) + 4);
     let newEngine = engine.mkEntity(bullet);
-    let id = newEngine.get("id");
 
     return IO.Thread<Engine>([
       (_e: Engine) => IO.Put(newEngine),
       (_e: Engine) => IO.Delay(3000),
-      (e: Engine) => IO.Put(e.rmEntity(e.getIn([ "entities", id ]))),
+      (e: Engine) => IO.Put(e.rmEntity(newEngine.lastId())),
     ]);
   } else {
     return engine;
