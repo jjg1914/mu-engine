@@ -11,7 +11,7 @@ type Pair = [ number, Node ];
 export type PathF = (t: number) => [ number, number ];
 
 function search(path: Pair[],
-                 t: number): [ Pair, Pair ] {
+                t: number): [ Pair, Pair ] {
   let i;
 
   for (i = path.length - 1; i >= 0; --i) {
