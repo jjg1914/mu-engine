@@ -19,6 +19,7 @@ export default Immutable.Record({
   }),
   movement: new MovementComponent({
     ySpeed: 32,
+    restrict: "remove",
   }),
   animate: new AnimateComponent({
     rotateSpeed: Math.PI / 4,

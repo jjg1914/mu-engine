@@ -16,6 +16,6 @@ export default Immutable.Record({
     shape: mask.path(),
     stroke: "#f33c6d",
   }),
-  movement: new MovementComponent(),
+  movement: new MovementComponent({ restrict: "remove" }),
   target: new TargetComponent({ value: 1 }),
 }, "BlockoidEntity");

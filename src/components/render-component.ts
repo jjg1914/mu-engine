@@ -4,5 +4,5 @@ export default Immutable.Record({
   fill: undefined,
   stroke: undefined,
   strokeWidth: 1,
-  shape: undefined,
+  shape: undefined, // TODO rename mask
 }, "RenderComponent");

@@ -5,7 +5,7 @@ export default function Interval(rate: number, cb: Callback): void {
   const start: number = performance.now();
   let now: number = start;
   let last: number = start;
-  const interval: number = setInterval((): void => {
+  const interval = setInterval((): void => {
     try {
       last = now;
       now = performance.now();

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
       smoothing: false,
     });
 
-    Interval(30, renderer(cb));
+    Interval(60, renderer(cb));
     Input(stage, cb);
   });
 });

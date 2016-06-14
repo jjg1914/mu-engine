@@ -129,29 +129,27 @@ function getNormals(shape1: Shape, shape2: Shape): Immutable.List<vec2> {
   }).toList();
 }
 
-function getMasks(entity: Entity): Shape {
+// TODO singularize name
+export function getMasks(entity: Entity): Shape {
   let mask = entity.getIn([ "position", "mask" ]);
 
-  if (mask instanceof Polygon || mask instanceof Circle) {
-    let x = Number(entity.getIn([ "position", "x" ]));
-    let y = Number(entity.getIn([ "position", "y" ]));
-    let rotate = Number(entity.getIn([ "position", "rotate" ]));
-
-    return mask.rotate(rotate).translate(x, y);
-  } else {
-    let x = Number(entity.getIn([ "position", "x" ]));
-    let y = Number(entity.getIn([ "position", "y" ]));
+  if (!(mask instanceof Polygon || mask instanceof Circle)) {
     let width = Number(entity.getIn([ "position", "width" ]));
     let height = Number(entity.getIn([ "position", "height" ]));
-    let rotate = Number(entity.getIn([ "position", "rotate" ]));
 
-    return new Polygon([
+    mask = new Polygon([
       [ 0, 0 ],
       [ width, 0 ],
       [ width, height ],
       [ 0, height ],
-    ]).rotate(rotate).translate(x, y);
+    ]);
   }
+
+  let x = Number(entity.getIn([ "position", "x" ]));
+  let y = Number(entity.getIn([ "position", "y" ]));
+  let rotate = Number(entity.getIn([ "position", "rotate" ]));
+
+  return mask.rotate(rotate).translate(x, y);
 }
 
 function hasNPhase(entity: Entity): boolean {
