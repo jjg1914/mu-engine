@@ -5,6 +5,7 @@ import { Polygon } from "../engine/shape";
 import PositionComponent from "../components/position-component";
 import MovementComponent from "../components/movement-component";
 import RenderComponent from "../components/render-component";
+import TargetComponent from "../components/target-component";
 
 const mask = new Polygon([
   [ 0, 20 ],
@@ -20,4 +21,5 @@ export default Immutable.Record({
     stroke: "#00b6E4",
   }),
   movement: new MovementComponent({ restict: true }),
+  target: new TargetComponent({ value: 1, group: "A" }),
 }, "PlayerEntity");

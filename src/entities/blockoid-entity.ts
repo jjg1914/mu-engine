@@ -24,5 +24,5 @@ export default Immutable.Record({
   animate: new AnimateComponent({
     rotateSpeed: Math.PI / 4,
   }),
-  target: new TargetComponent({ value: 3 }),
+  target: new TargetComponent({ value: 3, group: "B" }),
 }, "BlockoidEntity");

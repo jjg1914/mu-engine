@@ -55,6 +55,10 @@ export default class IO<T> {
     });
   }
 
+  public static Noop<T>(): IO<T> {
+    return IO.Get<T>();
+  }
+
   public constructor(f: Impl<T>) {
     this._f = f;
   }

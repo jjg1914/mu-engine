@@ -14,8 +14,8 @@ export default Immutable.Record({
   position: (new PositionComponent(mask.dimensions())).set("mask", mask),
   render: new RenderComponent({
     shape: mask.path(),
-    fill: "#00b6E4",
+    fill: "#f33c6d",
   }),
-  movement: new MovementComponent({ ySpeed: -256, restrict: "remove" }),
-  damage: new DamageComponent({ value: 1, group: "A" }),
+  movement: new MovementComponent({ restrict: "remove" }),
+  damage: new DamageComponent({ value: 1, group: "B" }),
 }, "BulletEntity");

@@ -8,6 +8,8 @@ import BlockoidEntity from "../entities/blockoid-entity";
 
 import DroneEntity from "../entities/drone-entity";
 
+import { Shoot } from "./shoot-helper";
+
 export function Blockoid(engine: Engine, x: number): IO<Engine> {
   let blockoid = (new BlockoidEntity())
     .setIn([ "position", "x" ], x)
@@ -22,6 +24,9 @@ export function Drone(engine: Engine, x: number): IO<Engine> {
     .setIn([ "position", "y" ], -12);
   let path = Path(drone, require("../paths/drone1-path"));
   drone = drone.setIn([ "movement", "path" ], path);
+  let newEngine = engine.mkEntity(drone);
 
-  return IO.Put(engine.mkEntity(drone));
+  return IO.Put(newEngine).bind((e) => {
+    return Shoot(newEngine.lastEntity());
+  });
 }
