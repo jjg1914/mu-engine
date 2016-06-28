@@ -1,8 +1,10 @@
+import "../poly.d.ts";
+
 import * as Immutable from "immutable";
 
 import { Callback } from "./runtime";
 
-export type Renderer = (_cb: Callback) => Callback;
+export type Renderer<T> = (_cb: Callback<T>) => Callback<T>;
 
 interface Config {
   width?: number;
@@ -11,8 +13,8 @@ interface Config {
   smoothing?: boolean;
 }
 
-export default function Render(stage: HTMLCanvasElement,
-                               config: Config = {}): Renderer {
+export default function Render<T>(stage: HTMLCanvasElement,
+                                  config: Config = {}): Renderer<T> {
   if (typeof stage.getContext !== "function") {
     throw new Error("Canvas not supported");
   }
@@ -34,17 +36,19 @@ export default function Render(stage: HTMLCanvasElement,
     }
   });
 
-  return (cb: Callback): Callback => {
+  return (cb: Callback<T>): Callback<T> => {
     return (event: Object) => {
       cb(event);
 
-      cb(new Event({
+      let tmp = cb(new Event({
         ctx: bufferCtx,
         width: width,
         height: height,
       }));
 
       stageCtx.drawImage(buffer, 0, 0);
+
+      return tmp;
     };
   };
 }

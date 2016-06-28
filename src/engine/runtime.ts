@@ -1,38 +1,39 @@
 import IO from "./io";
 
-export type Callback = (event: Object) => void;
-export type Impl = (cb: Callback) => void;
+export type Callback<T> = (event: Object) => T;
+export type Impl<T> = (cb: Callback<T>) => void;
 
 export interface Runable {
   run(event: Object): this | IO<this>;
 }
 
-export default class Runtime<T extends Runable> {
-  private state: T;
+export default function Runtime<T extends Runable>(initial: T | IO<T>,
+                                                   f: Impl<T>) {
+  let state;
 
-  public constructor(initial: T | IO<T>, f: Impl) {
-    if (initial instanceof IO) {
-      initial.run(() => this.state,
-                  (t: T) => this.state = t,
-                  (t: T) => this.state = t);
+  if (initial instanceof IO) {
+    initial.run(() => state,
+                (t: T) => state = t,
+                (t: T) => state = t);
+  } else {
+    state = initial;
+  }
+
+  f((event: Object) => {
+    if (event instanceof Error) {
+      console.error(event);
     } else {
-      this.state = initial;
+      let temp = this.state.run(event);
+
+      if (temp instanceof IO) {
+        temp.run(() => state,
+                 (t: T) => state = t,
+                 (t: T) => state = t);
+      } else {
+        state = temp;
+      }
     }
 
-    f((event: Object) => {
-      if (event instanceof Error) {
-        console.error(event);
-      } else {
-        let temp = this.state.run(event);
-
-        if (temp instanceof IO) {
-          temp.run(() => this.state,
-                   (t: T) => this.state = t,
-                   (t: T) => this.state = t);
-        } else {
-          this.state = temp;
-        }
-      }
-    });
-  }
+    return state;
+  });
 }

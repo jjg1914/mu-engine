@@ -5,7 +5,7 @@ function normalizeKey(ev: KeyboardEvent): number {
   return ev.keyCode;
 }
 
-export default function Input(stage: HTMLElement, cb: Callback): void {
+export default function Input<T>(stage: HTMLElement, cb: Callback<T>): void {
   stage.setAttribute("tabindex", "1");
 
   stage.addEventListener("keydown", (ev: KeyboardEvent) => {

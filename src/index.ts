@@ -1,4 +1,5 @@
 import Runtime, { Callback } from "./engine/runtime";
+import Engine from "./engine/engine";
 import Interval from "./engine/interval";
 import Render from "./engine/render";
 import Input from "./engine/input";
@@ -6,7 +7,7 @@ import Input from "./engine/input";
 import Shmup from "./shmup";
 
 document.addEventListener("DOMContentLoaded", () => {
-  let _runtime = new Runtime(Shmup(), (cb: Callback): void => {
+  Runtime(Shmup(), (cb: Callback<Engine>): void => {
     let stage = <HTMLCanvasElement> document.getElementById("stage");
     let renderer = Render(stage, {
       width: 208,
