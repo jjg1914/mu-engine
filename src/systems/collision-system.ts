@@ -24,7 +24,7 @@ export default function CollisionSystem(engine: Engine): Engine {
 
     if (entity.getIn([ "target", "group" ]) === "A") {
       let count = collisions.filter((e) => {
-        return e.getIn([ "target", "group" ]) !== "A";
+        return e.has("target") && e.getIn([ "target", "group" ]) !== "A";
       }).size;
 
       if (count > 0) {
