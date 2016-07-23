@@ -10,9 +10,9 @@ export function Shoot(entity: Entity): IO<Engine> {
       let frequency = entity.getIn([ "shoot", "frequency" ]);
       let bulletEntity = bullet(engine, e);
 
-      if (bulletEntity != null) {
+      if (bulletEntity != undefined) {
         return IO.Put<Engine>(engine.mkEntity(bulletEntity))
-          .bind((e) => IO.Delay<Engine>(frequency).bind(impl));
+          .bind(() => IO.Delay<Engine>(frequency).bind(impl));
       } else {
         return IO.Delay<Engine>(frequency).bind(impl);
       }

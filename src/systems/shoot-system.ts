@@ -1,6 +1,5 @@
 import Engine, { Entity } from "../engine/engine";
 import { Keys, EventType, Event } from "../engine/input";
-import IO from "../engine/io";
 
 import BulletEntity from "../entities/bullet-entity";
 

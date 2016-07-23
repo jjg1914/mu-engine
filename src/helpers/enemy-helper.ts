@@ -22,11 +22,12 @@ export function Drone(engine: Engine, x: number): IO<Engine> {
   let drone = (new DroneEntity())
     .setIn([ "position", "x" ], x)
     .setIn([ "position", "y" ], -12);
+  // tslint:disable-next-line:no-require-imports
   let path = Path(drone, require("../paths/drone1-path"));
   drone = drone.setIn([ "movement", "path" ], path);
   let newEngine = engine.mkEntity(drone);
 
-  return IO.Put(newEngine).bind((e) => {
+  return IO.Put(newEngine).bind(() => {
     return Shoot(newEngine.lastEntity());
   });
 }

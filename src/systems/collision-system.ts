@@ -6,11 +6,13 @@ export default function CollisionSystem(engine: Engine): Engine {
 
   return engine.runIterator([ "target" ], (value: Engine,
                                           entity: Entity): Engine => {
+    const group = entity.getIn([ "target", "group" ]);
+
     let collisions = query(tree, entity);
     let tmp = collisions.filter((e: Entity) => {
       return e.has("damage");
     }).reduce((m: Engine, e: Entity): Engine => {
-      if (entity.getIn([ "target", "group" ]) != e.getIn([ "damage", "group" ])) {
+      if (group !== e.getIn([ "damage", "group" ])) {
         let v = entity.getIn([ "target", "value" ]);
         let damage = e.getIn([ "damage", "value" ]);
 

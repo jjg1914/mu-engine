@@ -3,11 +3,11 @@ import "../poly.d.ts";
 import { Callback } from "./runtime";
 import { Event as RenderEvent } from "./render";
 import { Event as IntervalEvent } from "./interval";
-import Engine from "./engine";
+import Engine, { Entity } from "./engine";
 import { Circle } from "./shape";
 
 enum Property {
- EXPIRE = 0, 
+ EXPIRE = 0,
  X,
  Y,
  STROKE,
@@ -17,10 +17,10 @@ enum Property {
 
 const circle = (new Circle(1)).path();
 
-export default function Particle() {
+export default function Particle(): (cb: Callback<Engine>) => Callback<Engine> {
   let particles = [];
   let colors = [];
-  let colorIndex = {};
+  let colorIndex: { [ k: string ]: number } = {};
   let count = 0;
 
   return (cb: Callback<Engine>): Callback<Engine> => {
@@ -61,7 +61,7 @@ export default function Particle() {
   };
 }
 
-function checkDuty(t, dt, entity) {
+function checkDuty(t: number, dt: number, entity: Entity): boolean {
   const f = 1000 / entity.getIn([ "emitter", "frequency" ]);
   const t1 = t % f;
   const t0 = (t - dt) % f;
@@ -69,7 +69,14 @@ function checkDuty(t, dt, entity) {
   return t1 < t0;
 }
 
-function create(t, count, particles, x, y, lifetime, stroke, fill) {
+function create(t: number,
+                count: number,
+                particles: number[],
+                x: number,
+                y: number,
+                lifetime: number,
+                stroke: number,
+                fill: number): number {
   const index = count * Property.COUNT;
 
   count += 1;
@@ -86,7 +93,7 @@ function create(t, count, particles, x, y, lifetime, stroke, fill) {
   return count;
 }
 
-function recycle(t, particles, count) {
+function recycle(t: number, particles: number[], count: number): number {
   for (let i = 0; i < count; ++i) {
     const index = i * Property.COUNT;
 
@@ -106,13 +113,16 @@ function recycle(t, particles, count) {
   return count;
 }
 
-function draw(ctx, particles, count, colors) {
+function draw(ctx: CanvasRenderingContext2D,
+              particles: number[],
+              count: number,
+              colors: string[]): void {
   for (let i = 0; i < count; ++i) {
     const index = i * Property.COUNT;
 
     ctx.save();
     ctx.translate(particles[index + Property.X],
-                        particles[index + Property.Y]);          
+                        particles[index + Property.Y]);
     if (particles[index + Property.FILL]) {
       ctx.fillStyle = colors[particles[index + Property.FILL]];
       ctx.fill(circle);
@@ -125,7 +135,10 @@ function draw(ctx, particles, count, colors) {
   }
 }
 
-function calcColor(entity, field, colors, colorIndex) {
+function calcColor(entity: Entity,
+                   field: string,
+                   colors: string[],
+                   colorIndex: { [ k: string ]: number }): number {
   const c = entity.getIn([ "emitter", field ]);
 
   if (c) {
@@ -140,11 +153,11 @@ function calcColor(entity, field, colors, colorIndex) {
   }
 }
 
-function calcPos(entity, field, nudgeField) {
+function calcPos(entity: Entity, field: string, nudgeField: string): number {
   const pos = entity.getIn([ "position", field ]);
   const nudge = entity.getIn([ "emitter", nudgeField ]);
 
-  if (nudge != 0) {
+  if (nudge !== 0) {
     return pos + (2 * Math.random() * nudge) - nudge;
   } else {
     return pos;

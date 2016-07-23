@@ -4,5 +4,5 @@ export default Immutable.Record({
   delay: 0,
   frequency: 1000,
   limit: -1,
-  bullet: null,
+  bullet: undefined,
 }, "ShootComponent");

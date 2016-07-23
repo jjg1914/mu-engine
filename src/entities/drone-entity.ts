@@ -1,6 +1,5 @@
 import * as Immutable from "immutable";
 
-import IO from "../engine/io";
 import Engine, { Entity } from "../engine/engine";
 import { Circle } from "../engine/shape";
 
@@ -28,12 +27,12 @@ export default Immutable.Record({
     delay: 1000,
     bullet: (engine: Engine, drone: Entity): Entity => {
       let ids = engine.get("entities").keySeq().map((e) => Number(e)).toJS();
-      ids.sort()
+      ids.sort();
       let player = engine.rdEntity(ids[0]);
 
       if (player instanceof PlayerEntity) {
-        let droneX = drone.getIn([ "position", "x" ]); 
-        let droneY = drone.getIn([ "position", "y" ]); 
+        let droneX = drone.getIn([ "position", "x" ]);
+        let droneY = drone.getIn([ "position", "y" ]);
 
         let dx = player.getIn([ "position", "x" ]) - droneX;
         let dy = player.getIn([ "position", "y" ]) - droneY;

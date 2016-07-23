@@ -27,7 +27,7 @@ describe("Runtime", function() {
       it("should log error", function() {
         let fixture = new Fixture();
         let stub = sinon.stub();
-        let subject = new Runtime<Fixture>(fixture, stub);
+        let subject = Runtime<Fixture>(fixture, stub);
 
         let error = new Error("error message");
         stub.callArgWith(0, error);
@@ -44,7 +44,7 @@ describe("Runtime", function() {
         it("should update state", function() {
           let fixture = new Fixture();
           let stub = sinon.stub();
-          let subject = new Runtime<Fixture>(fixture, stub);
+          let subject = Runtime<Fixture>(fixture, stub);
           
           sinon.stub(fixture, "run")
             .withArgs("event-value")
@@ -59,7 +59,7 @@ describe("Runtime", function() {
         it("should run io", function() {
           let fixture = new Fixture();
           let stub = sinon.stub();
-          let subject = new Runtime<Fixture>(fixture, stub);
+          let subject = Runtime<Fixture>(fixture, stub);
           let io = new IO(null);
           sinon.stub(io, "run");
           

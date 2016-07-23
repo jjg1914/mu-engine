@@ -25,7 +25,6 @@ export default function StageState(value: Engine): IO<Engine> {
     .setIn([ "position", "y" ], 208);
 
   let newValue = value.mkEntity(entity);
-  let id = newValue.get("id").toString();
 
   let tmp2 = newValue.pushState((engine: Engine,
                                 event: Object): Engine | IO<Engine> => {
