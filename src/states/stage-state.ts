@@ -33,8 +33,11 @@ export default function StageState(value: Engine): IO<Engine> {
       BackgroundSystem(event);
       RenderSystem(engine, event);
     } else if (event instanceof InputEvent) {
-      let tmp = InputSystem(engine, engine.getIn([ "entities", id ]), event);
-      return ShootSystem(tmp, tmp.getIn([ "entities", id ]), event);
+      if (engine.rdEntity(tmp2.lastId())) {
+        let tmp = InputSystem(engine, engine.rdEntity(tmp2.lastId()), event);
+        tmp = ShootSystem(tmp, tmp.rdEntity(tmp2.lastId()), event);
+        return tmp;
+      }
     } else if (event instanceof IntervalEvent) {
       let tmp = MovementSystem(engine, event);
       tmp = PathSystem(tmp, event);
