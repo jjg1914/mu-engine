@@ -1,8 +1,8 @@
 import Engine, { Entity } from "../engine/engine";
 import IO from "../engine/io";
 
-export default function CollisionSystem(engine: Engine,
-                                        oldEngine: Engine): IO<Engine> {
+export default function FlashSystem(engine: Engine,
+                                    oldEngine: Engine): IO<Engine> {
   return engine.runIOIterator([ "target" ],
                               (entity: Entity): IO<Engine> => {
     let oldEntity = oldEngine.rdEntity(entity);
