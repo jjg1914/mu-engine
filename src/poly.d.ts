@@ -38,3 +38,7 @@ interface CanvasRenderingContext2D {
     stroke(path: Path2D): void;
     clip(path: Path2D, fillRule?: string): void;
 }
+
+interface Array<T> {
+  copyWithin(target: number, start: number, end?: number): T[];
+}

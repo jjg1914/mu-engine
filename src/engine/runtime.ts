@@ -23,7 +23,7 @@ export default function Runtime<T extends Runable>(initial: T | IO<T>,
     if (event instanceof Error) {
       console.error(event);
     } else {
-      let temp = this.state.run(event);
+      let temp = state.run(event);
 
       if (temp instanceof IO) {
         temp.run(() => state,

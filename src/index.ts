@@ -3,6 +3,7 @@ import Engine from "./engine/engine";
 import Interval from "./engine/interval";
 import Render from "./engine/render";
 import Input from "./engine/input";
+import Particle from "./engine/particle";
 
 import Shmup from "./shmup";
 
@@ -15,8 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
       scale: 2,
       smoothing: false,
     });
+    let particle = Particle();
 
-    Interval(60, renderer(cb));
+    Interval(60, renderer(particle(cb)));
     Input(stage, cb);
   });
 });
