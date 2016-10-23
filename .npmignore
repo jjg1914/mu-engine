@@ -1,6 +1,0 @@
-src/
-test/
-typings/
-node_modules/
-tsd.json
-.travis.yml

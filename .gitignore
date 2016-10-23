@@ -1,5 +1,0 @@
-lib/
-node_modules/
-typings/
-tsd.json
-test/**/*.js
