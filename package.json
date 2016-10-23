@@ -1,18 +1,18 @@
 {
-  "name": "little-engine",
-  "version": "0.1.0",
-  "description": "little engine",
+  "name": "mu-engine",
+  "version": "0.2.0",
+  "description": "mu-engine",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jjg1914/little-engine.git"
+    "url": "git+https://github.com/jjg1914/mu-engine.git"
   },
   "author": "John J. Glynn IV",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jjg1914/little-engine/issues"
+    "url": "https://github.com/jjg1914/mu-engine/issues"
   },
-  "homepage": "https://github.com/jjg1914/little-engine#readme",
+  "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "dependencies": {
     "@types/node": "^6.0.45",
     "immutable": "^3.8.1"
