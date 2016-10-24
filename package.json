@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "mu-engine",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jjg1914/mu-engine.git"

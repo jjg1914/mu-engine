@@ -101,14 +101,16 @@ function hasNPhase(entity: Entity): boolean {
          || (entity.getIn([ "position", "mask"]) instanceof Circle);
 }
 
-export class Node extends Immutable.Record({
+export const NodeBase = Immutable.Record({
   top: 0,
   bottom: 0,
   left: 0,
   right: 0,
   entities: Immutable.List<[ Bounds, Entity ]>(),
   children: undefined,
-}) implements Bounds {
+});
+
+export class Node extends NodeBase implements Bounds {
   public top: number;
   public bottom: number;
   public left: number;

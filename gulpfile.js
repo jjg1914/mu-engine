@@ -7,10 +7,10 @@ var del = require("del");
 
 gulp.task("default", [ "build" ]);
 
-gulp.task("build", [ "js" ], function() {
-  if (!process.env.NO_WATCH) {
-    gulp.watch("src/**/*.ts", [ "js" ]);
-  }
+gulp.task("build", [ "js" ]);
+
+gulp.task("watch", [ "js" ], function() {
+  gulp.watch("src/**/*.ts", [ "js" ]);
 });
 
 gulp.task("js", function() {

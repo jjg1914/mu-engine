@@ -6,12 +6,14 @@ import Runtime, {
 } from "./runtime";
 
 import Engine, {
+  EngineBase,
   Value,
   Component,
   Entity,
   System,
   Iterator,
   IOIterator,
+  MetaComponentBase,
   MetaComponent,
 } from "./engine";
 
@@ -20,6 +22,7 @@ import IO, {
 } from "./io";
 
 import Collision, {
+  NodeBase as CollisionNodeBase,
   Node as CollisionNode,
 } from "./collision";
 
@@ -37,23 +40,28 @@ import Timeline, {
 import Input, {
   EventType as InputEventType,
   Keys as InputKeys,
+  EventBase as InputEventBase,
   Event as InputEvent,
 } from "./input";
 
 import Interval, {
+  EventBase as IntervalEventBase,
   Event as IntervalEvent,
 } from "./interval";
 
 import Render, {
   Config as RenderConfig,
   Renderer,
+  EventBase as RenderEventBase,
   Event as RenderEvent,
 } from "./render";
 
 import {
   vec2,
   Shape,
+  CircleBase,
   Circle,
+  PolygonBase,
   Polygon,
   Dimensions,
   Bounds,
@@ -66,6 +74,7 @@ export {
   RuntimeState,
   RuntimeCallback,
   RuntimeImpl,
+  EngineBase,
   Engine,
   Value,
   Component,
@@ -73,10 +82,12 @@ export {
   System,
   Iterator,
   IOIterator,
+  MetaComponentBase,
   MetaComponent,
   IO,
   IOImpl,
   Collision,
+  CollisionNodeBase,
   CollisionNode,
   Particle,
   Path,
@@ -87,16 +98,21 @@ export {
   Input,
   InputEventType,
   InputKeys,
+  InputEventBase,
   InputEvent,
   Interval,
+  IntervalEventBase,
   IntervalEvent,
   Render,
   RenderConfig,
   Renderer,
+  RenderEventBase,
   RenderEvent,
   vec2,
   Shape,
+  CircleBase,
   Circle,
+  PolygonBase,
   Polygon,
   Dimensions,
   Bounds,

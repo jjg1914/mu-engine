@@ -39,10 +39,12 @@ export enum Keys {
   SPACE = 32,
 }
 
-export class Event extends Immutable.Record({
+export const EventBase = Immutable.Record({
   type: EventType.UNKNOWN,
   which: "",
-}) {
+});
+
+export class Event extends EventBase {
   public which: number;
   public type: EventType;
 }

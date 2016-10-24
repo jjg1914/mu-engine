@@ -9,15 +9,19 @@ export type System = (engine: Engine, event: Object) => Engine | IO<Engine>;
 export type Iterator<T> = (value: T, entity: Entity) => T;
 export type IOIterator<T> = (entity: Entity) => IO<T>;
 
-export class MetaComponent extends Immutable.Record({ id: 0 }) {
+export const MetaComponentBase = Immutable.Record({ id: 0 });
+
+export class MetaComponent extends MetaComponentBase {
   public id: number;
 }
 
-export default class Engine extends Immutable.Record({
+export const EngineBase = Immutable.Record({
   entities: Immutable.Map(),
   state: Immutable.Stack(),
   id: 0,
-}) implements Runable {
+});
+
+export default class Engine extends EngineBase implements Runable {
   private entities: Immutable.Map<string, Entity>;
   private state: Immutable.Stack<System>;
   private id: number;

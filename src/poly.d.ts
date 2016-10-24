@@ -1,5 +1,5 @@
 // Class
-interface Path2D {
+declare interface Path2D {
     addPath(path: Path2D, transform?: SVGMatrix): void;
     closePath(): void;
     moveTo(x: number, y: number): void;
@@ -22,7 +22,7 @@ interface Path2D {
 }
 
 // Constructor
-interface Path2DConstructor {
+declare interface Path2DConstructor {
     new (): Path2D;
     new (d: string): Path2D;
     new (path: Path2D, fillRule?: string): Path2D;
@@ -31,7 +31,7 @@ interface Path2DConstructor {
 declare var Path2D: Path2DConstructor;
 
 // Extend CanvasRenderingContext2D
-interface CanvasRenderingContext2D {
+declare interface CanvasRenderingContext2D {
     mozImageSmoothingEnabled: boolean;
     imageSmoothingEnabled: boolean;
     fill(path: Path2D): void;
@@ -39,6 +39,6 @@ interface CanvasRenderingContext2D {
     clip(path: Path2D, fillRule?: string): void;
 }
 
-interface Array<T> {
+declare interface Array<T> {
   copyWithin(target: number, start: number, end?: number): T[];
 }

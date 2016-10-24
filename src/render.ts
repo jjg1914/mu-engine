@@ -53,11 +53,13 @@ export default function Render<T>(stage: HTMLCanvasElement,
   };
 }
 
-export class Event extends Immutable.Record({
+export const EventBase = Immutable.Record({
   ctx: undefined,
   width: 0,
   height: 0,
-}) {
+});
+
+export class Event extends EventBase {
   public ctx: CanvasRenderingContext2D;
   public width: number;
   public height: number;

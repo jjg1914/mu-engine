@@ -18,10 +18,12 @@ export default function Interval<T>(rate: number, cb: Callback<T>): void {
   }, 1000 / rate);
 };
 
-export class Event extends Immutable.Record({
+export const EventBase = Immutable.Record({
   t: 0,
   dt: 0,
-}) {
+});
+
+export class Event extends EventBase {
   public t: number;
   public dt: number;
 }

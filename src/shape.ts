@@ -1,4 +1,4 @@
-import "./poly";
+/// <reference path="./poly.d.ts"/>
 import { Record, Map as _Map, List } from "immutable";
 import { Entity } from "./engine";
 
@@ -35,11 +35,13 @@ export function maskFor(entity: Entity): Shape {
   return mask.rotate(rotate).translate(x, y);
 }
 
-export class Circle extends Record({
+export const CircleBase = Record({
   radius: 0,
   x: 0,
   y: 0,
-}) implements Shape {
+});
+
+export class Circle extends CircleBase implements Shape {
   public radius: number;
   public x: number;
   public y: number;
@@ -111,9 +113,11 @@ export class Circle extends Record({
   }
 }
 
-export class Polygon extends Record({
+export const PolygonBase = Record({
   verticies: List<vec2>(),
-}) implements Shape {
+});
+
+export class Polygon extends PolygonBase implements Shape {
   public verticies: List<vec2>;
 
   public constructor(verticies: vec2[] | List<vec2>) {
