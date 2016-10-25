@@ -19,14 +19,14 @@ gulp.task("js", function() {
       declaration: true,
     }));
 
-  return es.merge([ s.js, s.dts ])
+  return es.merge([ s.js, s.dts, gulp.src("src/**/*.d.ts") ])
     .pipe(gulp.dest("lib"));
 });
 
 gulp.task("lint", function() {
   return gulp.src("src/**/*.ts")
-    .pipe(tslint())
-    .pipe(tslint.report("verbose"));
+    .pipe(tslint({ formatter: "prose" }))
+    .pipe(tslint.report());
 });
 
 gulp.task("clean", function() {

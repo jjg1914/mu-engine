@@ -39,6 +39,7 @@ export enum Keys {
   SPACE = 32,
 }
 
+// tslint:disable-next-line:variable-name
 export const EventBase = Immutable.Record({
   type: EventType.UNKNOWN,
   which: "",

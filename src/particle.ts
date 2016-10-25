@@ -1,4 +1,5 @@
-import "./poly";
+// tslint:disable-next-line:no-reference
+/// <reference path="./poly"/>
 
 import { Callback } from "./runtime";
 import { Event as RenderEvent } from "./render";

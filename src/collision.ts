@@ -101,6 +101,7 @@ function hasNPhase(entity: Entity): boolean {
          || (entity.getIn([ "position", "mask"]) instanceof Circle);
 }
 
+// tslint:disable-next-line:variable-name
 export const NodeBase = Immutable.Record({
   top: 0,
   bottom: 0,

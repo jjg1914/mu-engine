@@ -9,12 +9,14 @@ export type System = (engine: Engine, event: Object) => Engine | IO<Engine>;
 export type Iterator<T> = (value: T, entity: Entity) => T;
 export type IOIterator<T> = (entity: Entity) => IO<T>;
 
+// tslint:disable-next-line:variable-name
 export const MetaComponentBase = Immutable.Record({ id: 0 });
 
 export class MetaComponent extends MetaComponentBase {
   public id: number;
 }
 
+// tslint:disable-next-line:variable-name
 export const EngineBase = Immutable.Record({
   entities: Immutable.Map(),
   state: Immutable.Stack(),

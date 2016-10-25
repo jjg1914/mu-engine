@@ -1,4 +1,6 @@
-/// <reference path="./poly.d.ts"/>
+// tslint:disable-next-line:no-reference
+/// <reference path="./poly"/>
+
 import { Record, Map as _Map, List } from "immutable";
 import { Entity } from "./engine";
 
@@ -35,6 +37,7 @@ export function maskFor(entity: Entity): Shape {
   return mask.rotate(rotate).translate(x, y);
 }
 
+// tslint:disable-next-line:variable-name
 export const CircleBase = Record({
   radius: 0,
   x: 0,
@@ -113,6 +116,7 @@ export class Circle extends CircleBase implements Shape {
   }
 }
 
+// tslint:disable-next-line:variable-name
 export const PolygonBase = Record({
   verticies: List<vec2>(),
 });

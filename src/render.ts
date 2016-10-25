@@ -1,4 +1,5 @@
-import "./poly";
+// tslint:disable-next-line:no-reference
+/// <reference path="./poly"/>
 
 import * as Immutable from "immutable";
 
@@ -53,6 +54,7 @@ export default function Render<T>(stage: HTMLCanvasElement,
   };
 }
 
+// tslint:disable-next-line:variable-name
 export const EventBase = Immutable.Record({
   ctx: undefined,
   width: 0,

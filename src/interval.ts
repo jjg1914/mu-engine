@@ -18,6 +18,7 @@ export default function Interval<T>(rate: number, cb: Callback<T>): void {
   }, 1000 / rate);
 };
 
+// tslint:disable-next-line:variable-name
 export const EventBase = Immutable.Record({
   t: 0,
   dt: 0,
