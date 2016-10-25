@@ -14,8 +14,10 @@
     "url": "https://github.com/jjg1914/mu-engine/issues"
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
+  "scripts" : {
+    "prepublish": "gulp build"
+  },
   "dependencies": {
-    "@types/node": "^6.0.45",
     "immutable": "^3.8.1"
   },
   "devDependencies": {
