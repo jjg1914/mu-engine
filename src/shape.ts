@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="./poly"/>
+/// <reference path="./poly.d.ts"/>
 
 import { Record, Map as _Map, List } from "immutable";
 import { Entity } from "./engine";

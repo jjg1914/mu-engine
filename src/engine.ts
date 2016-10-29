@@ -3,8 +3,8 @@ import { Runable } from "./runtime";
 import IO from "./io";
 
 export type Value = string | number | Function;
-export type Component = Immutable.Map<string, Value>;
-export type Entity = Immutable.Map<string,Component>;
+export type Component = Immutable.Map<string, any>;
+export type Entity = Immutable.Map<string, Component>;
 export type System = (engine: Engine, event: Object) => Engine | IO<Engine>;
 export type Iterator<T> = (value: T, entity: Entity) => T;
 export type IOIterator<T> = (entity: Entity) => IO<T>;
