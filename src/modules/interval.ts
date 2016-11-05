@@ -1,5 +1,5 @@
 import * as Immutable from "immutable";
-import { Callback } from "./runtime";
+import { Callback } from "../runtime";
 
 export default function Interval<T>(rate: number, cb: Callback<T>): void {
   const start: number = performance.now();

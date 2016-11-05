@@ -1,9 +1,9 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="./poly.d.ts"/>
+/// <reference path="../poly.d.ts"/>
 
 import * as Immutable from "immutable";
 
-import { Callback } from "./runtime";
+import { Callback } from "../runtime";
 
 export type Renderer<T> = (_cb: Callback<T>) => Callback<T>;
 

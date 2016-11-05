@@ -1,11 +1,11 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="./poly.d.ts"/>
+/// <reference path="../poly.d.ts"/>
 
-import { Callback } from "./runtime";
+import { Callback } from "../runtime";
 import { Event as RenderEvent } from "./render";
 import { Event as IntervalEvent } from "./interval";
-import Engine, { Entity } from "./engine";
-import { Circle } from "./shape";
+import Engine, { Entity } from "../engine";
+import { Circle } from "../util/shape";
 
 enum Property {
  EXPIRE = 0,

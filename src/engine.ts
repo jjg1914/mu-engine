@@ -90,7 +90,11 @@ export default class Engine extends EngineBase implements Runable {
   };
 
   public run(event: Object): this | IO<this> {
-    return <this | IO<this>> this.runSystem(this.state.peek(), event);
+    if (this.state.size > 0) {
+      return <this | IO<this>> this.runSystem(this.state.peek(), event);
+    } else {
+      return this;
+    }
   };
 
   public runSystem(system: System, event: Object): Engine | IO<Engine> {

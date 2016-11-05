@@ -1,8 +1,8 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="./poly.d.ts"/>
+/// <reference path="../poly.d.ts"/>
 
 import { Record, Map as _Map, List } from "immutable";
-import { Entity } from "./engine";
+import { Entity } from "../engine";
 
 export type vec2 = [ number, number ];
 

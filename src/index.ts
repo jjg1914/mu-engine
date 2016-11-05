@@ -21,40 +21,40 @@ import IO, {
   Impl as IOImpl,
 } from "./io";
 
-import Collision, {
-  NodeBase as CollisionNodeBase,
-  Node as CollisionNode,
-} from "./collision";
-
-import Particle from "./particle";
-
-import Path, {
-  PathF,
-  Node as PathNode,
-} from "./path";
-
-import Timeline, {
-  Pair as TimelinePair,
-} from "./timeline";
-
 import Input, {
   EventType as InputEventType,
   Keys as InputKeys,
   EventBase as InputEventBase,
   Event as InputEvent,
-} from "./input";
+} from "./modules/input";
 
 import Interval, {
   EventBase as IntervalEventBase,
   Event as IntervalEvent,
-} from "./interval";
+} from "./modules/interval";
 
 import Render, {
   Config as RenderConfig,
   Renderer,
   EventBase as RenderEventBase,
   Event as RenderEvent,
-} from "./render";
+} from "./modules/render";
+
+import Particle from "./modules/particle";
+
+import Collision, {
+  NodeBase as CollisionNodeBase,
+  Node as CollisionNode,
+} from "./util/collision";
+
+import Path, {
+  PathF,
+  Node as PathNode,
+} from "./util/path";
+
+import Timeline, {
+  Pair as TimelinePair,
+} from "./util/timeline";
 
 import {
   vec2,
@@ -66,7 +66,19 @@ import {
   Dimensions,
   Bounds,
   maskFor,
-} from "./shape";
+} from "./util/shape";
+
+import AnimateComponent from "./components/animate-component";
+import EmitterComponent from "./components/emitter-component";
+import MovementComponent from "./components/movement-component";
+import PathComponent from "./components/path-component";
+import PositionComponent from "./components/position-component";
+import RenderComponent from "./components/render-component";
+
+import AnimateSystem from "./systems/animate-system";
+import MovementSystem from "./systems/movement-system";
+import PathSystem from "./systems/path-system";
+import RenderSystem from "./systems/render-system";
 
 export {
   Runtime,
@@ -117,4 +129,14 @@ export {
   Dimensions,
   Bounds,
   maskFor,
+  AnimateComponent,
+  EmitterComponent,
+  MovementComponent,
+  PathComponent,
+  PositionComponent,
+  RenderComponent,
+  AnimateSystem,
+  MovementSystem,
+  PathSystem,
+  RenderSystem,
 }

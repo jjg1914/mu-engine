@@ -1,4 +1,4 @@
-import IO from "./io";
+import IO from "../io";
 
 export type Pair<T> = [ number, (t: T) => IO<T> ]
 

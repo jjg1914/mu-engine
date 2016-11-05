@@ -1,5 +1,5 @@
 import * as Immutable from "immutable";
-import Engine, { Entity } from "./engine";
+import Engine, { Entity } from "../engine";
 import { vec2, Bounds, Shape, Polygon, Circle, maskFor } from "./shape";
 
 export default function Collision(engine: Engine,

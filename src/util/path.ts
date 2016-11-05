@@ -1,4 +1,4 @@
-import { Entity } from "./engine";
+import { Entity } from "../engine";
 
 export interface Node {
   t?: number;

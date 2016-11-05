@@ -1,5 +1,5 @@
 import * as Immutable from "immutable";
-import { Callback } from "./runtime";
+import { Callback } from "../runtime";
 
 function normalizeKey(ev: KeyboardEvent): number {
   return ev.keyCode;
