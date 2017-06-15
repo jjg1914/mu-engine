@@ -1,6 +1,6 @@
 {
   "name": "mu-engine",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "mu-engine",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,20 +14,15 @@
     "url": "https://github.com/jjg1914/mu-engine/issues"
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
-  "scripts" : {
-    "prepublish": "gulp build"
-  },
-  "dependencies": {
-    "immutable": "^3.8.1"
+  "scripts": {
+    "prepublish": "babel src -d lib",
+    "build": "babel src -d lib",
+    "clean": "rm -rf lib"
   },
   "devDependencies": {
-    "del": "^2.2.0",
-    "event-stream": "^3.3.4",
-    "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.0.0-alpha",
-    "gulp-tslint": "^6.1.2",
-    "gulp-typescript": "^3.0.2",
-    "tslint": "^3.10.2",
-    "typescript": "^2.0.3"
+    "babel-cli": "^6.24.1"
+  },
+  "dependencies": {
+    "babel-preset-env": "^1.5.2"
   }
 }
