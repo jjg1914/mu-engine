@@ -9,6 +9,8 @@ import Runtime from "./modules/runtime";
 import Camera from "./util/camera";
 import Collision from "./util/collision";
 import Path from "./util/path";
+import Stage from "./util/stage";
+import Assets from "./util/assets";
 import * as Shape from "./util/shape";
 
 import CameraSystem from "./systems/camera-system";
@@ -25,7 +27,7 @@ export {
   Engine, State,
   Input as InputModule, Interval as IntervalModule,
   Render as RenderModule, Runtime as RuntimeModule,
-  Camera, Collision, Path, Shape, Keys,
+  Camera, Collision, Path, Stage, Assets, Shape, Keys,
   CameraSystem, CollisionSystem, MovementSystem, RenderSystem,
   MovementComponent, PathComponent, PositionComponent, RenderComponent,
 };

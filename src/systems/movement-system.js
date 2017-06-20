@@ -19,11 +19,7 @@ export default class MovementSystem {
         e.path.t += event.dt;
       }
 
-      const [ x, y ] = Path(e.path.path,
-                            e.path.t,
-                            e.path.x,
-                            e.path.y,
-                            e.path.repeat);
+      const [ x, y ] = e.path.path.interpolate(e.path.t, e.path.repeat);
       let oldX = e.position.x;
       let oldY = e.position.y;
 
