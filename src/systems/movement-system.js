@@ -90,13 +90,25 @@ export default class MovementSystem {
         e.movement.ySubpixel = 0;
       }
 
+      engine.run(e.position.landing, [ "position" ], (f) => {
+        const shape = shapeFor(f);       
+        const bounds = shapeFor(e).bounds();
+        const height = bounds.bottom - bounds.top + 1;
+        const min = shape.minimum(bounds.left, bounds.right);
+
+        // min can be infinite if we're in the process of exiting the landing
+        if (isFinite(min)) {
+          e.position.y = Math.trunc(min - height);
+        }
+      });
+
       e.movement.xChange = e.position.x - oldX;
       e.movement.yChange = e.position.y - oldY;
 
       if (e.movement.restrict) {
         const b = shapeFor(e).bounds();
-        const w = b.right - b.left;
-        const h = b.bottom - b.top;
+        const w = b.right - b.left + 1;
+        const h = b.bottom - b.top + 1;
         const oldX = e.position.x;
         const oldY = e.position.y;
 

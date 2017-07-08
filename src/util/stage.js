@@ -1,3 +1,5 @@
+import { Circle, Polygon } from "./shape";
+
 export default class Stage {
   static unserialize(data) {
     return new Stage(data);
@@ -51,6 +53,39 @@ function _fromTMX(tmx, assets) {
           width: Number(f.$.width),
           height: Number(f.$.height),
         };
+
+        if (f.ellipse) {
+          const r = entity.position.width / 2;
+          //entity.position.x += r;
+          //entity.position.y += r;
+          entity.position.mask = new Circle(r, 0, 0);
+        }
+
+        if (f.polygon) {
+          const points = f.polygon[0].$.points.split(" ").map((e) => {
+            return e.split(",", 2).map((e) => Number(e));
+          });
+
+          let left = Infinity;
+          let top = Infinity;
+          let right = -Infinity;
+          let bottom = -Infinity;
+
+          for (let e of points) {
+            left = Math.min(e[0], left);
+            top = Math.min(e[1], top);
+            right = Math.max(e[0], right);
+            bottom = Math.max(e[1], bottom);
+          }
+
+          entity.position.mask = new Polygon(points.map((e) => {
+            return [ e[0] - left, e[1] - top ];
+          }));
+          entity.position.x += left;
+          entity.position.y += top;
+          entity.position.width = right - left + 1;
+          entity.position.height = bottom - top + 1;
+        }
 
         entity.render = {};
 

@@ -7,9 +7,9 @@ export function shapeFor(entity) {
 
     mask = new Polygon([
       [ 0, 0 ],
-      [ width, 0 ],
-      [ width, height ],
-      [ 0, height ],
+      [ width - 1, 0 ],
+      [ width - 1, height - 1 ],
+      [ 0, height - 1 ],
     ]);
   } else {
     mask = mask.clone();
@@ -19,7 +19,13 @@ export function shapeFor(entity) {
   const y = entity.position.y;
   const rotate = entity.position.rotate;
 
-  return mask.rotate(rotate).translate(x, y);
+  mask = mask.rotate(rotate).translate(x, y);
+
+  if (mask instanceof Circle) {
+    mask = mask.translate(mask._radius, mask._radius);
+  }
+
+  return mask;
 }
 
 export function fromBounds(bounds) {
@@ -37,10 +43,10 @@ export class Polygon {
   }
 
   clone() {
-    const verticies = new Array(verticies.length);
+    const verticies = new Array(this._verticies.length);
 
     for (let i = 0; i < verticies.length; i += 1) {
-      verticies[i] = [ verticies[i][0], verticies[i][1] ];
+      verticies[i] = [ this._verticies[i][0], this._verticies[i][1] ];
     }
 
     return new Polygon(verticies);
@@ -136,6 +142,31 @@ export class Polygon {
     };
   }
 
+  minimum(left, right) {
+    let min = Infinity;
+
+    for (let i = 0; i < this._verticies.length; ++i) {
+      const j = (i === this._verticies.length - 1) ? 0 : i + 1;
+      const a = this._verticies[i];
+      const b = this._verticies[j];
+
+      if (a[0] <= right && b[0] >= left) {
+        if (a[0] === b[0] || a[1] === b[1]) {
+          min = Math.min(a[1], b[1], min);
+        } else {
+          const slope = (b[1] - a[1]) / (b[0] - a[0]);
+          const int = a[1] - (slope * a[0]);
+          const cap = Math.min(a[1], b[1])
+
+          min = Math.min(Math.max((slope * left) + int, cap),
+                         Math.max((slope * right) + int, cap), min);
+        }
+      }
+    }
+
+    return min;
+  }
+
   path() {
     const path = new Path2D();
     let last = (this._verticies.length > 0 ?
@@ -178,14 +209,14 @@ export class Circle {
       const x = other._x - this._x;
       const y = other._y - this._y;
 
-      return [ [ this._x, this._y ] ];
+      return [ [ x, y ] ];
     } else if (other instanceof Polygon) {
       let normal = null;
       let magnitude = Infinity;
 
       for (let v of other._verticies) {
         let x = v[0] - this._x;
-        let y = y[0] - this._y;
+        let y = v[0] - this._y;
         let d = Math.sqrt(x * x + y * y);
 
         if (d < magnitude) {
@@ -216,17 +247,16 @@ export class Circle {
   bounds() {
     return {
       left: this._x - this._radius,
-      right: this._x + this._radius,
+      right: this._x + this._radius - 1,
       top: this._y - this._radius,
-      bottom: this._y + this._radius,
+      bottom: this._y + this._radius - 1,
     };
   }
 
   path() {
     const path = new Path2D();
 
-    path.moveTo(this._x + this._radius, this._y);
-    path.arc(this._x, this._y, this._radius, 0, 2 * Math.PI);
+    path.ellipse(this._x, this._y, this._radius, this._radius, 0, 0, 2 * Math.PI);
 
     return path;
   }

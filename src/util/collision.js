@@ -93,12 +93,12 @@ function _query(dest, id, node, bounds, mask) {
   } else {
     for (let e of node.entities) {
       if (e[0].meta.id != id && !dest.has(e[0].meta.id)) {
-        let mtv = _checkImpl(mask,
-                             _hasNPhase(e[0]) ? _shapeFor(e[0]) : null,
-                             bounds, e[1]);
+        let vectors = _checkImpl(mask,
+                                 _hasNPhase(e[0]) ? shapeFor(e[0]) : null,
+                                 bounds, e[1]);
 
-        if (mtv)  {
-          dest.set(e[0].meta.id, { entity: e[0], mtv: mtv });
+        if (vectors)  {
+          dest.set(e[0].meta.id, { entity: e[0], vectorData: vectors });
         } else {
           dest.set(e[0].meta.id, false);
         }
@@ -134,14 +134,14 @@ function _rebalanceNode(node) {
 }
 
 function _checkImpl(target, other, targetBounds, otherBounds) {
-  let mtv = _checkBounds(targetBounds, otherBounds);
+  let vectors = _checkBounds(targetBounds, otherBounds);
 
-  if (mtv && target != null && other != null) {
-    mtv = _checkMasks(target, other);
+  if (vectors && (target != null || other != null)) {
+    vectors = _checkMasks(target, other, targetBounds, otherBounds);
   }
 
-  if (mtv)  {
-    return mtv;
+  if (vectors)  {
+    return vectors;
   } else {
     return false;
   }
@@ -150,53 +150,55 @@ function _checkImpl(target, other, targetBounds, otherBounds) {
 function _checkBounds(a, b) {
   if (a.left <= b.right && a.right >= b.left &&
       a.top <= b.bottom && a.bottom >= b.top) {
-    const vectors = [
-      [ a.left - b.right, 0 ],
-      [ a.right - b.left, 0 ],
-      [ 0, a.top - b.bottom ],
-      [ 0, a.bottom - b.top ],
+    return [
+      [ b.left - a.right - 1, 0 ],
+      [ b.right - a.left + 1, 0 ],
+      [ 0, b.top - a.bottom - 1 ],
+      [ 0, b.bottom - a.top  + 1 ],
     ];
-
-    let mtv = null;
-    let d = Infinity;
-
-    for (let e of vectors) {
-      let f = Math.abs(e[0] + e[1]);
-
-      if (f < d) {
-        mtv = e;
-        d = f;
-      }
-    }
-
-    return mtv;
   } else {
     return false;
   }
 }
 
-function _checkMasks(a, b) {
-  const normals = a.normals(b).concat(b.normals(a));
-  let mtv = null;
-  let overlap = Infinity;
+function _checkMasks(a, b, aBounds, bBounds) {
+  if (a == null) {
+    a = fromBounds(aBounds);
+  }
 
+  if (b == null) {
+    b = fromBounds(bBounds);
+  }
+
+  const normals = a.normals(b).concat(b.normals(a));
   for (let e of normals) {
+    const mag = Math.sqrt(e[0] * e[0] + e[1] * e[1]);
+    e[0] = e[0] / mag;
+    e[1] = e[1] / mag;
+  }
+
+  const vectors = new Array(normals.length);
+
+  for (let i = 0; i < normals.length; ++i) {
+    const e = normals[i];
     const proj1 = a.project(e);
     const proj2 = b.project(e);
 
     if (proj1[0] <= proj2[1] && proj1[1] >= proj2[0]) {
-      return false;
-    } else {
-      const d = Math.min(proj1[1], proj2[1]) - Math.max(proj1[0], proj2[0]);
+      const d1 = proj2[0] - proj1[1];
+      const d2 = proj2[1] - proj1[0];
 
-      if (d < overlap) {
-        mtv = e;
-        overlap = d;
+      if (Math.abs(d1) < Math.abs(d2)) {
+        vectors[i] = e.map((e) => e * d1);
+      } else {
+        vectors[i] = e.map((e) => e * d2);
       }
+    } else {
+      return false;
     }
   }
 
-  return mtv;
+  return vectors;
 }
 
 function _hasNPhase(entity) {

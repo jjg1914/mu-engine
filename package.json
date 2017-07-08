@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "scripts": {
-    "prepublish": "babel src -d lib",
+    "prepublish": "babel src -d lib -s inline",
     "clean": "rm -rf lib"
   },
   "devDependencies": {

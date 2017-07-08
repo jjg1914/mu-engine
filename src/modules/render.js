@@ -58,7 +58,11 @@ function resize(canvas, buffer, config) {
 
   if (config.smoothing != null) {
     stageCtx.mozImageSmoothingEnabled = config.smoothing;
+    stageCtx.webkitImageSmoothingEnabled = config.smoothing;
     stageCtx.imageSmoothingEnabled = config.smoothing;
+    bufferCtx.mozImageSmoothingEnabled = config.smoothing;
+    bufferCtx.webkitImageSmoothingEnabled = config.smoothing;
+    bufferCtx.imageSmoothingEnabled = config.smoothing;
   }
 
   if (config.scale != null) {
