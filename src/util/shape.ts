@@ -1,7 +1,48 @@
-export function shapeFor(entity) {
+import { Entity } from "../entities/entity";
+
+export type Vertex = [ number, number ];
+export type Normal = [ number, number ];
+export type Interval = [ number, number ];
+
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
+export interface Bounds {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+export interface Shape {
+  clone(): Shape;
+  translate(x: number, y: number): this;
+  rotate(r: number): this;
+  normals(other: {}): Normal[];
+  project(axis: Normal): Interval;
+  dimensions(): Dimensions;
+  bounds(): Bounds;
+  minimum(left: number, right: number): number;
+  path(): Path2D;
+}
+
+export interface PositionEntity extends Entity {
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    rotate?: number;
+    mask?: Shape | null;
+  };
+}
+
+export function shapeFor(entity: PositionEntity): Shape {
   let mask = entity.position.mask;
 
-  if (!(mask instanceof Polygon || mask instanceof Circle)) {
+  if (mask == null) {
     const width = entity.position.width;
     const height = entity.position.height;
 
@@ -15,45 +56,52 @@ export function shapeFor(entity) {
     mask = mask.clone();
   }
 
-  const x = entity.position.x;
-  const y = entity.position.y;
   const rotate = entity.position.rotate;
 
-  mask = mask.rotate(rotate).translate(x, y);
+  if (rotate != null) {
+    mask = mask.rotate(rotate);
+  }
+
+  const x = entity.position.x;
+  const y = entity.position.y;
+
+  mask = mask.translate(x, y);
 
   if (mask instanceof Circle) {
-    mask = mask.translate(mask._radius, mask._radius);
+    mask = mask.translate(mask.radius(), mask.radius());
   }
 
   return mask;
 }
 
-export function fromBounds(bounds) {
-  return new Polygon([
-    [ bounds.left, bounds.top ],
-    [ bounds.right, bounds.top ],
-    [ bounds.right, bounds.bottom ],
-    [ bounds.left, bounds.bottom ],
-  ]);
-}
+export class Polygon implements Shape {
+  verticies: Vertex[];
 
-export class Polygon {
-  constructor(verticies) {
-    this._verticies = verticies;
+  static fromBounds(bounds: Bounds): Polygon {
+    return new Polygon([
+      [ bounds.left, bounds.top ],
+      [ bounds.right, bounds.top ],
+      [ bounds.right, bounds.bottom ],
+      [ bounds.left, bounds.bottom ],
+    ]);
   }
 
-  clone() {
-    const verticies = new Array(this._verticies.length);
+  constructor(verticies: Vertex[]) {
+    this.verticies = verticies;
+  }
+
+  clone(): Polygon {
+    const verticies = new Array(this.verticies.length);
 
     for (let i = 0; i < verticies.length; i += 1) {
-      verticies[i] = [ this._verticies[i][0], this._verticies[i][1] ];
+      verticies[i] = [ this.verticies[i][0], this.verticies[i][1] ];
     }
 
     return new Polygon(verticies);
   }
 
-  translate(x, y) {
-    for (let v of this._verticies) {
+  translate(x: number, y: number): this {
+    for (let v of this.verticies) {
       v[0] += x;
       v[1] += y;
     }
@@ -61,7 +109,7 @@ export class Polygon {
     return this;
   }
 
-  rotate(r) {
+  rotate(r: number): this {
     if (isNaN(r) || r == null || r === 0) {
       return this;
     }
@@ -75,7 +123,7 @@ export class Polygon {
     const const1 = -c * x + s * y + x;
     const const2  = -s * x - c * y + y;
 
-    for (let v of this._verticies) {
+    for (let v of this.verticies) {
       v[0] = c * v[0] - s * v[1] + const1;
       v[1] = s * v[0] + c * v[1] + const2;
     }
@@ -83,14 +131,12 @@ export class Polygon {
     return this;
   }
 
-  normals() {
-    let prev = (this._verticies.length > 0 ?
-                this._verticies[this._verticies.length - 1] :
-                null);
-    const normals = new Array(this._verticies.length);
+  normals(): Normal[] {
+    const normals = new Array(this.verticies.length);
+    let prev = this.verticies[this.verticies.length - 1];
 
-    for (let i = 0; i < this._verticies.length; i += 1) {
-      const v = this._verticies[i];
+    for (let i = 0; i < this.verticies.length; i += 1) {
+      const v = this.verticies[i];
 
       normals[i] = [ v[1] - prev[1], prev[0] - v[0] ];
       prev = v;
@@ -99,10 +145,10 @@ export class Polygon {
     return normals;
   }
 
-  project(axis) {
-    const memo = [ Infinity, -Infinity ];
+  project(axis: Normal): Interval {
+    const memo = [ Infinity, -Infinity ] as Interval;
 
-    for (let v of this._verticies) {
+    for (let v of this.verticies) {
       const dot = axis[0] * v[0] + axis[1] * v[1];
 
       memo[0] = Math.min(dot, memo[0]);
@@ -112,7 +158,7 @@ export class Polygon {
     return memo;
   }
 
-  dimensions() {
+  dimensions(): Dimensions {
     const bounds = this.bounds();
 
     return {
@@ -121,13 +167,13 @@ export class Polygon {
     };
   }
 
-  bounds() {
+  bounds(): Bounds {
     let left = Infinity;
     let right = -Infinity;
     let top = Infinity;
     let bottom = -Infinity;
 
-    for (let v of this._verticies) {
+    for (let v of this.verticies) {
       left = Math.min(v[0], left);
       right = Math.max(v[0], right);
       top = Math.min(v[1], top);
@@ -142,13 +188,13 @@ export class Polygon {
     };
   }
 
-  minimum(left, right) {
+  minimum(left: number, right: number): number {
     let min = Infinity;
 
-    for (let i = 0; i < this._verticies.length; ++i) {
-      const j = (i === this._verticies.length - 1) ? 0 : i + 1;
-      const a = this._verticies[i];
-      const b = this._verticies[j];
+    for (let i = 0; i < this.verticies.length; ++i) {
+      const j = (i === this.verticies.length - 1) ? 0 : i + 1;
+      const a = this.verticies[i];
+      const b = this.verticies[j];
 
       if (a[0] <= right && b[0] >= left) {
         if (a[0] === b[0] || a[1] === b[1]) {
@@ -167,44 +213,53 @@ export class Polygon {
     return min;
   }
 
-  path() {
+  path(): Path2D {
     const path = new Path2D();
-    let last = (this._verticies.length > 0 ?
-                this._verticies[this._verticies.length - 1] :
-                null);
 
-    path.moveTo(last[0], last[1]);
-    for (let v of this._verticies) {
-      path.lineTo(v[0], v[1]);
+    if (this.verticies.length > 0) {
+      let last = this.verticies[this.verticies.length - 1];
+
+      path.moveTo(last[0], last[1]);
+      for (let v of this.verticies) {
+        path.lineTo(v[0], v[1]);
+      }
     }
 
     return path;
   }
 }
 
-export class Circle {
-  constructor(radius, x, y) {
+export class Circle implements Shape {
+  private _radius: number;
+  private _x: number;
+  private _y: number;
+
+  constructor(radius: number, x: number, y: number) {
     this._radius = radius;
     this._x = x;
     this._y = y;
   }
 
-  clone() {
+  radius(): number {
+    return this._radius;
+  }
+
+  clone(): Circle {
     return new Circle(this._radius, this._x, this._y);
   }
 
-  translate(x, y) {
+  translate(x: number, y: number): this {
     this._x += x;
     this._y += y;
 
     return this;
   }
 
-  rotate(r) {
+  rotate(_r: number): this {
     return this;
   }
 
-  normals(other) {
+  normals(other: {}): Normal[] {
     if (other instanceof Circle) {
       const x = other._x - this._x;
       const y = other._y - this._y;
@@ -214,37 +269,37 @@ export class Circle {
       let normal = null;
       let magnitude = Infinity;
 
-      for (let v of other._verticies) {
+      for (let v of other.verticies) {
         let x = v[0] - this._x;
         let y = v[0] - this._y;
         let d = Math.sqrt(x * x + y * y);
 
         if (d < magnitude) {
-          normal = [ x, y ];
+          normal = [ x, y ] as [ number, number ];
           magnitude = d;
         }
       }
 
-      return [ normal ];
+      return (normal == null ? [] : [ normal ]);
     } else {
       throw new Error("unsupported shape");
     }
   }
 
-  project(axis) {
+  project(axis: Normal): Interval {
     const dot = axis[0] * this._x + axis[1] * this._y;
 
     return [ dot - this._radius, dot + this._radius ];
   }
 
-  dimensions() {
+  dimensions(): Dimensions {
     return {
       width: this._radius * 2,
       height: this._radius * 2,
     };
   }
 
-  bounds() {
+  bounds(): Bounds {
     return {
       left: this._x - this._radius,
       right: this._x + this._radius - 1,
@@ -253,7 +308,11 @@ export class Circle {
     };
   }
 
-  path() {
+  minimum(_left: number, _right: number): number {
+    throw new Error("not implemented");
+  }
+
+  path(): Path2D {
     const path = new Path2D();
 
     path.ellipse(this._x, this._y, this._radius, this._radius, 0, 0, 2 * Math.PI);

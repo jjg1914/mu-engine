@@ -1,9 +1,55 @@
-import { Polygon, Circle, shapeFor, fromBounds } from "../util/shape";
+import { PositionEntity } from "../util/shape";
+
+import {
+  Polygon,
+  Circle,
+  Shape,
+  Bounds,
+  shapeFor,
+} from "./shape";
 
 const DEPTH_LIMIT = 8;
 
-export default class Collision {
-  constructor(bounds) {
+export type Vector = [ number, number ];
+
+export interface CollisionEntity extends PositionEntity {
+  position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    rotate?: number;
+    mask?: Shape | null;
+    solid?: boolean | number[];
+    ignoreSolid?: boolean;
+    landing: CollisionEntity | null;
+  };
+  movement?: {
+    xChange: number;
+    yChange: number;
+    xSpeed: number;
+    ySpeed: number;
+    xSubpixel: number;
+    ySubpixel: number;
+    friction: number | null;
+  };
+}
+
+interface Node extends Bounds {
+  entities: ([ CollisionEntity, Bounds ])[];
+  children?: Node[] | null;
+}
+
+export interface QueryData {
+  entity: CollisionEntity;
+  vectorData: Vector[];
+}
+
+export class Collision {
+  private _root: Node;
+  private _entities: Map<number, CollisionEntity>;
+
+  constructor(bounds: Bounds) {
     this._root = {
       top: bounds.top,
       left: bounds.left,
@@ -11,13 +57,14 @@ export default class Collision {
       right: bounds.right,
       entities: [],
     };
+    this._entities = new Map<number, CollisionEntity>();
   }
 
-  static checkBounds(target, bounds) {
+  static checkBounds(target: CollisionEntity, bounds: Bounds) {
     return _checkBounds(shapeFor(target).bounds(), bounds);
   }
 
-  static check(target, other) {
+  static check(target: CollisionEntity, other: CollisionEntity) {
     let mask1 = shapeFor(target);
     let mask2 = shapeFor(other);
 
@@ -26,17 +73,20 @@ export default class Collision {
                       mask1.bounds(), mask2.bounds());
   }
 
-  add(entity) {
-    _add(entity, this._root, shapeFor(entity).bounds(), 0);
+  [Symbol.iterator]() {
+    return this._entities.values();
   }
 
-  queryBounds(bounds, id) {
-    const mask = fromBounds(bounds);
+  add(entity: CollisionEntity) {
+    _add(entity, this._root, shapeFor(entity).bounds(), 0);
+    this._entities.set(entity.id, entity);
+  }
+
+  queryBounds(bounds: Bounds, id: number) {
     const dest = new Map();
     const rval = [];
 
-    _query(dest, id, this._root,
-           bounds, null, false);
+    _query(dest, id, this._root, bounds, null);
 
     for (let e of dest) {
       if (e[1]) {
@@ -47,12 +97,12 @@ export default class Collision {
     return rval;
   }
 
-  query(entity) {
+  query(entity: CollisionEntity): QueryData[] {
     const mask = shapeFor(entity);
     const dest = new Map();
     const rval = [];
 
-    _query(dest, entity.meta.id, this._root,
+    _query(dest, entity.id, this._root,
            mask.bounds(), _hasNPhase(entity) ? mask : null);
 
     for (let e of dest) {
@@ -65,7 +115,10 @@ export default class Collision {
   }
 }
 
-function _add(entity, node, bounds, depth) {
+function _add(entity: CollisionEntity,
+              node: Node,
+              bounds: Bounds,
+              depth: number) {
   if (depth < DEPTH_LIMIT &&
       node.children == null &&
       node.entities.length > 4) {
@@ -78,12 +131,14 @@ function _add(entity, node, bounds, depth) {
     }
   } else {
     if (_checkBounds(node, bounds)) {
-      node.entities.push([ entity, bounds ]);
+      node.entities.push([ entity, bounds ] as [ CollisionEntity, Bounds ]);
     }
   }
 }
 
-function _query(dest, id, node, bounds, mask) {
+function _query(dest: Map<number, QueryData | false>,
+                id: number, node: Node,
+                bounds: Bounds, mask: Shape | null): void {
   if (node.children != null) {
     for (let e of node.children) {
       if (_checkBounds(bounds, e)) {
@@ -92,22 +147,22 @@ function _query(dest, id, node, bounds, mask) {
     }
   } else {
     for (let e of node.entities) {
-      if (e[0].meta.id != id && !dest.has(e[0].meta.id)) {
+      if (e[0].id != id && !dest.has(e[0].id)) {
         let vectors = _checkImpl(mask,
                                  _hasNPhase(e[0]) ? shapeFor(e[0]) : null,
                                  bounds, e[1]);
 
         if (vectors)  {
-          dest.set(e[0].meta.id, { entity: e[0], vectorData: vectors });
+          dest.set(e[0].id, { entity: e[0], vectorData: vectors });
         } else {
-          dest.set(e[0].meta.id, false);
+          dest.set(e[0].id, false);
         }
       }
     }
   }
 }
 
-function _rebalanceNode(node) {
+function _rebalanceNode(node: Node): void {
   const width = (node.right - node.left) / 2;
   const height = (node.bottom - node.top) / 2;
 
@@ -133,7 +188,9 @@ function _rebalanceNode(node) {
   }
 }
 
-function _checkImpl(target, other, targetBounds, otherBounds) {
+function _checkImpl(target: Shape | null, other: Shape | null,
+                    targetBounds: Bounds, otherBounds: Bounds)
+: Vector[] | false {
   let vectors = _checkBounds(targetBounds, otherBounds);
 
   if (vectors && (target != null || other != null)) {
@@ -147,7 +204,7 @@ function _checkImpl(target, other, targetBounds, otherBounds) {
   }
 }
 
-function _checkBounds(a, b) {
+function _checkBounds(a: Bounds, b: Bounds): Vector[] | false {
   if (a.left <= b.right && a.right >= b.left &&
       a.top <= b.bottom && a.bottom >= b.top) {
     return [
@@ -161,13 +218,15 @@ function _checkBounds(a, b) {
   }
 }
 
-function _checkMasks(a, b, aBounds, bBounds) {
+function _checkMasks(a: Shape | null, b: Shape | null,
+                     aBounds: Bounds, bBounds: Bounds)
+: Vector[] | false {
   if (a == null) {
-    a = fromBounds(aBounds);
+    a = Polygon.fromBounds(aBounds);
   }
 
   if (b == null) {
-    b = fromBounds(bBounds);
+    b = Polygon.fromBounds(bBounds);
   }
 
   const normals = a.normals(b).concat(b.normals(a));
@@ -201,7 +260,7 @@ function _checkMasks(a, b, aBounds, bBounds) {
   return vectors;
 }
 
-function _hasNPhase(entity) {
+function _hasNPhase(entity: CollisionEntity): boolean {
   return (entity.position.mask instanceof Polygon)
          || (entity.position.mask instanceof Circle);
 }
