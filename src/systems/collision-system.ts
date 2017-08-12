@@ -1,5 +1,5 @@
 import { CollisionEntity } from "../util/collision";
-import { CollisionEventData } from "../modules/collision-module";
+import { CollisionEventData } from "../events/collision-event";
 
 export function CollisionSystem(entity: CollisionEntity): void {
   entity.on("precollision", (ev: CollisionEventData) => {

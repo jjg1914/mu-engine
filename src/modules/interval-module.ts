@@ -1,4 +1,5 @@
 import { Entity } from "../entities/entity";
+import { IntervalEvent } from "../events/interval-event";
 
 const Now = (() => {
   if (performance.now != null) {
@@ -7,24 +8,6 @@ const Now = (() => {
     return () => Date.now();
   }
 })();
-
-export interface IntervalEventData {
-  type: "interval";
-  t: number;
-  dt: number;
-}
-
-export class IntervalEvent implements IntervalEventData {
-  type: "interval";
-  t: number;
-  dt: number;
-  
-  constructor(t: number, dt: number) {
-    this.type = "interval";
-    this.t = t;
-    this.dt = dt;
-  }
-}
 
 export interface IntervalConfig {
   interval: {

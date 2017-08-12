@@ -1,5 +1,5 @@
 import { RenderData } from "../components/render-component";
-import { RenderEventData } from "../modules/render-module";
+import { RenderEventData } from "../events/render-event";
 import { shapeFor, PositionEntity } from "../util/shape";
 
 export interface RenderEntity extends PositionEntity {

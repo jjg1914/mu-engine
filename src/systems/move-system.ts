@@ -1,10 +1,8 @@
 import { shapeFor } from "../util/shape";
 import { CollisionEntity } from "../util/collision";
-import { MoveEventData } from "../modules/move-module";
-import {
-  CollisionEventData,
-  ResolutionEventData,
-} from "../modules/collision-module";
+import { MoveEventData } from "../events/move-event";
+import { CollisionEventData } from "../events/collision-event";
+import { ResolutionEventData } from "../events/resolution-event";
 import { Entity } from "../entities/entity";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";

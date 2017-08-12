@@ -1,5 +1,5 @@
 import { shapeFor, Bounds, PositionEntity, Dimensions } from "../util/shape";
-import { RenderEventData } from "../modules/render-module";
+import { RenderEventData } from "../events/render-event";
 
 export interface CameraConfig {
   camera: {

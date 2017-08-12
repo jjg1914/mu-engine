@@ -1,5 +1,6 @@
 import { Entity } from "../entities/entity";
-import { Keys, InputEventData } from "../modules/input-module";
+import { InputEventData } from "../events/input-event";
+import { Keys } from "../modules/input-module";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 

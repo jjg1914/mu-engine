@@ -1,4 +1,5 @@
 export * from "./util/assets";
+export * from "./util/canvas-buffer";
 export * from "./util/collision";
 export * from "./util/path";
 export * from "./util/shape";
@@ -8,6 +9,13 @@ export * from "./entities/entity";
 export * from "./entities/base-entity";
 export * from "./entities/collection-entity";
 export * from "./entities/stack-entity";
+
+export * from "./events/collision-event";
+export * from "./events/input-event";
+export * from "./events/interval-event";
+export * from "./events/move-event";
+export * from "./events/render-event";
+export * from "./events/resolution-event";
 
 export * from "./modules/input-module";
 export * from "./modules/interval-module";

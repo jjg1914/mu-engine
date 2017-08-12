@@ -1,41 +1,8 @@
 import { Entity } from "../entities/entity";
 import { Bounds } from "../util/shape";
 import { Collision, CollisionEntity, Vector } from "../util/collision";
-
-export interface CollisionEventData {
-  type: "precollision" | "postcollision";
-  data: Collision;
-}
-
-export interface ResolutionEventData {
-  type: "collision" | "bump";
-  target: CollisionEntity;
-  mtv: Vector;
-}
-
-export class CollisionEvent implements CollisionEventData {
-  type: "precollision" | "postcollision";
-  data: Collision;
-
-  constructor(type: "precollision" | "postcollision", data: Collision) {
-    this.type = type;
-    this.data = data;
-  }
-}
-
-export class ResolutionEvent implements ResolutionEventData {
-  type: "collision" | "bump";
-  target: CollisionEntity;
-  mtv: Vector;
-
-  constructor(type: "collision" | "bump",
-              target: CollisionEntity,
-              mtv: Vector) {
-    this.type = type;
-    this.target = target;
-    this.mtv = mtv;
-  }
-}
+import { CollisionEvent } from "../events/collision-event";
+import { ResolutionEvent } from "../events/resolution-event";
 
 export interface CollisionConfig {
   collision: {

@@ -1,4 +1,4 @@
-import { MoveEventData } from "../modules/move-module";
+import { MoveEventData } from "../events/move-event";
 import { Entity } from "../entities/entity";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
