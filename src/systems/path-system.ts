@@ -1,6 +1,5 @@
 import { MoveEventData } from "../modules/move-module";
 import { Entity } from "../entities/entity";
-import { Constructor } from "../util/mixin";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 import { PathData } from "../components/path-component";
@@ -11,34 +10,27 @@ export interface PathEntity extends Entity {
   path: PathData;
 }
 
-export function PathSystem(klass: Constructor<PathEntity>)
-: Constructor<PathEntity>{
-  return class extends klass {
-    constructor(...args: any[]) {
-      super(...args);
+export function PathSystem(entity: PathEntity): void {
+  entity.on("premove", (event: MoveEventData) => {
+    if (entity.path.path != null) {
+      if (entity.path.t == null) {
+        entity.path.t = 0;
+        entity.path.x = entity.position.x;
+        entity.path.y = entity.position.y;
+      } else {
+        entity.path.t += event.dt;
+      }
 
-      this.on("premove", (event: MoveEventData) => {
-        if (this.path.path != null) {
-          if (this.path.t == null) {
-            this.path.t = 0;
-            this.path.x = this.position.x;
-            this.path.y = this.position.y;
-          } else {
-            this.path.t += event.dt;
-          }
+      const [ x, y ] = entity.path.path.interpolate(entity.path.t,
+                                                    entity.path.repeat);
+      let oldX = entity.position.x;
+      let oldY = entity.position.y;
 
-          const [ x, y ] = this.path.path.interpolate(this.path.t,
-                                                      this.path.repeat);
-          let oldX = this.position.x;
-          let oldY = this.position.y;
+      entity.position.x = Math.trunc(x) + entity.path.x;
+      entity.position.y = Math.trunc(y) + entity.path.y;
 
-          this.position.x = Math.trunc(x) + this.path.x;
-          this.position.y = Math.trunc(y) + this.path.y;
-
-          this.movement.xChange = this.position.x - oldX;
-          this.movement.yChange = this.position.y - oldY;
-        }
-      });
+      entity.movement.xChange = entity.position.x - oldX;
+      entity.movement.yChange = entity.position.y - oldY;
     }
-  };
+  });
 }

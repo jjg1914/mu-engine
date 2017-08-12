@@ -1,6 +1,5 @@
 export * from "./util/assets";
 export * from "./util/collision";
-export * from "./util/mixin";
 export * from "./util/path";
 export * from "./util/shape";
 export * from "./util/stage";

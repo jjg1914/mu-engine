@@ -1,6 +1,5 @@
 import { MoveEventData } from "../modules/move-module";
 import { Entity } from "../entities/entity";
-import { Constructor } from "../util/mixin";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 
@@ -9,48 +8,41 @@ export interface AccelEntity extends Entity {
   movement: MovementData;
 }
 
-export function AccelSystem(klass: Constructor<AccelEntity>)
-: Constructor<AccelEntity> {
-  return class extends klass {
-    constructor(...args: any[]) {
-      super(...args);
+export function AccelSystem(entity: AccelEntity): void {
+  entity.on("premove", (event: MoveEventData) => {
+    let friction = entity.movement.friction;
+    let g = (entity.position.landing == null ? event.gravity : 0);
 
-      this.on("premove", (event: MoveEventData) => {
-        let friction = this.movement.friction;
-        let g = (this.position.landing == null ? event.gravity : 0);
-
-        if (this.position.landing != null &&
-            this.position.landing.movement != null) {
-          friction = this.position.landing.movement.friction;
-        }
-
-        const dt = event.dt / 1000;
-
-        this.movement.xSpeed = _accel(dt, this.movement.xSpeed,
-                                      this.movement.xAccel,
-                                      this.movement.xMax,
-                                      friction);
-
-        this.movement.ySpeed = _accel(dt, this.movement.ySpeed,
-                                      this.movement.yAccel + g,
-                                      this.movement.yMax,
-                                      friction);
-
-        if (this.movement.xAccel) {
-          let [ a, s ] = [ this.movement.xAccel, this.movement.xSpeed ];
-
-          this.movement.xSpeed = (a < 0 ? Math.min(s, 0) : Math.max(s, 0));
-        }
-
-        if (this.movement.xSpeed === 0 &&
-            this.position.landing != null &&
-            this.position.landing.movement != null) {
-          this.movement.xSubpixel = this.position.landing.movement.xSubpixel;
-          this.movement.ySubpixel = this.position.landing.movement.ySubpixel;
-        }
-      });
+    if (entity.position.landing != null &&
+        entity.position.landing.movement != null) {
+      friction = entity.position.landing.movement.friction;
     }
-  };
+
+    const dt = event.dt / 1000;
+
+    entity.movement.xSpeed = _accel(dt, entity.movement.xSpeed,
+                                    entity.movement.xAccel,
+                                    entity.movement.xMax,
+                                    friction);
+
+    entity.movement.ySpeed = _accel(dt, entity.movement.ySpeed,
+                                    entity.movement.yAccel + g,
+                                    entity.movement.yMax,
+                                    friction);
+
+    if (entity.movement.xAccel) {
+      let [ a, s ] = [ entity.movement.xAccel, entity.movement.xSpeed ];
+
+      entity.movement.xSpeed = (a < 0 ? Math.min(s, 0) : Math.max(s, 0));
+    }
+
+    if (entity.movement.xSpeed === 0 &&
+        entity.position.landing != null &&
+        entity.position.landing.movement != null) {
+      entity.movement.xSubpixel = entity.position.landing.movement.xSubpixel;
+      entity.movement.ySubpixel = entity.position.landing.movement.ySubpixel;
+    }
+  });
 }
 
 function _accel(dt: number,

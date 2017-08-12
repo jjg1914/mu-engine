@@ -1,5 +1,4 @@
 import { Entity } from "../entities/entity";
-import { Constructor } from "../util/mixin";
 import { Bounds } from "../util/shape";
 
 export interface RenderEventData {
@@ -43,8 +42,42 @@ export interface RenderConfig {
   render: BufferCanvasConfig;
 }
 
-export interface RenderModuleClass {
-  new(config: { render: RenderConfig, [ key: string ]: any }): Entity;
+export function RenderModule(entity: Entity, config: RenderConfig): void {
+  const buffer = new BufferCanvas(config.render);
+
+  let timeout: number | undefined;
+
+  window.addEventListener("resize", () => {
+    if (timeout == undefined) {
+      timeout = setTimeout(() => {
+        timeout = undefined;
+        buffer.resize();
+      }, 10);
+    }
+  });
+
+  buffer.resize();
+
+  entity.on("interval", () => {
+    const ev = buffer.emit();
+
+    ev.type = "prerender";
+    entity.send("prerender", ev);
+
+    if (config.render.background != null) {
+      ev.ctx.fillStyle = config.render.background;
+      ev.ctx.fillRect(0, 0, ev.viewport.right - ev.viewport.left + 1,
+                            ev.viewport.bottom - ev.viewport.top + 1);
+    }
+
+    ev.type = "render";
+    entity.send("render", ev);
+
+    ev.type = "postrender";
+    entity.send("postrender", ev);
+
+    buffer.flip();
+  });
 }
 
 class BufferCanvas {
@@ -135,49 +168,4 @@ class BufferCanvas {
       this._canvasCTX.scale(this._config.scale, this._config.scale);
     }
   }
-}
-
-export function RenderModule(klass: Constructor<Entity>): Constructor<Entity> {
-  return class extends klass {
-    constructor(...args: any[]) {
-      super(...args);
-      const config: RenderConfig = args[0];
-
-      const buffer = new BufferCanvas(config.render);
-
-      let timeout: number | undefined;
-
-      window.addEventListener("resize", () => {
-        if (timeout == undefined) {
-          timeout = setTimeout(() => {
-            timeout = undefined;
-            buffer.resize();
-          }, 10);
-        }
-      });
-
-      buffer.resize();
-
-      this.on("interval", () => {
-        const ev = buffer.emit();
-
-        ev.type = "prerender";
-        this.send("prerender", ev);
-
-        if (config.render.background != null) {
-          ev.ctx.fillStyle = config.render.background;
-          ev.ctx.fillRect(0, 0, ev.viewport.right - ev.viewport.left + 1,
-                                ev.viewport.bottom - ev.viewport.top + 1);
-        }
-
-        ev.type = "render";
-        this.send("render", ev);
-
-        ev.type = "postrender";
-        this.send("postrender", ev);
-
-        buffer.flip();
-      });
-    }
-  };
 }

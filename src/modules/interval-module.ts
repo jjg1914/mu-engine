@@ -1,5 +1,4 @@
 import { Entity } from "../entities/entity";
-import { Constructor } from "../util/mixin";
 
 const Now = (() => {
   if (performance.now != null) {
@@ -33,28 +32,20 @@ export interface IntervalConfig {
   };
 }
 
-export function IntervalModule(klass: Constructor<Entity>)
-: Constructor<Entity> {
-  return class extends klass {
-    constructor(...args: any[]) {
-      super(...args);
-      const config: IntervalConfig = args[0];
+export function IntervalModule(entity: Entity, config: IntervalConfig): void {
+  const start = Now();
+  let last = start;
 
-      const start = Now();
-      let last = start;
+  const interval = setInterval(() => {
+    const now = Now();
 
-      const interval = setInterval(() => {
-        const now = Now();
-
-        try {
-          this.send("interval", new IntervalEvent(now - start, now - last));
-        } catch (e) {
-          clearInterval(interval);
-          console.error(e);
-        }
-
-        last = now;
-      }, 1000 / config.interval.fps);
+    try {
+      entity.send("interval", new IntervalEvent(now - start, now - last));
+    } catch (e) {
+      clearInterval(interval);
+      console.error(e);
     }
-  };
+
+    last = now;
+  }, 1000 / config.interval.fps);
 }
