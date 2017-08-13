@@ -7,22 +7,8 @@ export class CollectionEntity extends BaseEntity {
   constructor() {
     super();
     this._collection = {};
-  }
 
-  put(entity: Entity): this {
-    this._collection[entity.id] = entity;
-    return this;
-  }
-
-  remove(entity: Entity): this {
-    delete this._collection[entity.id];
-    return this;
-  }
-
-  send(event: string, ...args: any[]): boolean {
-    if (super.send(event, ...args)) {
-      return true;
-    } else {
+    this.last((event: string, ...args: any[]) => {
       for (let e in this._collection) {
         const entity = this._collection[e];
 
@@ -33,7 +19,17 @@ export class CollectionEntity extends BaseEntity {
         }
       }
 
-      return false;
-    }
+      return;
+    });
+  }
+
+  put(entity: Entity): this {
+    this._collection[entity.id] = entity;
+    return this;
+  }
+
+  remove(entity: Entity): this {
+    delete this._collection[entity.id];
+    return this;
   }
 }

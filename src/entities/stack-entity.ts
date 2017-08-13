@@ -7,6 +7,16 @@ export class StackEntity extends BaseEntity {
   constructor() {
     super();
     this._stack = [];
+
+    this.last((event: string, ...args: any[]) => {
+      for (let i = this._stack.length - 1; i >= 0; ++i) {
+        if (this._stack[i].send(event, ...args)) {
+          return true;
+        }
+      }
+
+      return;
+    });
   }
 
   push(entity: Entity): this {
@@ -21,19 +31,5 @@ export class StackEntity extends BaseEntity {
 
   swap(entity: Entity): this {
     return this.pop().push(entity);
-  }
-
-  send(event: string, ...args: any[]): boolean {
-    if (super.send(event, ...args)) {
-      return true;
-    } else {
-      for (let i = this._stack.length - 1; i >= 0; ++i) {
-        if (this._stack[i].send(event, ...args)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
   }
 }

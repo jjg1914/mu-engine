@@ -21,7 +21,7 @@ export function RenderModule(entity: Entity, config: RenderConfig): void {
 
   buffer.resize();
 
-  entity.on("interval", () => {
+  entity.after("interval", () => {
     const ev = buffer.emit();
 
     ev.type = "prerender";
