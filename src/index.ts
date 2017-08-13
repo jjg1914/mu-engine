@@ -13,6 +13,7 @@ export * from "./entities/stack-entity";
 export * from "./events/collision-event";
 export * from "./events/input-event";
 export * from "./events/interval-event";
+export * from "./events/landing-event";
 export * from "./events/move-event";
 export * from "./events/render-event";
 export * from "./events/resolution-event";

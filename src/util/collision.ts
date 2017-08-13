@@ -32,6 +32,7 @@ export interface CollisionEntity extends PositionEntity {
     xSubpixel: number;
     ySubpixel: number;
     friction: number | null;
+    nogravity: boolean;
   };
 }
 

@@ -10,6 +10,7 @@ export interface MovementData {
   xChange: number;
   yChange: number;
   friction: number | null;
+  nogravity: boolean;
   restrict: boolean;
 }
 
@@ -25,6 +26,7 @@ export class MovementComponent implements MovementData {
   xChange: number;
   yChange: number;
   friction: number | null;
+  nogravity: boolean;
   restrict: boolean;
 
   constructor(options: Partial<MovementData> = {}) {
@@ -41,6 +43,7 @@ export class MovementComponent implements MovementData {
       yChange: 0,
       friction: null,
       restrict: false,
+      nogravity: false,
     }, options);
   }
 }

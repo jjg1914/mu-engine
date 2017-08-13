@@ -3,6 +3,7 @@ import { CollisionEntity } from "../util/collision";
 import { MoveEventData } from "../events/move-event";
 import { CollisionEventData } from "../events/collision-event";
 import { ResolutionEventData } from "../events/resolution-event";
+import { LandingEvent } from "../events/landing-event";
 import { Entity } from "../entities/entity";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
@@ -109,7 +110,12 @@ export function MoveSystem(entity: MoveEntity): void {
         }
       }
 
-      entity.position.landing = m;
+      if (m != null && entity.position.landing !== m) {
+        entity.position.landing = m;
+        m.send("landing", new LandingEvent(entity));
+      } else {
+        entity.position.landing = m;
+      }
     }
 
     _bumps.length = 0;

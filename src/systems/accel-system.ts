@@ -11,7 +11,8 @@ export interface AccelEntity extends Entity {
 export function AccelSystem(entity: AccelEntity): void {
   entity.on("premove", (event: MoveEventData) => {
     let friction = entity.movement.friction;
-    let g = (entity.position.landing == null ? event.gravity : 0);
+    let g = !entity.movement.nogravity && entity.position.landing == null ?
+            event.gravity : 0;
 
     if (entity.position.landing != null &&
         entity.position.landing.movement != null) {
