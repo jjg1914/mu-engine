@@ -102,7 +102,7 @@ export function MoveSystem(entity: MoveEntity): void {
           const b2 = shape.bounds();
           const v = Math.abs(Math.min(b1.right, b2.right) -
                              Math.max(b1.left, b2.left));
-          if (min < d2 || v > d) {
+          if (min < d2 || (min === d2 && v > d)) {
             d = v;
             d2 = min;
             m = e;
