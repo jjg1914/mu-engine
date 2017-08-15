@@ -4,15 +4,21 @@ export class BaseEntity implements Entity {
   private static _idCounter: number = 0;
 
   private _handlers: { [event: string]: Function[] | null | undefined };
+  private _active: boolean;
 
   id: number;
 
   constructor() {
     this.id = ++BaseEntity._idCounter;
     this._handlers = {};
+    this._active = true;
   }
 
   send(event: string, ...args: any[]): boolean {
+    if (!this._active) {
+      return false;
+    }
+
     const handlers = this._handlers[event];
     let rval = true;
 
@@ -96,5 +102,29 @@ export class BaseEntity implements Entity {
 
   last(handler: Function): this {
     return this.on("_last", handler);
+  }
+
+  activate(): void {
+    this._active = true;
+  }
+
+  deactivate(): void {
+    this._active = false;
+  }
+
+  toggle(): void {
+    this._active = !this._active;
+  }
+
+  setActive(active: boolean): void {
+    this._active = active;
+  }
+
+  isActive(): boolean {
+    return this._active;
+  }
+
+  isInactive(): boolean {
+    return !this._active;
   }
 }
