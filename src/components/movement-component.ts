@@ -11,7 +11,7 @@ export interface MovementData {
   yChange: number;
   friction: number | null;
   nogravity: boolean;
-  restrict: boolean;
+  restrict: boolean | [ number, number ];
 }
 
 export class MovementComponent implements MovementData {
@@ -27,7 +27,7 @@ export class MovementComponent implements MovementData {
   yChange: number;
   friction: number | null;
   nogravity: boolean;
-  restrict: boolean;
+  restrict: boolean | [ number, number ];
 
   constructor(options: Partial<MovementData> = {}) {
     Object.assign(this, {

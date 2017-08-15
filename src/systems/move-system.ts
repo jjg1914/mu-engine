@@ -61,20 +61,44 @@ export function MoveSystem(entity: MoveEntity): void {
     entity.movement.yChange = entity.position.y - oldY;
 
     if (entity.movement.restrict) {
+      const restrict = (entity.movement.restrict instanceof Array ?
+                        entity.movement.restrict :
+                        [ 0, 0 ] as [ number, number ]);
+
       const b = shapeFor(entity).bounds();
       const w = b.right - b.left + 1;
       const h = b.bottom - b.top + 1;
       const oldX = entity.position.x;
       const oldY = entity.position.y;
 
-      entity.position.x = Math.min(Math.max(event.bounds.left, b.left),
-                                 event.bounds.right - w);
+      if (restrict[0] != null) {
+        if (restrict[0] >= 0) {
+          entity.position.x = Math.min(event.bounds.right - w,
+                                       entity.position.x);
+        }
+
+        if (restrict[0] <= 0) {
+          entity.position.x = Math.max(event.bounds.left,
+                                       entity.position.x);
+        }
+      }
+
+      if (restrict[1] != null) {
+        if (restrict[1] >= 0) {
+          entity.position.y = Math.min(event.bounds.bottom - h,
+                                       entity.position.y);
+        }
+
+        if (restrict[1] <= 0) {
+          entity.position.y = Math.max(event.bounds.top,
+                                       entity.position.y);
+        }
+      }
+
       if (entity.position.x !== oldX) {
         entity.movement.xSpeed = 0;
       }
 
-      entity.position.y = Math.min(Math.max(event.bounds.top, b.top),
-                                 event.bounds.bottom - h);
       if (entity.position.y !== oldY) {
         entity.movement.ySpeed = 0;
       }
