@@ -1,6 +1,5 @@
 import { Entity } from "../entities/entity";
 import { InputEventData } from "../events/input-event";
-import { Keys } from "../modules/input-module";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 
@@ -16,12 +15,17 @@ export interface Control2WayEntity extends Entity {
 
 export function Control2WaySystem(entity: Control2WayEntity): void {
   entity.on("keydown", (event: InputEventData) => {
+    const _left = event.inputs["ArrowLeft"] || event.inputs["A"];
+    const _right = event.inputs["ArrowRight"] || event.inputs["D"];
+
     switch (event.which) {
-    case Keys.ARROW_LEFT:
-    case Keys.ARROW_RIGHT:
-      entity.movement.xAccel += _accel(event.which, entity.control.xAccel);
+    case "ArrowLeft":
+    case "A":
+    case "ArrowRight":
+    case "D":
+      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
       break;
-    case Keys.ARROW_UP:
+    case " ":
       if (entity.position.landing != null) {
         entity.movement.ySpeed = -entity.control.jumpSpeed;
         entity.position.landing = null;
@@ -35,12 +39,17 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
   });
 
   entity.on("keyup", (event: InputEventData) => {
+    const _left = event.inputs["ArrowLeft"] || event.inputs["A"];
+    const _right = event.inputs["ArrowRight"] || event.inputs["D"];
+
     switch (event.which) {
-    case Keys.ARROW_LEFT:
-    case Keys.ARROW_RIGHT:
-      entity.movement.xAccel -= _accel(event.which, entity.control.xAccel);
+    case "ArrowLeft":
+    case "A":
+    case "ArrowRight":
+    case "D":
+      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
       break;
-    case Keys.ARROW_UP:
+    case " ":
       if (entity.position.landing == null && entity.movement.ySpeed < 0) {
         entity.movement.ySpeed = 0;
         entity.movement.nogravity = false;
@@ -50,13 +59,19 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
   });
 }
 
-function _accel(which: number, accel: number): number {
-  switch (which) {
-  case Keys.ARROW_LEFT:
-    return -accel; 
-  case Keys.ARROW_RIGHT:
-    return accel; 
-  default:
-    return 0;
+function _accel(accel: number,
+                left?: boolean | null,
+                right?: boolean | null)
+: number {
+  let rval = 0;
+
+  if (left) {
+    rval -= accel;
   }
+
+  if (right) {
+    rval += accel;
+  }
+
+  return rval;
 }
