@@ -27,14 +27,10 @@ export function RenderModule(entity: Entity, config: RenderConfig): void {
     ev.type = "prerender";
     entity.send("prerender", ev);
 
-    if (config.render.background != null) {
-      ev.ctx.fillStyle = config.render.background;
-      ev.ctx.fillRect(0, 0, ev.viewport.right - ev.viewport.left + 1,
-                            ev.viewport.bottom - ev.viewport.top + 1);
-    }
-
     ev.type = "render";
     entity.send("render", ev);
+
+    ev.backend.render(ev.viewport);
 
     ev.type = "postrender";
     entity.send("postrender", ev);

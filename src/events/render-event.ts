@@ -1,10 +1,11 @@
 import { Bounds } from "../util/shape";
+import { RenderBackend } from "../util/render-backend";
 
 export type RenderEventType = "prerender" | "render" | "postrender";
 
 export interface RenderEventData {
   type: RenderEventType;
-  ctx: CanvasRenderingContext2D;
+  backend: RenderBackend;
   width: number;  
   height: number;
   viewport: Bounds;
@@ -12,13 +13,13 @@ export interface RenderEventData {
 
 export class RenderEvent implements RenderEventData {
   type: RenderEventType;
-  ctx: CanvasRenderingContext2D;
+  backend: RenderBackend;
   width: number;  
   height: number;
   viewport: Bounds;
 
-  constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
-    this.ctx = ctx;
+  constructor(backend: RenderBackend, width: number, height: number) {
+    this.backend = backend;
     this.width = width;
     this.height = height;
     this.viewport = {

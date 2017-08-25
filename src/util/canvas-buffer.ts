@@ -1,4 +1,6 @@
 import { RenderEventData, RenderEvent } from "../events/render-event";
+import { RenderBackend } from "./render-backend";
+import { RenderBackend2D } from "./render-backends/render-backend-2d";
 
 export interface CanvasBufferConfig {
   canvas: HTMLCanvasElement;
@@ -15,7 +17,7 @@ export class CanvasBuffer {
   private _canvas: HTMLCanvasElement;
   private _buffer: HTMLCanvasElement;
   private _canvasCTX: CanvasRenderingContext2D;
-  private _bufferCTX: CanvasRenderingContext2D;
+  private _backend: RenderBackend;
 
   private _width: number;
   private _height: number;
@@ -38,17 +40,17 @@ export class CanvasBuffer {
       this._canvasCTX = canvasCtx
     }
 
-    const bufferCtx = this._buffer.getContext("2d"); 
+    const backendCtx2D = this._buffer.getContext("2d"); 
 
-    if (bufferCtx == null) {
+    if (backendCtx2D == null) {
       throw new Error("Failed to create 2d context");
     } else {
-      this._bufferCTX = bufferCtx
+      this._backend = new RenderBackend2D(backendCtx2D);
     }
   }
 
   emit(): RenderEventData {
-    return new RenderEvent(this._bufferCTX, this._width, this._height);
+    return new RenderEvent(this._backend, this._width, this._height);
   }
 
   flip(): void {
@@ -88,9 +90,6 @@ export class CanvasBuffer {
       this._canvasCTX.mozImageSmoothingEnabled = this._config.smoothing;
       this._canvasCTX.webkitImageSmoothingEnabled = this._config.smoothing;
       this._canvasCTX.imageSmoothingEnabled = this._config.smoothing;
-      this._bufferCTX.mozImageSmoothingEnabled = this._config.smoothing;
-      this._bufferCTX.webkitImageSmoothingEnabled = this._config.smoothing;
-      this._bufferCTX.imageSmoothingEnabled = this._config.smoothing;
     }
 
     if (this._config.scale != null) {
