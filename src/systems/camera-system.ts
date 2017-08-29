@@ -27,9 +27,9 @@ export function CameraSystem(entity: PositionEntity,
     y = Number((Math.floor(y) + (targetBounds.top % 1)).toFixed(4));
 
     x = Math.min(Math.max(x, config.camera.bounds.left),
-                 config.camera.bounds.right - cameraW);
+                 config.camera.bounds.right - cameraW + 1);
     y = Math.min(Math.max(y, config.camera.bounds.top),
-                 config.camera.bounds.bottom - cameraH);
+                 config.camera.bounds.bottom - cameraH + 1);
 
     ev.viewport.left = x;
     ev.viewport.top = y;
