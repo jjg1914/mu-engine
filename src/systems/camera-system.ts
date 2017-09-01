@@ -1,3 +1,4 @@
+import { Entity } from "../entities/entity";
 import { shapeFor, Bounds, PositionEntity, Dimensions } from "../util/shape";
 import { RenderEventData } from "../events/render-event";
 
@@ -8,10 +9,11 @@ export interface CameraConfig {
   }
 }
 
-export function CameraSystem(entity: PositionEntity,
+export function CameraSystem(entity: Entity,
+                             target: PositionEntity,
                              config: CameraConfig): void {
   entity.on("prerender", (ev: RenderEventData) => {
-    const targetBounds = shapeFor(entity).bounds();
+    const targetBounds = shapeFor(target).bounds();
     const cameraW =  config.camera.dimensions.width;
     const cameraH =  config.camera.dimensions.height;
 
