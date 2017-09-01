@@ -9,7 +9,7 @@ export class StackEntity extends BaseEntity {
     this._stack = [];
 
     this.last((event: string, ...args: any[]) => {
-      for (let i = this._stack.length - 1; i >= 0; ++i) {
+      for (let i = 0; i < this._stack.length; ++i) {
         if (this._stack[i].send(event, ...args)) {
           return true;
         }
@@ -20,12 +20,12 @@ export class StackEntity extends BaseEntity {
   }
 
   push(entity: Entity): this {
-    this._stack.push(entity);
+    this._stack.unshift(entity);
     return this;
   }
 
   pop(): this {
-    this._stack.pop();
+    this._stack.shift();
     return this;
   }
 
