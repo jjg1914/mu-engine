@@ -36,21 +36,6 @@ export class RenderBackend2D implements RenderBackend {
 
       layer.length = 0;
     }
-
-    /*
-    (this._ctx as any).resetTransform();
-    const t = new Array(6) as Transform;
-    identity(t);
-    scale(t, 16, 16);
-    // translate(t, 4, 4);
-    // 1 2 3
-    // 4 5 6
-    // 0 3 1 4 2 5
-    translate(t, 16, 16);
-    this._ctx.setTransform(t[0], t[3], t[1], t[4], t[2], t[5]);
-    this._ctx.fillStyle = "#FF0000";
-    this._ctx.fillRect(0, 0, 1, 1);
-    */
   }
 }
 
