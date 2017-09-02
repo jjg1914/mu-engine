@@ -140,6 +140,8 @@ export function MoveSystem(entity: MoveEntity): void {
       } else {
         entity.position.landing = m;
       }
+    } else {
+      entity.position.landing = null;
     }
 
     _bumps.length = 0;
