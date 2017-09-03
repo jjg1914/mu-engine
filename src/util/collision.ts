@@ -78,9 +78,21 @@ export class Collision {
     return this._entities.values();
   }
 
-  add(entity: CollisionEntity) {
-    _add(entity, this._root, shapeFor(entity).bounds(), 0);
+  bounds(): Bounds {
+    return {
+      top: this._root.top,
+      left: this._root.left,
+      bottom: this._root.bottom,
+      right: this._root.right,
+    };
+  }
+
+  add(entity: CollisionEntity): boolean {
+    const rval = _add(entity, this._root, shapeFor(entity).bounds(), 0);
+
     this._entities.set(entity.id, entity);
+
+    return rval;
   }
 
   queryBounds(bounds: Bounds, id: number) {
@@ -119,7 +131,7 @@ export class Collision {
 function _add(entity: CollisionEntity,
               node: Node,
               bounds: Bounds,
-              depth: number) {
+              depth: number): boolean {
   if (depth < DEPTH_LIMIT &&
       node.children == null &&
       node.entities.length > 4) {
@@ -127,12 +139,20 @@ function _add(entity: CollisionEntity,
   }
 
   if (node.children) {
+    let rval = false;
+
     for (let n of node.children) {
-      _add(entity, n, bounds, depth + 1);
+      rval = _add(entity, n, bounds, depth + 1) || rval;
     }
+
+    return rval;
   } else {
     if (_checkBounds(node, bounds)) {
       node.entities.push([ entity, bounds ] as [ CollisionEntity, Bounds ]);
+
+      return true;
+    } else {
+      return false;
     }
   }
 }

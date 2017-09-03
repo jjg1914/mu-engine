@@ -1,6 +1,8 @@
 import { Collision } from "../util/collision";
 
-export type CollisionEventType = "precollision" | "postcollision";
+export type CollisionEventType = "precollision" |
+                                 "postcollision" |
+                                 "outofbounds";
 
 export interface CollisionEventData {
   type: CollisionEventType;

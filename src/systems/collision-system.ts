@@ -1,8 +1,16 @@
 import { CollisionEntity } from "../util/collision";
-import { CollisionEventData } from "../events/collision-event";
+import { CollisionEvent, CollisionEventData } from "../events/collision-event";
 
 export function CollisionSystem(entity: CollisionEntity): void {
+  let _outofbounds = false;
+
   entity.on("precollision", (ev: CollisionEventData) => {
-    ev.data.add(entity);
+    _outofbounds = !ev.data.add(entity);
+  });
+
+  entity.on("postcollision", (ev: CollisionEventData) => {
+    if (_outofbounds) {
+      entity.send("outofbounds", new CollisionEvent("outofbounds", ev.data));
+    }
   });
 }
