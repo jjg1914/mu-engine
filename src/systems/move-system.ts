@@ -73,7 +73,7 @@ export function MoveSystem(entity: MoveEntity): void {
 
       if (restrict[0] != null) {
         if (restrict[0] >= 0) {
-          entity.position.x = Math.min(event.bounds.right - w,
+          entity.position.x = Math.min(event.bounds.right - w + 1,
                                        entity.position.x);
         }
 
@@ -85,7 +85,7 @@ export function MoveSystem(entity: MoveEntity): void {
 
       if (restrict[1] != null) {
         if (restrict[1] >= 0) {
-          entity.position.y = Math.min(event.bounds.bottom - h,
+          entity.position.y = Math.min(event.bounds.bottom - h + 1,
                                        entity.position.y);
         }
 
