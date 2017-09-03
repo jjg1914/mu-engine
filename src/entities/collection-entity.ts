@@ -1,6 +1,11 @@
 import { Entity } from "./entity";
 import { BaseEntity } from "./base-entity";
 
+import {
+  EntityAddEventData,
+  EntityDestroyEventData,
+} from "../events/entity-event";
+
 export class CollectionEntity extends BaseEntity {
   private _collection: { [id: number ]: Entity | null | undefined };
 
@@ -25,6 +30,17 @@ export class CollectionEntity extends BaseEntity {
 
   put(entity: Entity): this {
     this._collection[entity.id] = entity;
+
+    entity.on("remove", (_ev: EntityDestroyEventData) => {
+      this.remove(entity);
+    });
+
+    entity.on("put", (ev: EntityAddEventData) => {
+      if (this._collection[entity.id] === entity) {
+        this.put(ev.target);
+      }
+    });
+
     return this;
   }
 

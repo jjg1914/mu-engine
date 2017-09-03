@@ -1,6 +1,11 @@
 import { Entity } from "./entity";
 import { BaseEntity } from "./base-entity";
 
+import {
+  EntityAddEventData,
+  EntityDestroyEventData,
+} from "../events/entity-event";
+
 export class StackEntity extends BaseEntity {
   private _stack: Entity[];
 
@@ -20,7 +25,30 @@ export class StackEntity extends BaseEntity {
   }
 
   push(entity: Entity): this {
+    const i = this._stack.length;
+
     this._stack.unshift(entity);
+
+    entity.on("pop", (_ev: EntityDestroyEventData) => {
+      if (this._stack[i] === entity) {
+        while (this._stack.length > i) {
+          this.pop();
+        }
+      }
+    });
+
+    entity.on("push", (ev: EntityAddEventData) => {
+      if (this._stack[i] === entity) {
+        this.push(ev.target);
+      }
+    });
+
+    entity.on("swap", (ev: EntityAddEventData) => {
+      if (this._stack[i] === entity) {
+        this.swap(ev.target);
+      }
+    });
+
     return this;
   }
 

@@ -12,6 +12,7 @@ export * from "./entities/collection-entity";
 export * from "./entities/stack-entity";
 
 export * from "./events/collision-event";
+export * from "./events/entity-event";
 export * from "./events/input-event";
 export * from "./events/interval-event";
 export * from "./events/landing-event";
