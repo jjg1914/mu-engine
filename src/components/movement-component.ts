@@ -10,6 +10,7 @@ export interface MovementData {
   xChange: number;
   yChange: number;
   friction: number | null;
+  drag: number | null;
   nogravity: boolean;
   restrict: boolean | [ number, number ];
 }
@@ -26,6 +27,7 @@ export class MovementComponent implements MovementData {
   xChange: number;
   yChange: number;
   friction: number | null;
+  drag: number | null;
   nogravity: boolean;
   restrict: boolean | [ number, number ];
 
@@ -42,6 +44,7 @@ export class MovementComponent implements MovementData {
       xChange: 0,
       yChange: 0,
       friction: null,
+      drag: null,
       restrict: false,
       nogravity: false,
     }, options);
