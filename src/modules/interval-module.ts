@@ -16,6 +16,7 @@ export interface IntervalConfig {
 }
 
 export function IntervalModule(entity: Entity, config: IntervalConfig): void {
+  const dt = 1000 / config.interval.fps;
   const start = Now();
   let last = start;
 
@@ -23,12 +24,13 @@ export function IntervalModule(entity: Entity, config: IntervalConfig): void {
     const now = Now();
 
     try {
-      entity.send("interval", new IntervalEvent(now - start, now - last));
+      entity.send("interval", new IntervalEvent(now - start,
+                                                Math.min(now - last, dt)));
     } catch (e) {
       clearInterval(interval);
       console.error(e);
     }
 
     last = now;
-  }, 1000 / config.interval.fps);
+  }, dt);
 }
