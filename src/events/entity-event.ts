@@ -2,9 +2,14 @@ import { Entity } from "../entities/entity";
 
 export type EntityEventType = "put" | "remove" | "push" | "pop" | "swap";
 
+export interface Config {
+  block: boolean;
+}
+
 export interface EntityAddEventData {
   type: "put" | "push" | "swap";
   target: Entity;
+  config: Partial<Config>;
 }
 
 export interface EntityDestroyEventData {
@@ -16,10 +21,14 @@ export type EntityEventData = EntityAddEventData | EntityDestroyEventData;
 export class EntityAddEvent implements EntityAddEventData {
   type: "put" | "push" | "swap";
   target: Entity;
+  config: Partial<Config>;
 
-  constructor(type: "put" | "push" | "swap", target: Entity) {
+  constructor(type: "put" | "push" | "swap",
+              target: Entity,
+              config: Partial<Config> = {}) {
     this.type = type;
     this.target = target;
+    this.config = config;
   }
 }
 
