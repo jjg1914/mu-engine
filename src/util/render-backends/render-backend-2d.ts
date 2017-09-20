@@ -60,6 +60,18 @@ function _render(ctx: CanvasRenderingContext2D, data: RenderData): void {
       ctx.fillStyle = data.fill;
       ctx.fill(path as any); // TODO
     }
+  } else if (data.text != null) {
+    ctx.font = "8pt monospace";
+
+    if (data.stroke != null) {
+      ctx.strokeStyle = data.stroke;
+      ctx.strokeText(data.text, 0, 0);
+    }
+
+    if (data.fill != null) {
+      ctx.fillStyle = data.fill;
+      ctx.fillText(data.text, 0, 0);
+    }
   } else {
     if (data.stroke != null) {
       ctx.strokeStyle = data.stroke;
