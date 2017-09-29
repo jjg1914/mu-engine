@@ -48,7 +48,10 @@ function _render(ctx: CanvasRenderingContext2D, data: RenderData): void {
                 data.transform[2],
                 data.transform[5]);
 
-  if (data.shape != null) {
+  if (data.image != null) {
+    ctx.drawImage(data.image, 0, 0, data.image.width, data.image.height,
+                              0, 0, data.image.width, data.image.height);
+  } else if (data.shape != null) {
     const path = data.shape.path();
 
     if (data.stroke != null) {

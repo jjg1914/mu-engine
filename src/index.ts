@@ -5,11 +5,13 @@ export * from "./util/matrix";
 export * from "./util/path";
 export * from "./util/shape";
 export * from "./util/stage";
+export * from "./util/tileset";
 
 export * from "./entities/entity";
 export * from "./entities/base-entity";
 export * from "./entities/collection-entity";
 export * from "./entities/stack-entity";
+export * from "./entities/stage-entity";
 
 export * from "./events/collision-event";
 export * from "./events/entity-event";

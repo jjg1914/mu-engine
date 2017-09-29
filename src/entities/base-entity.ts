@@ -34,8 +34,7 @@ export class BaseEntity implements Entity {
         }
 
         if (event !== "_last") {
-          args.shift();
-          return this.send("_last", event, ...args);
+          return this.send("_last", event, ...(args.slice(1)));
         } else {
           return rval;
         }

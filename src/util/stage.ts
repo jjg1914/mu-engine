@@ -1,5 +1,7 @@
 import { Entity } from "../entities/entity";
+import { Tileset } from "./tileset";
 import { Bounds, Circle, Polygon } from "./shape";
+import { RenderData } from "../components/render-component";
 
 interface BuildableProperty {
   value: any;
@@ -13,6 +15,12 @@ interface BuildableComponent {
 interface BuildableEntity {
   type: string;
   components: { [key: string]: BuildableComponent };
+}
+
+interface BuildableTileLayer {
+  width: number;
+  height: number;
+  data: number[][];
 }
 
 export interface EntityDefinition {
@@ -29,7 +37,44 @@ export class Stage {
     const width = Number(data.map.$.width) * Number(data.map.$.tilewidth);
     const height = Number(data.map.$.height) * Number(data.map.$.tileheight);
 
-    const stage = new Stage(width, height);
+    const stage = (data.map.tileset != null && data.map.tileset.length > 0) ?
+      new Stage(width, height, data.map.tileset[0].$.source) :
+      new Stage(width, height);
+
+    if (data.map.layer != null) {
+      for (let e of data.map.layer) {
+        const width = Number(e.$.width);
+        const height = Number(e.$.height);
+
+        let data = "";
+        for (let f of e.data ) {
+          if (f.hasOwnProperty("_")) {
+            data += f._;
+          }
+        }
+        const dataRows = data.trim().split("\n");
+
+        const tiles = new Array(height) as number[][];
+        for (let i = 0; i < height; ++i) {
+          tiles[i] = new Array(width);
+          tiles[i].fill(0);
+
+          if (i < dataRows.length) {
+            const row = dataRows[i].split(",");
+
+            for (let j = 0; j < Math.min(row.length, tiles[i].length); ++j) {
+              tiles[i][j] = Number(row[j]);
+            }
+          }
+        }
+
+        stage._tiles.push({
+          width: width,
+          height: height,
+          data: tiles,
+        });
+      }
+    }
 
     for (let e of data.map.objectgroup) {
       for (let f of e.object) {
@@ -107,11 +152,15 @@ export class Stage {
   private _width: number;
   private _height: number;
   private _entities: BuildableEntity[];
+  private _tiles: BuildableTileLayer[];
+  private _tileset?: string | null;
 
-  constructor(width: number, height: number) {
+  constructor(width: number, height: number, tileset?: string | null) {
     this._entities = [];
+    this._tiles = [];
     this._width = width;
     this._height = height;
+    this._tileset = tileset;
   }
 
   bounds(): Bounds {
@@ -127,7 +176,43 @@ export class Stage {
     this._entities.push(entity);
   }
 
-  build(dest: { put(entity: Entity): any }, config: BuildConfig): Entity[] {
+  buildLayers(config: BuildConfig): RenderData[] {
+    const rval = [] as RenderData[];
+
+    if (this._tileset != null) {
+      const tileset = config.assets.load(this._tileset) as Tileset;
+
+      for (let e of this._tiles) {
+        const layer = document.createElement("canvas");
+        layer.width = this._width;
+        layer.height = this._height;
+        const layerCtx = layer.getContext("2d");
+
+        if (layerCtx == null) {
+          throw new Error("Failed to create 2d context");
+        }
+
+        tileset.ready(() => {
+          for (let j = 0; j < e.data.length; j += 1){
+            for (let i = 0; i < e.data[j].length; i += 1){
+              tileset.drawTile(layerCtx, e.data[j][i], i, j);
+            }
+          }
+        });
+
+        rval.push({
+          image: layer,
+          depth: 0,
+          transform: [ 1, 0, 0, 0, 1, 0 ],
+          children: [],
+        });
+      }
+    }
+
+    return rval;
+  }
+
+  buildEntities(config: BuildConfig): Entity[] {
     const rval = [];
 
     for (let e of this._entities) {
@@ -160,7 +245,6 @@ export class Stage {
         }
 
         const entity = new config.entities[e.type](components);
-        dest.put(entity);
         rval.push(entity);
       }
     }

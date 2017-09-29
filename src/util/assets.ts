@@ -1,5 +1,6 @@
 import { Path } from "./path";
 import { Stage } from "./stage";
+import { Tileset } from "./tileset";
 
 export interface AssetConfig {
   [ key: string ]: { type: string, data: any };
@@ -20,6 +21,8 @@ export class Assets {
         return Path.unserialize(data.data);
       case "stage":
         return Stage.unserialize(data.data);
+      case "tileset":
+        return Tileset.unserialize(data.data);
     }
   }
 
