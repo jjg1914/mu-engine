@@ -3,7 +3,6 @@ import { PositionData } from "../components/position-component";
 import { RenderData } from "../components/render-component";
 import { RenderEventData } from "../events/render-event";
 import { shapeFor, PositionEntity } from "../util/shape";
-import { identity, translate, scale} from "../util/matrix";
 
 export interface RenderEntity extends Entity {
   position?: PositionData;
@@ -12,21 +11,27 @@ export interface RenderEntity extends Entity {
 
 export function RenderSystem(entity: RenderEntity): void {
   entity.on("render", (event: RenderEventData) => {
+    const data = {
+      x: 0,
+      y: 0,
+      width: 1,
+      height: 1,
+      render: entity.render,
+    };
+
     if (entity.position != null) {
-      identity(entity.render.transform);
+      data.x = entity.position.x;
+      data.y = entity.position.y;
+      data.width = entity.position.width;
+      data.height = entity.position.height;
 
       if (entity.position.mask != null) {
-        entity.render.shape = shapeFor(entity as PositionEntity);
-        entity.render.shape.translate(-entity.position.x, -entity.position.y);
+        data.render.shape = shapeFor(entity as PositionEntity);
       } else {
-        entity.render.shape = null;
-        scale(entity.render.transform, entity.position.width,
-                                       entity.position.height);
+        data.render.shape = null;
       }
-
-      translate(entity.render.transform, entity.position.x, entity.position.y);
     }
 
-    event.backend.add(entity.render);
+    event.backend.add(data);
   });
 }

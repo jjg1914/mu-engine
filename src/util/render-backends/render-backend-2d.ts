@@ -1,10 +1,10 @@
 import { RenderData } from "../../components/render-component";
-import { RenderBackend } from "../render-backend";
+import { RenderBackend, RenderBackendItem } from "../render-backend";
 import { Bounds } from "../shape";
 
 export class RenderBackend2D implements RenderBackend {
   private _depths: number[];
-  private _layers: { [ key: number ]: RenderData[] };
+  private _layers: { [ key: number ]: RenderBackendItem[] };
   private _ctx: CanvasRenderingContext2D;
 
   constructor(ctx: CanvasRenderingContext2D) {
@@ -13,12 +13,12 @@ export class RenderBackend2D implements RenderBackend {
     this._ctx = ctx;
   }
 
-  add(data: RenderData): void {
-    if (this._layers.hasOwnProperty(data.depth.toString())) {
-      this._layers[data.depth].push(data);
+  add(data: RenderBackendItem): void {
+    if (this._layers.hasOwnProperty(data.render.depth.toString())) {
+      this._layers[data.render.depth].push(data);
     } else {
-      this._depths.push(data.depth);
-      this._layers[data.depth] = [ data ];
+      this._depths.push(data.render.depth);
+      this._layers[data.render.depth] = [ data ];
     }
   }
 
@@ -31,7 +31,7 @@ export class RenderBackend2D implements RenderBackend {
       const layer = this._layers[this._depths[i]];
       
       for (let j = 0; j < layer.length; ++j) {
-        _render(this._ctx, layer[j]);
+        _render(this._ctx, layer[j].render, layer[j]);
       }
 
       layer.length = 0;
@@ -39,7 +39,9 @@ export class RenderBackend2D implements RenderBackend {
   }
 }
 
-function _render(ctx: CanvasRenderingContext2D, data: RenderData): void {
+function _render(ctx: CanvasRenderingContext2D,
+                 data: RenderData,
+                 root: RenderBackendItem): void {
   ctx.save();
   ctx.transform(data.transform[0],
                 data.transform[3],
@@ -48,9 +50,8 @@ function _render(ctx: CanvasRenderingContext2D, data: RenderData): void {
                 data.transform[2],
                 data.transform[5]);
 
-  if (data.image != null) {
     ctx.drawImage(data.image, 0, 0, data.image.width, data.image.height,
-                              0, 0, data.image.width, data.image.height);
+                              root.x, root.y, data.image.width, data.image.height);
   } else if (data.shape != null) {
     const path = data.shape.path();
 
@@ -68,27 +69,27 @@ function _render(ctx: CanvasRenderingContext2D, data: RenderData): void {
 
     if (data.stroke != null) {
       ctx.strokeStyle = data.stroke;
-      ctx.strokeText(data.text, 0, 0);
+      ctx.strokeText(data.text, root.x, root.y);
     }
 
     if (data.fill != null) {
       ctx.fillStyle = data.fill;
-      ctx.fillText(data.text, 0, 0);
+      ctx.fillText(data.text, root.x, root.y);
     }
   } else {
     if (data.stroke != null) {
       ctx.strokeStyle = data.stroke;
-      ctx.strokeRect(0, 0, 1, 1);
+      ctx.strokeRect(root.x, root.y, root.width, root.height);
     }
 
     if (data.fill != null) {
       ctx.fillStyle = data.fill;
-      ctx.fillRect(0, 0, 1, 1);
+      ctx.fillRect(root.x, root.y, root.width, root.height);
     }
   }
 
   for (let i = 0; i < data.children.length; ++i) {
-    _render(ctx, data.children[i]);
+    _render(ctx, data.children[i], root, assets);
   }
 
   ctx.restore();

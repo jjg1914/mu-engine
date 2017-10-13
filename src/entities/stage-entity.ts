@@ -56,7 +56,13 @@ export class StageEntity extends CollectionEntity {
 
     this.on("render", (event: RenderEventData) => {
       for (let e of layers) {
-        event.backend.add(e);
+        event.backend.add({
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          render: e,
+        });
       }
     });
   };
