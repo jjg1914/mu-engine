@@ -1,16 +1,44 @@
 import { RenderData } from "../../components/render-component";
 import { RenderBackend, RenderBackendItem } from "../render-backend";
 import { Bounds } from "../shape";
+import { Assets } from "../assets";
+import { Sprite } from "../sprite";
+
+class AssetCache {
+  private _sprites: { [ key: string ]: Sprite };
+  private _assets: Assets;
+
+  constructor(assets?: Assets) {
+    this._sprites = {};
+    this._assets = assets != null ? assets : new Assets({});
+  }
+
+  loadSprite(id: string): Sprite {
+    if (this._sprites[id] == null) {
+      const value = this._assets.load(id);
+
+      if (!(value instanceof Sprite)) {
+        throw "not a sprite: " + id;
+      }
+
+      this._sprites[id] = value;
+    }
+
+    return this._sprites[id];
+  }
+}
 
 export class RenderBackend2D implements RenderBackend {
   private _depths: number[];
   private _layers: { [ key: number ]: RenderBackendItem[] };
   private _ctx: CanvasRenderingContext2D;
+  private _assetCache: AssetCache;
 
-  constructor(ctx: CanvasRenderingContext2D) {
+  constructor(ctx: CanvasRenderingContext2D, assets?: Assets) {
     this._depths = [ 0 ];
     this._layers = { 0: [] };
     this._ctx = ctx;
+    this._assetCache = new AssetCache(assets);
   }
 
   add(data: RenderBackendItem): void {
@@ -31,7 +59,7 @@ export class RenderBackend2D implements RenderBackend {
       const layer = this._layers[this._depths[i]];
       
       for (let j = 0; j < layer.length; ++j) {
-        _render(this._ctx, layer[j].render, layer[j]);
+        _render(this._ctx, layer[j].render, layer[j], this._assetCache);
       }
 
       layer.length = 0;
@@ -41,7 +69,8 @@ export class RenderBackend2D implements RenderBackend {
 
 function _render(ctx: CanvasRenderingContext2D,
                  data: RenderData,
-                 root: RenderBackendItem): void {
+                 root: RenderBackendItem,
+                 assets: AssetCache): void {
   ctx.save();
   ctx.transform(data.transform[0],
                 data.transform[3],
@@ -50,6 +79,11 @@ function _render(ctx: CanvasRenderingContext2D,
                 data.transform[2],
                 data.transform[5]);
 
+  if (data.sprite != null) {
+    const sprite = assets.loadSprite(data.sprite);
+    sprite.drawFrame(ctx, data.spriteFrame != null ? data.spriteFrame : 0,
+                     root.x, root.y);
+  } else if (data.image != null) {
     ctx.drawImage(data.image, 0, 0, data.image.width, data.image.height,
                               root.x, root.y, data.image.width, data.image.height);
   } else if (data.shape != null) {

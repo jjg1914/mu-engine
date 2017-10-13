@@ -5,6 +5,8 @@ export interface RenderData {
   stroke?: string | null;
   fill?: string | null;
   image?: HTMLImageElement | HTMLCanvasElement | null;
+  sprite?: string | null;
+  spriteFrame?: number | null;
   depth: number;
   transform: Transform;
   shape?: Shape | null;
@@ -16,6 +18,8 @@ export class RenderComponent implements RenderData {
   stroke?: string | null;
   fill?: string | null;
   image?: HTMLImageElement | null;
+  sprite?: string | null;
+  spriteFrame?: number | null;
   depth: number;
   transform: Transform;
   shape?: Shape | null;

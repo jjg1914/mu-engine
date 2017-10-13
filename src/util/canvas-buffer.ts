@@ -1,3 +1,4 @@
+import { Assets } from "./assets";
 import { RenderEventData, RenderEvent } from "../events/render-event";
 import { RenderBackend } from "./render-backend";
 import { RenderBackend2D } from "./render-backends/render-backend-2d";
@@ -9,6 +10,7 @@ export interface CanvasBufferConfig {
   scale?: number;
   smoothing?: boolean;
   background?: string;
+  assets?: Assets;
 }
 
 export class CanvasBuffer {
@@ -45,7 +47,7 @@ export class CanvasBuffer {
     if (backendCtx2D == null) {
       throw new Error("Failed to create 2d context");
     } else {
-      this._backend = new RenderBackend2D(backendCtx2D);
+      this._backend = new RenderBackend2D(backendCtx2D, config.assets);
     }
   }
 
