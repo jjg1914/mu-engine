@@ -1,4 +1,5 @@
 import { Path } from "./path";
+import { Sprite } from "./sprite";
 import { Stage } from "./stage";
 import { Tileset } from "./tileset";
 
@@ -19,6 +20,8 @@ export class Assets {
     switch (data.type) {
       case "path":
         return Path.unserialize(data.data);
+      case "sprite":
+        return Sprite.unserialize(data.data);
       case "stage":
         return Stage.unserialize(data.data);
       case "tileset":

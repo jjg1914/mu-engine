@@ -4,6 +4,7 @@ export * from "./util/collision";
 export * from "./util/matrix";
 export * from "./util/path";
 export * from "./util/shape";
+export * from "./util/sprite";
 export * from "./util/stage";
 export * from "./util/tileset";
 
