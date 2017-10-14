@@ -25,12 +25,14 @@ export function AccelSystem(entity: AccelEntity): void {
     entity.movement.xSpeed = _accel(dt, entity.movement.xSpeed,
                                     entity.movement.xAccel,
                                     entity.movement.xMax,
-                                    friction);
+                                    friction,
+                                    entity.movement.nofriction);
 
     entity.movement.ySpeed = _accel(dt, entity.movement.ySpeed,
                                     entity.movement.yAccel + g,
                                     entity.movement.yMax,
-                                    friction);
+                                    friction,
+                                    entity.movement.nofriction);
 
     if (entity.movement.xAccel) {
       let [ a, s ] = [ entity.movement.xAccel, entity.movement.xSpeed ];
@@ -51,7 +53,8 @@ function _accel(dt: number,
                 speed: number,
                 accel: number,
                 max: number | null,
-                friction: number | null): number {
+                friction: number | null,
+                nofriction: boolean): number {
   if (accel !== 0) {
     speed += accel * dt;
 
@@ -59,7 +62,7 @@ function _accel(dt: number,
       speed = Math.max(Math.min(speed, max), -max);
     }
   } else if (speed !== 0) {
-    if (friction != null) {
+    if (!nofriction && friction != null) {
       if (Math.abs(speed) < friction * dt) {
         speed = 0;
       } else {
