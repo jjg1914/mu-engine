@@ -41,6 +41,16 @@ export class Stage {
       new Stage(width, height, data.map.tileset[0].$.source) :
       new Stage(width, height);
 
+    if (data.map.properties != null) {
+      for (let e of data.map.properties) {
+        if (e.property != null) {
+          for (let f of e.property) {
+            stage.prop(f.$.name, _valueForProperty(f.$.type, f.$.value).value);
+          }
+        }
+      }
+    }
+
     if (data.map.layer != null) {
       for (let e of data.map.layer) {
         const width = Number(e.$.width);
@@ -154,6 +164,7 @@ export class Stage {
   private _entities: BuildableEntity[];
   private _tiles: BuildableTileLayer[];
   private _tileset?: string | null;
+  private _props: { [key: string]: any };
 
   constructor(width: number, height: number, tileset?: string | null) {
     this._entities = [];
@@ -161,6 +172,18 @@ export class Stage {
     this._width = width;
     this._height = height;
     this._tileset = tileset;
+    this._props = {};
+  }
+
+  prop(name: string): any;
+  prop(name: string, value: any): void;
+
+  prop(name: string, value?: any): any | void {
+    if (value != null)  {
+      this._props[name] = value;
+    } else {
+      return this._props[name];
+    }
   }
 
   bounds(): Bounds {
@@ -265,38 +288,38 @@ function _set(dest: BuildableEntity, path: string, value: string, type: string) 
       dest.components[component] = {};
     }
 
-    switch (type) {
-      case "color":
-        dest.components[component][key] = {
+    dest.components[component][key] = _valueForProperty(type, value);
+  }
+}
+
+function _valueForProperty(type: string, value: string): BuildableProperty {
+  switch (type) {
+    case "color":
+      return {
+        type: "value",
+        value: "#" + value.substr(3, 6),
+      };
+    case "bool":
+      return {
+        type: "value",
+        value: (value === "true"),
+      };
+    case "file":
+      return {
+        type: "asset",
+        value: value,
+      };
+    default:
+      try {
+        return {
           type: "value",
-          value: "#" + value.substr(3, 6),
+          value: JSON.parse(value),
         };
-        break;
-      case "bool":
-        dest.components[component][key] = {
+      } catch (e) {
+        return {
           type: "value",
-          value: (value === "true"),
-        };
-        break;
-      case "file":
-        dest.components[component][key] = {
-          type: "asset",
           value: value,
         };
-        break;
-      default:
-        try {
-          dest.components[component][key] = {
-            type: "value",
-            value: JSON.parse(value),
-          };
-        } catch (e) {
-          dest.components[component][key] = {
-            type: "value",
-            value: value,
-          };
-        }
-        break;
-    }
+      }
   }
 }
