@@ -1,5 +1,6 @@
 import { RenderData } from "../components/render-component";
 import { Bounds } from "./shape";
+import { Assets } from "./assets";
 
 export interface RenderBackendItem {
   x: number;
@@ -12,4 +13,5 @@ export interface RenderBackendItem {
 export interface RenderBackend {
   add(data: RenderBackendItem): void;
   render(viewport: Bounds): void;
+  assets(): Assets;
 }

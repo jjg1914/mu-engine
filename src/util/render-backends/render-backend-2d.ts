@@ -2,43 +2,18 @@ import { RenderData } from "../../components/render-component";
 import { RenderBackend, RenderBackendItem } from "../render-backend";
 import { Bounds } from "../shape";
 import { Assets } from "../assets";
-import { Sprite } from "../sprite";
-
-class AssetCache {
-  private _sprites: { [ key: string ]: Sprite };
-  private _assets: Assets;
-
-  constructor(assets?: Assets) {
-    this._sprites = {};
-    this._assets = assets != null ? assets : new Assets({});
-  }
-
-  loadSprite(id: string): Sprite {
-    if (this._sprites[id] == null) {
-      const value = this._assets.load(id);
-
-      if (!(value instanceof Sprite)) {
-        throw "not a sprite: " + id;
-      }
-
-      this._sprites[id] = value;
-    }
-
-    return this._sprites[id];
-  }
-}
 
 export class RenderBackend2D implements RenderBackend {
   private _depths: number[];
   private _layers: { [ key: number ]: RenderBackendItem[] };
   private _ctx: CanvasRenderingContext2D;
-  private _assetCache: AssetCache;
+  private _assets: Assets;
 
   constructor(ctx: CanvasRenderingContext2D, assets?: Assets) {
     this._depths = [ 0 ];
     this._layers = { 0: [] };
     this._ctx = ctx;
-    this._assetCache = new AssetCache(assets);
+    this._assets = assets != null ? assets : new Assets({ assets: {} });
   }
 
   add(data: RenderBackendItem): void {
@@ -59,18 +34,22 @@ export class RenderBackend2D implements RenderBackend {
       const layer = this._layers[this._depths[i]];
       
       for (let j = 0; j < layer.length; ++j) {
-        _render(this._ctx, layer[j].render, layer[j], this._assetCache);
+        _render(this._ctx, layer[j].render, layer[j], this._assets);
       }
 
       layer.length = 0;
     }
+  }
+
+  assets(): Assets {
+    return this._assets;
   }
 }
 
 function _render(ctx: CanvasRenderingContext2D,
                  data: RenderData,
                  root: RenderBackendItem,
-                 assets: AssetCache): void {
+                 assets: Assets): void {
   ctx.save();
   ctx.transform(data.transform[0],
                 data.transform[3],
