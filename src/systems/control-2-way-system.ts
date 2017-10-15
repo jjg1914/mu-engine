@@ -1,5 +1,6 @@
 import { Entity } from "../entities/entity";
 import { InputEventData } from "../events/input-event";
+import { ControlEvent } from "../events/control-event";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 
@@ -21,9 +22,25 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
     switch (event.which) {
     case "ArrowLeft":
     case "A":
+      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+
+      if (entity.movement.xAccel < 0) {
+        entity.send("start-left", new ControlEvent("start-left"));
+      } else {
+        entity.send("stop-left", new ControlEvent("stop-left"));
+      }
+
+      break;
     case "ArrowRight":
     case "D":
       entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+
+      if (entity.movement.xAccel > 0) {
+        entity.send("start-right", new ControlEvent("start-right"));
+      } else {
+        entity.send("stop-right", new ControlEvent("stop-right"));
+      }
+
       break;
     case " ":
       if (entity.position.landing != null) {
@@ -45,9 +62,25 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
     switch (event.which) {
     case "ArrowLeft":
     case "A":
+      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+
+      if (entity.movement.xAccel > 0) {
+        entity.send("start-right", new ControlEvent("start-right"));
+      } else {
+        entity.send("stop-left", new ControlEvent("stop-left"));
+      }
+
+      break;
     case "ArrowRight":
     case "D":
       entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+
+      if (entity.movement.xAccel < 0) {
+        entity.send("start-left", new ControlEvent("start-left"));
+      } else {
+        entity.send("stop-right", new ControlEvent("stop-right"));
+      }
+
       break;
     case " ":
       if (entity.position.landing == null && entity.movement.ySpeed < 0) {

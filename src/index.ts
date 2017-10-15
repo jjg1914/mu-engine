@@ -15,6 +15,7 @@ export * from "./entities/stack-entity";
 export * from "./entities/stage-entity";
 
 export * from "./events/collision-event";
+export * from "./events/control-event";
 export * from "./events/entity-event";
 export * from "./events/input-event";
 export * from "./events/interval-event";
