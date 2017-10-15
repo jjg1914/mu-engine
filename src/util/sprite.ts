@@ -6,6 +6,12 @@ export interface FrameData {
   duration: number;
 }
 
+export interface TagData {
+  name: string;
+  from: number;
+  to: number;
+}
+
 export class Sprite {
   static fromJSON(data: any): Sprite {
     const imageName = data.meta.image.split("/").reverse()[0];
@@ -13,7 +19,7 @@ export class Sprite {
     const image = new Image();
     image.src = "/assets/" + imageName;
 
-    return new Sprite(image, _framesFor(data.frames));
+    return new Sprite(image, _framesFor(data.frames), data.meta.frameTags);
   }
 
   static unserialize(data: any): Sprite {
@@ -22,10 +28,18 @@ export class Sprite {
 
   private _image: HTMLImageElement;
   private _frames: FrameData[];
+  private _tags: { [key: string]: TagData | null | undefined };
 
-  constructor(image: HTMLImageElement, frames: FrameData[]) {
+  constructor(image: HTMLImageElement, frames: FrameData[], tags: TagData[]) {
     this._image = image;
     this._frames = frames;
+    this._tags = {};
+
+    for (let e of tags) {
+      this._tags[e.name] = e;
+    }
+
+    console.log(this);
   }
 
   drawFrame(ctx: CanvasRenderingContext2D, n: number, x: number, y: number) {
@@ -34,6 +48,33 @@ export class Sprite {
 
       ctx.drawImage(this._image, frame.x, frame.y, frame.width, frame.height,
                     x, y, frame.width, frame.height);
+    }
+  }
+
+  duration(n: number): number {
+    if (n >= 0 && n < this._frames.length && this._frames[n] != null) {
+      const frame = this._frames[n];
+      return frame.duration;
+    } else {
+      return NaN;
+    }
+  }
+
+  nextIndex(tagName: string, current?: number | null): number {
+    const tag = this._tags[tagName];
+
+    if (tag != null) {
+      if (current != null) {
+        if (current >= tag.from && current < tag.to) {
+          return current + 1;
+        } else {
+          return tag.from;
+        }
+      } else {
+        return tag.from;
+      }
+    } else {
+      return NaN;
     }
   }
 }

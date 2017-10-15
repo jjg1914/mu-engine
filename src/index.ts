@@ -30,6 +30,7 @@ export * from "./modules/move-module";
 export * from "./modules/render-module";
 
 export * from "./systems/accel-system";
+export * from "./systems/animation-system";
 export * from "./systems/camera-system";
 export * from "./systems/collision-system";
 export * from "./systems/control-2-way-system";
@@ -37,6 +38,7 @@ export * from "./systems/move-system";
 export * from "./systems/path-system";
 export * from "./systems/render-system";
 
+export * from "./components/animation-component";
 export * from "./components/movement-component";
 export * from "./components/path-component";
 export * from "./components/position-component";
