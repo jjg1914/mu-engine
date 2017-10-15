@@ -24,20 +24,19 @@ export * from "./events/move-event";
 export * from "./events/render-event";
 export * from "./events/resolution-event";
 
-export * from "./modules/input-module";
-export * from "./modules/interval-module";
-export * from "./modules/collision-module";
-export * from "./modules/move-module";
-export * from "./modules/render-module";
-
 export * from "./systems/accel-system";
 export * from "./systems/animation-system";
 export * from "./systems/camera-system";
 export * from "./systems/collision-system";
+export * from "./systems/collision-mediator-system";
 export * from "./systems/control-2-way-system";
+export * from "./systems/input-system";
+export * from "./systems/interval-system";
 export * from "./systems/move-system";
+export * from "./systems/move-mediator-system";
 export * from "./systems/path-system";
 export * from "./systems/render-system";
+export * from "./systems/render-mediator-system";
 
 export * from "./components/animation-component";
 export * from "./components/movement-component";

@@ -10,13 +10,11 @@ const Now = (() => {
 })();
 
 export interface IntervalConfig {
-  interval: {
-    fps: number;
-  };
+  fps: number;
 }
 
-export function IntervalModule(entity: Entity, config: IntervalConfig): void {
-  const dt = 1000 / config.interval.fps;
+export function IntervalSystem(entity: Entity, config: IntervalConfig): void {
+  const dt = 1000 / config.fps;
   const start = Now();
   let last = start;
 

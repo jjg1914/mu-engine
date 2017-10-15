@@ -2,17 +2,15 @@ import { Entity } from "../entities/entity";
 import { InputEvent, InputStateIndex } from "../events/input-event";
 
 export interface InputConfig {
-  input: {
-    canvas: HTMLElement;
-  }
+  canvas: HTMLElement;
 }
 
-export function InputModule(entity: Entity, config: InputConfig): void {
+export function InputSystem(entity: Entity, config: InputConfig): void {
   const _inputs: InputStateIndex = {};
 
-  config.input.canvas.setAttribute("tabindex", "1");
+  config.canvas.setAttribute("tabindex", "1");
 
-  config.input.canvas.addEventListener("keydown", (ev) => {
+  config.canvas.addEventListener("keydown", (ev) => {
     if (!ev.repeat) {
       const key = _normalizeKey(ev);
       _inputs[key] = true;
@@ -20,7 +18,7 @@ export function InputModule(entity: Entity, config: InputConfig): void {
     }
   });
 
-  config.input.canvas.addEventListener("keyup", (ev) => {
+  config.canvas.addEventListener("keyup", (ev) => {
     const key = _normalizeKey(ev);
     _inputs[key] = false;
     entity.send("keyup", new InputEvent("keyup", key, _inputs));

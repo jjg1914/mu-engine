@@ -14,8 +14,8 @@ import {
 
 import { CollectionEntity } from "./collection-entity";
 
-import { MoveModule } from "../modules/move-module";
-import { CollisionModule } from "../modules/collision-module";
+import { MoveMediatorSystem } from "../systems/move-mediator-system";
+import { CollisionMediatorSystem } from "../systems/collision-mediator-system";
 import { RenderSystem } from "../systems/render-system";
 
 export interface StageConfig {
@@ -48,8 +48,8 @@ export class StageEntity extends CollectionEntity {
       this.put(e);
     }
 
-    MoveModule(this, { move: { gravity: 480, bounds: this.stage.bounds() } });
-    CollisionModule(this, { collision: { bounds: this.stage.bounds() } });
+    MoveMediatorSystem(this, { gravity: 480, bounds: this.stage.bounds() });
+    CollisionMediatorSystem(this, { bounds: this.stage.bounds() });
     RenderSystem(this);
 
     const layers = this.stage.buildLayers(config);

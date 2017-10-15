@@ -1,12 +1,12 @@
 import { Entity } from "../entities/entity";
 import { CanvasBuffer, CanvasBufferConfig } from "../util/canvas-buffer";
 
-export interface RenderConfig {
-  render: CanvasBufferConfig;
-}
+export type RenderConfig = CanvasBufferConfig;
 
-export function RenderModule(entity: Entity, config: RenderConfig): void {
-  const buffer = new CanvasBuffer(config.render);
+export function RenderMediatorSystem(entity: Entity,
+                                     config: RenderConfig)
+: void {
+  const buffer = new CanvasBuffer(config);
 
   let timeout: number | undefined;
 

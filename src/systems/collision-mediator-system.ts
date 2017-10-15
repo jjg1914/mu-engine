@@ -5,9 +5,7 @@ import { CollisionEvent } from "../events/collision-event";
 import { ResolutionEvent } from "../events/resolution-event";
 
 export interface CollisionConfig {
-  collision: {
-    bounds: Bounds;
-  }
+  bounds: Bounds;
 }
 
 interface TranslationData {
@@ -15,9 +13,11 @@ interface TranslationData {
   mtv: Vector;
 }
 
-export function CollisionModule(entity: Entity, config: CollisionConfig): void {
+export function CollisionMediatorSystem(entity: Entity,
+                                        config: CollisionConfig)
+: void {
   entity.on("interval", () => {
-    const collision = new Collision(config.collision.bounds);
+    const collision = new Collision(config.bounds);
 
     entity.send("precollision", new CollisionEvent("precollision",
                                                    collision));
