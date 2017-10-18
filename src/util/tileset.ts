@@ -63,8 +63,8 @@ export class Tileset {
     if (n !== 0 && n <= this._columns * this._rows) {
       n -= 1;
 
-      const i = n % this._rows;
-      const j = Math.floor(n / this._rows);
+      const i = n % this._columns;
+      const j = Math.floor(n / this._columns);
 
       ctx.drawImage(this._image, i * this._tileWidth, j * this._tileWidth,
                     this._tileWidth, this._tileHeight,
