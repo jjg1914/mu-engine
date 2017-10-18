@@ -86,69 +86,71 @@ export class Stage {
       }
     }
 
-    for (let e of data.map.objectgroup) {
-      for (let f of e.object) {
-        const entity = {
-          type: (f.$.type != null ? f.$.type : "default"),
-          components: {},
-        } as BuildableEntity;
+    if (data.map.objectgroup != null) {
+      for (let e of data.map.objectgroup) {
+        for (let f of e.object) {
+          const entity = {
+            type: (f.$.type != null ? f.$.type : "default"),
+            components: {},
+          } as BuildableEntity;
 
-        entity.components.position = {
-          x: { value: Number(f.$.x), type: "value" },
-          y: { value: Number(f.$.y), type: "value" },
-          width: { value: Number(f.$.width), type: "value" },
-          height: { value: Number(f.$.height), type: "value" },
-        };
+          entity.components.position = {
+            x: { value: Number(f.$.x), type: "value" },
+            y: { value: Number(f.$.y), type: "value" },
+            width: { value: Number(f.$.width), type: "value" },
+            height: { value: Number(f.$.height), type: "value" },
+          };
 
-        if (f.ellipse) {
-          const r = Number(f.$.width) / 2;
-          entity.components.position.mask =
-            { value: new Circle(r, 0, 0), type: "value" };
-        } else if (f.polygon) {
-          const points = f.polygon[0].$.points.split(" ").map((e: string) => {
-            return e.split(",", 2).map((e) => Number(e));
-          }) as ([ number, number ])[];
+          if (f.ellipse) {
+            const r = Number(f.$.width) / 2;
+            entity.components.position.mask =
+              { value: new Circle(r, 0, 0), type: "value" };
+          } else if (f.polygon) {
+            const points = f.polygon[0].$.points.split(" ").map((e: string) => {
+              return e.split(",", 2).map((e) => Number(e));
+            }) as ([ number, number ])[];
 
-          let left = Infinity;
-          let top = Infinity;
-          let right = -Infinity;
-          let bottom = -Infinity;
+            let left = Infinity;
+            let top = Infinity;
+            let right = -Infinity;
+            let bottom = -Infinity;
 
-          for (let e of points) {
-            left = Math.min(e[0], left);
-            top = Math.min(e[1], top);
-            right = Math.max(e[0], right);
-            bottom = Math.max(e[1], bottom);
+            for (let e of points) {
+              left = Math.min(e[0], left);
+              top = Math.min(e[1], top);
+              right = Math.max(e[0], right);
+              bottom = Math.max(e[1], bottom);
+            }
+
+            entity.components.position.mask = {
+              type: "value",
+              value: new Polygon(points.map((e) => {
+                return [ e[0] - left, e[1] - top ] as [ number, number ];
+              })),
+            }
+            entity.components.position.x.value += left;
+            entity.components.position.y.value += top;
+            entity.components.position.width.value = right - left + 1;
+            entity.components.position.height.value = bottom - top + 1;
           }
 
-          entity.components.position.mask = {
-            type: "value",
-            value: new Polygon(points.map((e) => {
-              return [ e[0] - left, e[1] - top ] as [ number, number ];
-            })),
+
+          if (f.$.visible == null || Number(f.$.visible) !== 0) {
+            entity.components.render = {};
           }
-          entity.components.position.x.value += left;
-          entity.components.position.y.value += top;
-          entity.components.position.width.value = right - left + 1;
-          entity.components.position.height.value = bottom - top + 1;
-        }
 
-
-        if (f.$.visible == null || Number(f.$.visible) !== 0) {
-          entity.components.render = {};
-        }
-
-        if (f.properties != null) {
-          for (let g of f.properties) {
-            if (g.property != null) {
-              for (let h of g.property) {
-                _set(entity, h.$.name, h.$.value, h.$.type);
+          if (f.properties != null) {
+            for (let g of f.properties) {
+              if (g.property != null) {
+                for (let h of g.property) {
+                  _set(entity, h.$.name, h.$.value, h.$.type);
+                }
               }
             }
           }
-        }
 
-        stage._addEntity(entity);
+          stage._addEntity(entity);
+        }
       }
     }
 
