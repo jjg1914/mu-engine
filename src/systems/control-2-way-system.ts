@@ -1,6 +1,7 @@
 import { Entity } from "../entities/entity";
 import { InputEventData } from "../events/input-event";
 import { ControlEvent } from "../events/control-event";
+import { AccelData } from "../components/accel-component";
 import { MovementData } from "../components/movement-component";
 import { CollisionData } from "../components/collision-component";
 
@@ -10,6 +11,7 @@ export interface Control2WayEntity extends Entity {
     jumpSpeed: number;
     jumpCutoff: number;
   };
+  accel: AccelData;
   movement: MovementData;
   collision: CollisionData;
 }
@@ -22,9 +24,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
     switch (event.which) {
     case "ArrowLeft":
     case "A":
-      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+      entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
-      if (entity.movement.xAccel < 0) {
+      if (entity.accel.xAccel < 0) {
         entity.send("start-left", new ControlEvent("start-left"));
       } else {
         entity.send("stop-left", new ControlEvent("stop-left"));
@@ -33,9 +35,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
       break;
     case "ArrowRight":
     case "D":
-      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+      entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
-      if (entity.movement.xAccel > 0) {
+      if (entity.accel.xAccel > 0) {
         entity.send("start-right", new ControlEvent("start-right"));
       } else {
         entity.send("stop-right", new ControlEvent("stop-right"));
@@ -46,9 +48,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
       if (entity.collision.landing != null) {
         entity.movement.ySpeed = -entity.control.jumpSpeed;
         entity.collision.landing = undefined;
-        entity.movement.nogravity = true;
+        entity.accel.nogravity = true;
         setTimeout(() => {
-          entity.movement.nogravity = false;
+          entity.accel.nogravity = false;
         }, entity.control.jumpCutoff);
       }
       break;
@@ -62,9 +64,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
     switch (event.which) {
     case "ArrowLeft":
     case "A":
-      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+      entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
-      if (entity.movement.xAccel > 0) {
+      if (entity.accel.xAccel > 0) {
         entity.send("start-right", new ControlEvent("start-right"));
       } else {
         entity.send("stop-left", new ControlEvent("stop-left"));
@@ -73,9 +75,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
       break;
     case "ArrowRight":
     case "D":
-      entity.movement.xAccel = _accel(entity.control.xAccel, _left, _right);
+      entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
-      if (entity.movement.xAccel < 0) {
+      if (entity.accel.xAccel < 0) {
         entity.send("start-left", new ControlEvent("start-left"));
       } else {
         entity.send("stop-right", new ControlEvent("stop-right"));
@@ -85,7 +87,7 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
     case " ":
       if (entity.collision.landing == null && entity.movement.ySpeed < 0) {
         entity.movement.ySpeed = 0;
-        entity.movement.nogravity = false;
+        entity.accel.nogravity = false;
       }
       break;
     }

@@ -2,6 +2,7 @@ import { Entity } from "../entities/entity";
 import { PositionData } from "../components/position-component";
 import { CollisionData } from "../components/collision-component";
 import { MovementData } from "../components/movement-component";
+import { AccelData } from "../components/accel-component";
 import { shapeFor } from "../modules/shape";
 
 import {
@@ -19,6 +20,7 @@ export interface CollisionEntity extends Entity {
   position: PositionData;
   collision: CollisionData;
   movement?: MovementData;
+  accel?: AccelData;
 };
 
 interface Node extends Bounds {
