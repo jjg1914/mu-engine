@@ -1,40 +1,25 @@
-import { PositionEntity } from "../util/shape";
+import { Entity } from "../entities/entity";
+import { PositionData } from "../components/position-component";
+import { CollisionData } from "../components/collision-component";
+import { MovementData } from "../components/movement-component";
+import { shapeFor } from "../modules/shape";
 
 import {
   Polygon,
   Circle,
   Shape,
   Bounds,
-  shapeFor,
 } from "./shape";
 
 const DEPTH_LIMIT = 8;
 
 export type Vector = [ number, number ];
 
-export interface CollisionEntity extends PositionEntity {
-  position: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    rotate?: number;
-    mask?: Shape | null;
-    solid?: boolean | number[];
-    ignoreSolid?: boolean;
-    landing: CollisionEntity | null;
-  };
-  movement?: {
-    xChange: number;
-    yChange: number;
-    xSpeed: number;
-    ySpeed: number;
-    xSubpixel: number;
-    ySubpixel: number;
-    friction: number | null;
-    nogravity: boolean;
-  };
-}
+export interface CollisionEntity extends Entity {
+  position: PositionData;
+  collision: CollisionData;
+  movement?: MovementData;
+};
 
 interface Node extends Bounds {
   entities: ([ CollisionEntity, Bounds ])[];
@@ -61,11 +46,11 @@ export class Collision {
     this._entities = new Map<number, CollisionEntity>();
   }
 
-  static checkBounds(target: CollisionEntity, bounds: Bounds) {
+  static checkBounds(target: { position: PositionData }, bounds: Bounds) {
     return _checkBounds(shapeFor(target).bounds(), bounds);
   }
 
-  static check(target: CollisionEntity, other: CollisionEntity) {
+  static check(target: { position: PositionData }, other: { position: PositionData }) {
     let mask1 = shapeFor(target);
     let mask2 = shapeFor(other);
 
@@ -131,7 +116,8 @@ export class Collision {
 function _add(entity: CollisionEntity,
               node: Node,
               bounds: Bounds,
-              depth: number): boolean {
+              depth: number)
+: boolean {
   if (depth < DEPTH_LIMIT &&
       node.children == null &&
       node.entities.length > 4) {
@@ -281,7 +267,7 @@ function _checkMasks(a: Shape | null, b: Shape | null,
   return vectors;
 }
 
-function _hasNPhase(entity: CollisionEntity): boolean {
+function _hasNPhase(entity: { position: PositionData }): boolean {
   return (entity.position.mask instanceof Polygon)
          || (entity.position.mask instanceof Circle);
 }

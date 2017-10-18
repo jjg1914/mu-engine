@@ -1,23 +1,23 @@
 import { MoveEventData } from "../events/move-event";
 import { Entity } from "../entities/entity";
-import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
+import { CollisionData } from "../components/collision-component";
 
 export interface AccelEntity extends Entity {
-  position: PositionData;
   movement: MovementData;
+  collision: CollisionData;
 }
 
 export function AccelSystem(entity: AccelEntity): void {
   entity.on("premove", (event: MoveEventData) => {
     let friction = entity.movement.drag;
-    let g = !entity.movement.nogravity && entity.position.landing == null ?
+    let g = !entity.movement.nogravity && entity.collision.landing == null ?
             event.gravity : 0;
 
-    if (entity.position.landing != null &&
-        entity.position.landing.movement != null &&
-        entity.position.landing.movement.friction != null) {
-      friction = entity.position.landing.movement.friction;
+    if (entity.collision.landing != null &&
+        entity.collision.landing.movement != null &&
+        entity.collision.landing.movement.friction != null) {
+      friction = entity.collision.landing.movement.friction;
     }
 
     const dt = event.dt / 1000;
@@ -41,10 +41,10 @@ export function AccelSystem(entity: AccelEntity): void {
     }
 
     if (entity.movement.xSpeed === 0 &&
-        entity.position.landing != null &&
-        entity.position.landing.movement != null) {
-      entity.movement.xSubpixel = entity.position.landing.movement.xSubpixel;
-      entity.movement.ySubpixel = entity.position.landing.movement.ySubpixel;
+        entity.collision.landing != null &&
+        entity.collision.landing.movement != null) {
+      entity.movement.xSubpixel = entity.collision.landing.movement.xSubpixel;
+      entity.movement.ySubpixel = entity.collision.landing.movement.ySubpixel;
     }
   });
 }

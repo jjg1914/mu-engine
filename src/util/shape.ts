@@ -1,5 +1,3 @@
-import { Entity } from "../entities/entity";
-
 export type Vertex = [ number, number ];
 export type Normal = [ number, number ];
 export type Interval = [ number, number ];
@@ -26,52 +24,6 @@ export interface Shape {
   bounds(): Bounds;
   minimum(left: number, right: number): number;
   path(): Path2D;
-}
-
-export interface PositionEntity extends Entity {
-  position: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    rotate?: number;
-    mask?: Shape | null;
-  };
-}
-
-export function shapeFor(entity: PositionEntity): Shape {
-  let mask = entity.position.mask;
-
-  if (mask == null) {
-    const width = entity.position.width;
-    const height = entity.position.height;
-
-    mask = new Polygon([
-      [ 0, 0 ],
-      [ width - 1, 0 ],
-      [ width - 1, height - 1 ],
-      [ 0, height - 1 ],
-    ]);
-  } else {
-    mask = mask.clone();
-  }
-
-  const rotate = entity.position.rotate;
-
-  if (rotate != null) {
-    mask = mask.rotate(rotate);
-  }
-
-  const x = entity.position.x;
-  const y = entity.position.y;
-
-  mask = mask.translate(x, y);
-
-  if (mask instanceof Circle) {
-    mask = mask.translate(mask.radius(), mask.radius());
-  }
-
-  return mask;
 }
 
 export class Polygon implements Shape {

@@ -30,11 +30,11 @@ export function CollisionMediatorSystem(entity: Entity,
 
       for (let c of collision.query(e)) {
         // only resolve collision for solids
-        if (!e.position.ignoreSolid && c.entity.position.solid) {
+        if (!e.collision.ignoreSolid && c.entity.collision.solid) {
           // support solids that allow passing through in a certain direction.
           // need to determine which direction the entity is contacted in.
-          let [ xMask, yMask ] = (c.entity.position.solid instanceof Array) ?
-            c.entity.position.solid : [ 0, 0 ];
+          let [ xMask, yMask ] = (c.entity.collision.solid instanceof Array) ?
+            c.entity.collision.solid : [ 0, 0 ];
           let [ xOtherChange, yOtherChange ] = (c.entity.movement != null) ?
             [ c.entity.movement.xChange, c.entity.movement.yChange ] :
             [ 0, 0 ];

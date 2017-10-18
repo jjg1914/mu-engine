@@ -1,8 +1,8 @@
 import { Entity } from "../entities/entity";
 import { InputEventData } from "../events/input-event";
 import { ControlEvent } from "../events/control-event";
-import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
+import { CollisionData } from "../components/collision-component";
 
 export interface Control2WayEntity extends Entity {
   control: {
@@ -10,8 +10,8 @@ export interface Control2WayEntity extends Entity {
     jumpSpeed: number;
     jumpCutoff: number;
   };
-  position: PositionData;
   movement: MovementData;
+  collision: CollisionData;
 }
 
 export function Control2WaySystem(entity: Control2WayEntity): void {
@@ -43,9 +43,9 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
 
       break;
     case " ":
-      if (entity.position.landing != null) {
+      if (entity.collision.landing != null) {
         entity.movement.ySpeed = -entity.control.jumpSpeed;
-        entity.position.landing = null;
+        entity.collision.landing = undefined;
         entity.movement.nogravity = true;
         setTimeout(() => {
           entity.movement.nogravity = false;
@@ -83,7 +83,7 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
 
       break;
     case " ":
-      if (entity.position.landing == null && entity.movement.ySpeed < 0) {
+      if (entity.collision.landing == null && entity.movement.ySpeed < 0) {
         entity.movement.ySpeed = 0;
         entity.movement.nogravity = false;
       }
