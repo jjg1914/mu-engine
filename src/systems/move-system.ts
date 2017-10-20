@@ -120,7 +120,7 @@ export function MoveSystem(entity: MoveEntity): void {
       let m = null;
 
       for (let e of s) {
-        if (e.position.solid) {
+        if (e.collision.solid) {
           const shape = shapeFor(e);
           const bounds = shapeFor(entity).bounds();
           const min = shape.minimum(bounds.left, bounds.right);

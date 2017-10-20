@@ -38,8 +38,6 @@ export class Sprite {
     for (let e of tags) {
       this._tags[e.name] = e;
     }
-
-    console.log(this);
   }
 
   drawFrame(ctx: CanvasRenderingContext2D, n: number, x: number, y: number) {

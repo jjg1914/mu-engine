@@ -38,8 +38,12 @@ export * from "./systems/path-system";
 export * from "./systems/render-system";
 export * from "./systems/render-mediator-system";
 
+export * from "./components/accel-component";
 export * from "./components/animation-component";
+export * from "./components/collision-component";
 export * from "./components/movement-component";
 export * from "./components/path-component";
 export * from "./components/position-component";
 export * from "./components/render-component";
+
+export * from "./modules/shape";
