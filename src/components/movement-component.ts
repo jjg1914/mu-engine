@@ -7,7 +7,7 @@ export interface MovementData {
   ySubpixel: number;
   xChange: number;
   yChange: number;
-  restrict?: boolean | [ number, number ];
+  restrict?: boolean | [ number | null, number | null ];
 }
 
 export class MovementComponent implements MovementData {
@@ -21,7 +21,7 @@ export class MovementComponent implements MovementData {
   yChange: number;
   restrict?: boolean | [ number, number ];
 
-  constructor(options: Partial<MovementData> = {}) {
+  constructor(...options: (Partial<MovementData> | undefined)[]) {
     Object.assign(this, {
       xSpeed: 0,
       ySpeed: 0,
@@ -29,6 +29,6 @@ export class MovementComponent implements MovementData {
       ySubpixel: 0,
       xChange: 0,
       yChange: 0,
-    }, options);
+    }, ...options);
   }
 }

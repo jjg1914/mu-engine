@@ -9,11 +9,11 @@ export class AnimationComponent implements AnimationData {
   duration: number;
   tag: string;
 
-  constructor(options: Partial<AnimationData> = {}) {
+  constructor(...options: (Partial<AnimationData> | undefined)[]) {
     Object.assign(this, {
       t: 0,
       duration: 0,
       tag: "",
-    }, options);
+    }, ...options);
   }
 }

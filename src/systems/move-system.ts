@@ -73,25 +73,28 @@ export function MoveSystem(entity: MoveEntity): void {
       const oldX = entity.position.x;
       const oldY = entity.position.y;
 
-      if (restrict[0] != null) {
-        if (restrict[0] >= 0) {
+      const restrictX = restrict[0];
+      const restrictY = restrict[1];
+
+      if (restrictX != null) {
+        if (restrictX >= 0) {
           entity.position.x = Math.min(event.bounds.right - w + 1,
                                        entity.position.x);
         }
 
-        if (restrict[0] <= 0) {
+        if (restrictX <= 0) {
           entity.position.x = Math.max(event.bounds.left,
                                        entity.position.x);
         }
       }
 
-      if (restrict[1] != null) {
-        if (restrict[1] >= 0) {
+      if (restrictY != null) {
+        if (restrictY >= 0) {
           entity.position.y = Math.min(event.bounds.bottom - h + 1,
                                        entity.position.y);
         }
 
-        if (restrict[1] <= 0) {
+        if (restrictY <= 0) {
           entity.position.y = Math.max(event.bounds.top,
                                        entity.position.y);
         }

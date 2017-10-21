@@ -11,6 +11,7 @@ export * from "./util/tileset";
 export * from "./entities/entity";
 export * from "./entities/base-entity";
 export * from "./entities/collection-entity";
+export * from "./entities/simple-entity";
 export * from "./entities/stack-entity";
 export * from "./entities/stage-entity";
 
