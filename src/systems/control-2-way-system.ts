@@ -1,12 +1,14 @@
 import { Entity } from "../entities/entity";
 import { InputEventData } from "../events/input-event";
 import { ControlEvent } from "../events/control-event";
+import { PositionData } from "../components/position-component";
 import { AccelData } from "../components/accel-component";
 import { MovementData } from "../components/movement-component";
 import { CollisionData } from "../components/collision-component";
 import { ControlData } from "../components/control-component";
 
 export interface Control2WayEntity extends Entity {
+  position: PositionData;
   control: ControlData;
   accel: AccelData;
   movement: MovementData;
@@ -38,6 +40,22 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
         entity.send("start-right", new ControlEvent("start-right"));
       } else {
         entity.send("stop-right", new ControlEvent("stop-right"));
+      }
+
+      break;
+    case "ArrowDown":
+    case "S":
+      if (entity.collision.landing != null) {
+        const solid = entity.collision.landing.collision.solid;
+
+        if (solid instanceof Array) {
+          const ySolid = solid[1];
+
+          if (ySolid != null && ySolid > 0) {
+            entity.collision.landing = undefined;
+            entity.position.y += 1;
+          }
+        }
       }
 
       break;
