@@ -49,3 +49,4 @@ export * from "./components/position-component";
 export * from "./components/render-component";
 
 export * from "./modules/shape";
+export * from "./modules/snap";
