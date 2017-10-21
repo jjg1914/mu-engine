@@ -26,7 +26,7 @@ export class RenderComponent implements RenderData {
   text?: string | null;
   children?: RenderData[];
 
-  constructor(...options: (Partial<RenderData> | undefined)[]) {
-    Object.assign(this, ...options);
+  constructor(options?: Partial<RenderData>) {
+    Object.assign(this, options);
   }
 }

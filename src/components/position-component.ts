@@ -17,7 +17,7 @@ export class PositionComponent implements PositionData {
   rotate: number;
   mask: Shape | null;
 
-  constructor(...options: (Partial<PositionData> | undefined)[]) {
+  constructor(options?: Partial<PositionData>) {
     Object.assign(this, {
       x: 0,
       y: 0,
@@ -25,6 +25,6 @@ export class PositionComponent implements PositionData {
       height: 0,
       rotate: 0,
       mask: null,
-    }, ...options);
+    }, options);
   }
 }

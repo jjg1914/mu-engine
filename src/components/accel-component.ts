@@ -15,12 +15,12 @@ export class AccelComponent implements AccelData {
   nogravity: boolean;
   nofriction: boolean;
 
-  constructor(...options: (Partial<AccelData> | undefined)[]) {
+  constructor(options?: Partial<AccelData>) {
     Object.assign(this, {
       xAccel: 0,
       yAccel: 0,
       nogravity: false,
       nofriction: false,
-    }, ...options);
+    }, options);
   }
 }

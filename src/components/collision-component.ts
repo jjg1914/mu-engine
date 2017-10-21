@@ -11,10 +11,10 @@ export class CollisionComponent implements CollisionData {
   ignoreSolid: boolean;
   landing?: CollisionEntity;
 
-  constructor(...options: (Partial<CollisionData> | undefined)[]) {
+  constructor(options?: Partial<CollisionData>) {
     Object.assign(this, {
       solid: false,
       ignoreSolid: false,
-    }, ...options);
+    }, options);
   }
 }

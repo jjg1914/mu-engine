@@ -15,13 +15,13 @@ export class PathComponent implements PathData {
   x: number;
   y: number;
 
-  constructor(...options: (Partial<PathData> | undefined)[]) {
+  constructor(options?: Partial<PathData>) {
     Object.assign(this, {
       path: null,
       repeat: false,
       t: null,
       x: 0,
       y: 0,
-    }, ...options);
+    }, options);
   }
 }

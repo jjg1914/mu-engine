@@ -43,15 +43,14 @@ export class SimpleEntity extends BaseEntity {
   collision: CollisionData;
   accel: AccelData;
 
-  constructor(defaults: Partial<SimpleEntityConfig>,
-              config: Partial<SimpleEntityConfig>) {
+  constructor(config: Partial<SimpleEntityConfig>) {
     super();
 
-    this.position = new PositionComponent(defaults.position, config.position);
-    this.accel = new AccelComponent(defaults.accel, config.accel);
-    this.movement = new MovementComponent(defaults.movement, config.movement);
-    this.collision = new CollisionComponent(defaults.collision, config.collision);
-    this.render = new RenderComponent(defaults.render, config.render);
+    this.position = new PositionComponent(config.position);
+    this.accel = new AccelComponent(config.accel);
+    this.movement = new MovementComponent(config.movement);
+    this.collision = new CollisionComponent(config.collision);
+    this.render = new RenderComponent(config.render);
 
     CollisionSystem(this);
     RenderSystem(this);
