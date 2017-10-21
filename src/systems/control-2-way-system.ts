@@ -4,13 +4,10 @@ import { ControlEvent } from "../events/control-event";
 import { AccelData } from "../components/accel-component";
 import { MovementData } from "../components/movement-component";
 import { CollisionData } from "../components/collision-component";
+import { ControlData } from "../components/control-component";
 
 export interface Control2WayEntity extends Entity {
-  control: {
-    xAccel: number;
-    jumpSpeed: number;
-    jumpCutoff: number;
-  };
+  control: ControlData;
   accel: AccelData;
   movement: MovementData;
   collision: CollisionData;

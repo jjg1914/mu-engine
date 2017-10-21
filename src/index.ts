@@ -42,6 +42,7 @@ export * from "./systems/render-mediator-system";
 export * from "./components/accel-component";
 export * from "./components/animation-component";
 export * from "./components/collision-component";
+export * from "./components/control-component";
 export * from "./components/movement-component";
 export * from "./components/path-component";
 export * from "./components/position-component";
