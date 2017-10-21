@@ -1,50 +1,52 @@
 import { MoveEventData } from "../events/move-event";
 import { Entity } from "../entities/entity";
-import { PositionData } from "../components/position-component";
+import { AccelData } from "../components/accel-component";
 import { MovementData } from "../components/movement-component";
+import { CollisionData } from "../components/collision-component";
 
 export interface AccelEntity extends Entity {
-  position: PositionData;
+  accel: AccelData;
   movement: MovementData;
+  collision: CollisionData;
 }
 
 export function AccelSystem(entity: AccelEntity): void {
   entity.on("premove", (event: MoveEventData) => {
-    let friction = entity.movement.drag;
-    let g = !entity.movement.nogravity && entity.position.landing == null ?
+    let friction = entity.accel.drag;
+    let g = !entity.accel.nogravity && entity.collision.landing == null ?
             event.gravity : 0;
 
-    if (entity.position.landing != null &&
-        entity.position.landing.movement != null &&
-        entity.position.landing.movement.friction != null) {
-      friction = entity.position.landing.movement.friction;
+    if (entity.collision.landing != null &&
+        entity.collision.landing.accel != null &&
+        entity.collision.landing.accel.friction != null) {
+      friction = entity.collision.landing.accel.friction;
     }
 
     const dt = event.dt / 1000;
 
     entity.movement.xSpeed = _accel(dt, entity.movement.xSpeed,
-                                    entity.movement.xAccel,
+                                    entity.accel.xAccel,
                                     entity.movement.xMax,
                                     friction,
-                                    entity.movement.nofriction);
+                                    entity.accel.nofriction);
 
     entity.movement.ySpeed = _accel(dt, entity.movement.ySpeed,
-                                    entity.movement.yAccel + g,
+                                    entity.accel.yAccel + g,
                                     entity.movement.yMax,
                                     friction,
-                                    entity.movement.nofriction);
+                                    entity.accel.nofriction);
 
-    if (entity.movement.xAccel) {
-      let [ a, s ] = [ entity.movement.xAccel, entity.movement.xSpeed ];
+    if (entity.accel.xAccel) {
+      let [ a, s ] = [ entity.accel.xAccel, entity.movement.xSpeed ];
 
       entity.movement.xSpeed = (a < 0 ? Math.min(s, 0) : Math.max(s, 0));
     }
 
     if (entity.movement.xSpeed === 0 &&
-        entity.position.landing != null &&
-        entity.position.landing.movement != null) {
-      entity.movement.xSubpixel = entity.position.landing.movement.xSubpixel;
-      entity.movement.ySubpixel = entity.position.landing.movement.ySubpixel;
+        entity.collision.landing != null &&
+        entity.collision.landing.movement != null) {
+      entity.movement.xSubpixel = entity.collision.landing.movement.xSubpixel;
+      entity.movement.ySubpixel = entity.collision.landing.movement.ySubpixel;
     }
   });
 }
@@ -52,8 +54,8 @@ export function AccelSystem(entity: AccelEntity): void {
 function _accel(dt: number,
                 speed: number,
                 accel: number,
-                max: number | null,
-                friction: number | null,
+                max: number | undefined,
+                friction: number | undefined,
                 nofriction: boolean): number {
   if (accel !== 0) {
     speed += accel * dt;

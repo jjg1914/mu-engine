@@ -1,4 +1,4 @@
-import { shapeFor } from "../util/shape";
+import { shapeFor } from "../modules/shape";
 import { CollisionEntity } from "../util/collision";
 import { MoveEventData } from "../events/move-event";
 import { CollisionEventData } from "../events/collision-event";
@@ -7,10 +7,12 @@ import { LandingEvent } from "../events/landing-event";
 import { Entity } from "../entities/entity";
 import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
+import { CollisionData } from "../components/collision-component";
 
 export interface MoveEntity extends Entity {
   position: PositionData;
   movement: MovementData;
+  collision: CollisionData;
 }
 
 export function MoveSystem(entity: MoveEntity): void {
@@ -20,10 +22,10 @@ export function MoveSystem(entity: MoveEntity): void {
     let xSpeed = entity.movement.xSpeed * event.dt;
     let ySpeed = entity.movement.ySpeed * event.dt;
 
-    if (entity.position.landing != null &&
-        entity.position.landing.movement != null) {
-      xSpeed += entity.position.landing.movement.xChange * 1000;
-      ySpeed += entity.position.landing.movement.yChange * 1000;
+    if (entity.collision.landing != null &&
+        entity.collision.landing.movement != null) {
+      xSpeed += entity.collision.landing.movement.xChange * 1000;
+      ySpeed += entity.collision.landing.movement.yChange * 1000;
     }
 
     let oldX = entity.position.x;
@@ -45,8 +47,8 @@ export function MoveSystem(entity: MoveEntity): void {
       entity.movement.ySubpixel = 0;
     }
 
-    if (entity.position.landing != null) {
-      const shape = shapeFor(entity.position.landing);       
+    if (entity.collision.landing != null) {
+      const shape = shapeFor(entity.collision.landing);       
       const bounds = shapeFor(entity).bounds();
       const height = bounds.bottom - bounds.top + 1;
       const min = shape.minimum(bounds.left, bounds.right);
@@ -71,25 +73,28 @@ export function MoveSystem(entity: MoveEntity): void {
       const oldX = entity.position.x;
       const oldY = entity.position.y;
 
-      if (restrict[0] != null) {
-        if (restrict[0] >= 0) {
+      const restrictX = restrict[0];
+      const restrictY = restrict[1];
+
+      if (restrictX != null) {
+        if (restrictX >= 0) {
           entity.position.x = Math.min(event.bounds.right - w + 1,
                                        entity.position.x);
         }
 
-        if (restrict[0] <= 0) {
+        if (restrictX <= 0) {
           entity.position.x = Math.max(event.bounds.left,
                                        entity.position.x);
         }
       }
 
-      if (restrict[1] != null) {
-        if (restrict[1] >= 0) {
+      if (restrictY != null) {
+        if (restrictY >= 0) {
           entity.position.y = Math.min(event.bounds.bottom - h + 1,
                                        entity.position.y);
         }
 
-        if (restrict[1] <= 0) {
+        if (restrictY <= 0) {
           entity.position.y = Math.max(event.bounds.top,
                                        entity.position.y);
         }
@@ -106,11 +111,11 @@ export function MoveSystem(entity: MoveEntity): void {
   });
 
   entity.on("postcollision", (event: CollisionEventData) => {
-    if (!entity.position.ignoreSolid) {
+    if (!entity.collision.ignoreSolid) {
       const b1 = shapeFor(entity).bounds();
       b1.top = b1.bottom + 1;
       b1.bottom += 2;
-      const s = (entity.position.landing == null ? _bumps :
+      const s = (entity.collision.landing == null ? _bumps :
                  event.data.queryBounds(b1, entity.id).map((f) => f.entity));
 
       let d = -Infinity;
@@ -118,7 +123,7 @@ export function MoveSystem(entity: MoveEntity): void {
       let m = null;
 
       for (let e of s) {
-        if (e.position.solid) {
+        if (e.collision.solid) {
           const shape = shapeFor(e);
           const bounds = shapeFor(entity).bounds();
           const min = shape.minimum(bounds.left, bounds.right);
@@ -134,14 +139,14 @@ export function MoveSystem(entity: MoveEntity): void {
         }
       }
 
-      if (m != null && entity.position.landing !== m) {
-        entity.position.landing = m;
+      if (m != null && entity.collision.landing !== m) {
+        entity.collision.landing = m;
         m.send("landing", new LandingEvent(entity));
       } else {
-        entity.position.landing = m;
+        entity.collision.landing = m;
       }
     } else {
-      entity.position.landing = null;
+      entity.collision.landing = undefined;
     }
 
     _bumps.length = 0;

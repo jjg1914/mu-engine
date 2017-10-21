@@ -15,7 +15,7 @@ export class PathComponent implements PathData {
   x: number;
   y: number;
 
-  constructor(options: Partial<PathData> = {}) {
+  constructor(options?: Partial<PathData>) {
     Object.assign(this, {
       path: null,
       repeat: false,

@@ -17,11 +17,13 @@ export class RenderBackend2D implements RenderBackend {
   }
 
   add(data: RenderBackendItem): void {
-    if (this._layers.hasOwnProperty(data.render.depth.toString())) {
-      this._layers[data.render.depth].push(data);
+    const depth = data.render.depth != null ? data.render.depth : 0;
+
+    if (this._layers.hasOwnProperty(depth.toString())) {
+      this._layers[depth].push(data);
     } else {
-      this._depths.push(data.render.depth);
-      this._layers[data.render.depth] = [ data ];
+      this._depths.push(depth);
+      this._layers[depth] = [ data ];
     }
   }
 
@@ -51,12 +53,14 @@ function _render(ctx: CanvasRenderingContext2D,
                  root: RenderBackendItem,
                  assets: Assets): void {
   ctx.save();
-  ctx.transform(data.transform[0],
-                data.transform[3],
-                data.transform[1],
-                data.transform[4],
-                data.transform[2],
-                data.transform[5]);
+  if (data.transform != null) {
+    ctx.transform(data.transform[0],
+                  data.transform[3],
+                  data.transform[1],
+                  data.transform[4],
+                  data.transform[2],
+                  data.transform[5]);
+  }
 
   if (data.sprite != null) {
     const sprite = assets.loadSprite(data.sprite);
@@ -101,8 +105,10 @@ function _render(ctx: CanvasRenderingContext2D,
     }
   }
 
-  for (let i = 0; i < data.children.length; ++i) {
-    _render(ctx, data.children[i], root, assets);
+  if (data.children != null) {
+    for (let i = 0; i < data.children.length; ++i) {
+      _render(ctx, data.children[i], root, assets);
+    }
   }
 
   ctx.restore();
