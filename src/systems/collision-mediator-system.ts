@@ -28,7 +28,9 @@ export function CollisionMediatorSystem(entity: Entity,
       let xTarget = null, yTarget = null;
       let xD = -Infinity, yD = -Infinity;
 
-      for (let c of collision.query(e)) {
+      const query = collision.query(e);
+      const visits = {} as { [ key: number ]: boolean };
+      for (let c of query) {
         // only resolve collision for solids
         if (!e.collision.ignoreSolid && c.entity.collision.solid) {
           // support solids that allow passing through in a certain direction.
@@ -111,6 +113,7 @@ export function CollisionMediatorSystem(entity: Entity,
           }
 
           if (target != null) {
+            visits[c.entity.id] = true;
             e.send("collision", new ResolutionEvent("collision",
                                                     c.entity, target));
           }
@@ -123,10 +126,12 @@ export function CollisionMediatorSystem(entity: Entity,
           mtv: [ xTarget.mtv[0], yTarget.mtv[1] ],
         });
 
+        visits[xTarget.entity.id] = true;
         e.send("bump", new ResolutionEvent("bump",
                                            xTarget.entity, xTarget.mtv));
 
         if (xTarget !== yTarget) {
+          visits[yTarget.entity.id] = true;
           e.send("bump", new ResolutionEvent("bump",
                                              yTarget.entity, yTarget.mtv));
         }
@@ -136,6 +141,7 @@ export function CollisionMediatorSystem(entity: Entity,
           mtv: xTarget.mtv,
         });
 
+        visits[xTarget.entity.id] = true;
         e.send("bump", new ResolutionEvent("bump",
                                            xTarget.entity, xTarget.mtv));
       } else if (yTarget != null) {
@@ -144,8 +150,33 @@ export function CollisionMediatorSystem(entity: Entity,
           mtv: yTarget.mtv,
         });
 
+        visits[yTarget.entity.id] = true;
         e.send("bump", new ResolutionEvent("bump",
                                            yTarget.entity, yTarget.mtv));
+      }
+
+      for (let c of query) {
+        if (!visits[c.entity.id]) {
+          let target = null;
+          let d = Infinity;
+
+          for (let i = 0; i < c.vectorData.length; ++i) {
+            const x = c.vectorData[i][0];
+            const y = c.vectorData[i][1];
+            const tmpD = Math.sqrt(x * x + y * y) ;
+
+            if (tmpD < d) {
+              target = c.vectorData[i] as Vector;
+              d = tmpD;
+            }
+          }
+
+          if (target != null) {
+            visits[c.entity.id] = true;
+            e.send("collision", new ResolutionEvent("collision",
+                                                    c.entity, target));
+          }
+        }
       }
     }
 
