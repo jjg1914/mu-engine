@@ -17,7 +17,7 @@ export class Sprite {
     const imageName = data.meta.image.split("/").reverse()[0];
 
     const image = new Image();
-    image.src = "/assets/" + imageName;
+    image.src = "/assets/sprites/" + imageName;
 
     return new Sprite(image, _framesFor(data.frames), data.meta.frameTags);
   }

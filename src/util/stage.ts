@@ -173,7 +173,7 @@ export class Stage {
     this._tiles = [];
     this._width = width;
     this._height = height;
-    this._tileset = tileset;
+    this._tileset = tileset != null ? tileset.split("/").reverse()[0] : null;
     this._props = {};
   }
 

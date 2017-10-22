@@ -18,7 +18,7 @@ export class Tileset {
     const height = Number(data.imageheight);
 
     const image = new Image();
-    image.src = "/assets/" + data.image;
+    image.src = "/assets/tilesets/" + data.image;
 
     return new Tileset(image, width, height, tileWidth, tileHeight);
   }
