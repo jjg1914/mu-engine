@@ -9,6 +9,7 @@ export function InputSystem(entity: Entity, config: InputConfig): void {
   const _inputs: InputStateIndex = {};
 
   config.canvas.setAttribute("tabindex", "1");
+  config.canvas.focus();
 
   config.canvas.addEventListener("keydown", (ev) => {
     if (!ev.repeat) {
