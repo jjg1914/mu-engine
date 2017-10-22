@@ -54,14 +54,18 @@ export function AccelSystem(entity: AccelEntity): void {
 function _accel(dt: number,
                 speed: number,
                 accel: number,
-                max: number | undefined,
+                max: [ number, number ] | number | undefined,
                 friction: number | undefined,
                 nofriction: boolean): number {
   if (accel !== 0) {
     speed += accel * dt;
 
     if (max != null) {
-      speed = Math.max(Math.min(speed, max), -max);
+      if (max instanceof Array) {
+        speed = Math.max(Math.min(speed, max[1]), max[0]);
+      } else {
+        speed = Math.max(Math.min(speed, max), -max);
+      }
     }
   } else if (speed !== 0) {
     if (!nofriction && friction != null) {
