@@ -120,6 +120,7 @@ export function MoveSystem(entity: MoveEntity): void {
 
       let d = -Infinity;
       let d2 = Infinity;
+      let d3 = Infinity;
       let m = null;
 
       for (let e of s) {
@@ -128,12 +129,15 @@ export function MoveSystem(entity: MoveEntity): void {
           const bounds = shapeFor(entity).bounds();
           const min = shape.minimum(bounds.left, bounds.right);
 
+          const u = e.collision.solid instanceof Array ? e.collision.solid[1] : 0;
+
           const b2 = shape.bounds();
           const v = Math.abs(Math.min(b1.right, b2.right) -
                              Math.max(b1.left, b2.left));
-          if (min < d2 || (min === d2 && v > d)) {
+          if (min >= bounds.bottom - 1 && min < d2 || (min === d2 && v > d) && u < d3) {
             d = v;
             d2 = min;
+            d3 = u;
             m = e;
           }
         }
