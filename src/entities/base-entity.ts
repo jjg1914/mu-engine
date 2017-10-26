@@ -7,6 +7,7 @@ export class BaseEntity implements Entity {
   private _active: boolean;
 
   id: number;
+  parent?: Entity;
 
   constructor() {
     this.id = ++BaseEntity._idCounter;

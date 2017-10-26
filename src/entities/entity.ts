@@ -1,5 +1,6 @@
 export interface Entity {
   id: number;
+  parent?: Entity;
   send(event: string, ...args: any[]): boolean;
   on(event: string, handler: Function): this;
   before(event: string, handler: Function): this;

@@ -26,26 +26,31 @@ export class CollectionEntity extends BaseEntity {
 
       return;
     });
+
+    this.on("put", (ev: EntityAddEventData) => {
+      this.put(ev.target);
+    });
+
+    this.on("remove", (ev: EntityDestroyEventData) => {
+      this.remove(ev.target);
+    });
   }
 
   put(entity: Entity): this {
-    this._collection[entity.id] = entity;
-
-    entity.on("remove", (_ev: EntityDestroyEventData) => {
-      this.remove(entity);
-    });
-
-    entity.on("put", (ev: EntityAddEventData) => {
-      if (this._collection[entity.id] === entity) {
-        this.put(ev.target);
-      }
-    });
+    if (entity.parent === undefined) {
+      this._collection[entity.id] = entity;
+      entity.parent = this;
+    }
 
     return this;
   }
 
   remove(entity: Entity): this {
-    delete this._collection[entity.id];
+    if (entity.parent === this) {
+      delete entity.parent;
+      delete this._collection[entity.id];
+    }
+
     return this;
   }
 }

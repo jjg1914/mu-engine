@@ -25,34 +25,35 @@ export class StackEntity extends BaseEntity {
 
       return;
     });
+
+    this.on("pop", (_ev: EntityDestroyEventData) => {
+      this.pop();
+    });
+
+    this.on("push", (ev: EntityAddEventData) => {
+      this.push(ev.target, ev.config);
+    });
+
+    this.on("swap", (ev: EntityAddEventData) => {
+      this.swap(ev.target, ev.config);
+    });
   }
 
   push(entity: Entity, config: Partial<Config> = {}): this {
-    this._stack.unshift([ entity, config ]);
-
-    entity.on("pop", (_ev: EntityDestroyEventData) => {
-      if (this._stack[0][0] === entity) {
-        this.pop();
-      }
-    });
-
-    entity.on("push", (ev: EntityAddEventData) => {
-      if (this._stack[0][0] === entity) {
-        this.push(ev.target, ev.config);
-      }
-    });
-
-    entity.on("swap", (ev: EntityAddEventData) => {
-      if (this._stack[0][0] === entity) {
-        this.swap(ev.target, ev.config);
-      }
-    });
+    if (entity.parent === undefined) {
+      this._stack.unshift([ entity, config ]);
+      entity.parent = this;
+    }
 
     return this;
   }
 
   pop(): this {
-    this._stack.shift();
+    const e = this._stack.shift();
+    if (e !== undefined) {
+      delete e[0].parent;
+    }
+
     return this;
   }
 
