@@ -4,6 +4,13 @@ import { AccelData } from "../components/accel-component";
 import { MovementData } from "../components/movement-component";
 import { CollisionData } from "../components/collision-component";
 
+import {
+  frictionFor,
+  gravityFor,
+  speedFor,
+  restrict,
+} from "../modules/movement";
+
 export interface AccelEntity extends Entity {
   accel: AccelData;
   movement: MovementData;
@@ -12,70 +19,17 @@ export interface AccelEntity extends Entity {
 
 export function AccelSystem(entity: AccelEntity): void {
   entity.on("premove", (event: MoveEventData) => {
-    let friction = entity.accel.drag;
-    let g = !entity.accel.nogravity && entity.collision.landing == null ?
-            event.gravity : 0;
-
-    if (entity.collision.landing != null &&
-        entity.collision.landing.accel != null &&
-        entity.collision.landing.accel.friction != null) {
-      friction = entity.collision.landing.accel.friction;
-    }
-
     const dt = event.dt / 1000;
 
-    entity.movement.xSpeed = _accel(dt, entity.movement.xSpeed,
-                                    entity.accel.xAccel,
-                                    entity.movement.xMax,
-                                    friction,
-                                    entity.accel.nofriction);
+    const f = frictionFor(entity);
+    const g = gravityFor(entity, event);
 
-    entity.movement.ySpeed = _accel(dt, entity.movement.ySpeed,
-                                    entity.accel.yAccel + g,
-                                    entity.movement.yMax,
-                                    friction,
-                                    entity.accel.nofriction);
+    let xSpeed = entity.movement.xSpeed;
+    xSpeed = speedFor(dt, xSpeed, entity.accel.xAccel, f);
+    entity.movement.xSpeed = restrict(xSpeed, entity.movement.xMax);
 
-    if (entity.accel.xAccel) {
-      let [ a, s ] = [ entity.accel.xAccel, entity.movement.xSpeed ];
-
-      entity.movement.xSpeed = (a < 0 ? Math.min(s, 0) : Math.max(s, 0));
-    }
-
-    if (entity.movement.xSpeed === 0 &&
-        entity.collision.landing != null &&
-        entity.collision.landing.movement != null) {
-      entity.movement.xSubpixel = entity.collision.landing.movement.xSubpixel;
-      entity.movement.ySubpixel = entity.collision.landing.movement.ySubpixel;
-    }
+    let ySpeed = entity.movement.ySpeed;
+    ySpeed = speedFor(dt, ySpeed, entity.accel.yAccel + g, f);
+    entity.movement.ySpeed = restrict(ySpeed, entity.movement.yMax);
   });
-}
-
-function _accel(dt: number,
-                speed: number,
-                accel: number,
-                max: [ number, number ] | number | undefined,
-                friction: number | undefined,
-                nofriction: boolean): number {
-  if (accel !== 0) {
-    speed += accel * dt;
-
-    if (max != null) {
-      if (max instanceof Array) {
-        speed = Math.max(Math.min(speed, max[1]), max[0]);
-      } else {
-        speed = Math.max(Math.min(speed, max), -max);
-      }
-    }
-  } else if (speed !== 0) {
-    if (!nofriction && friction != null) {
-      if (Math.abs(speed) < friction * dt) {
-        speed = 0;
-      } else {
-        speed += friction * dt * (speed > 0 ? -1 : 1)
-      }
-    }
-  }
-
-  return speed;
 }

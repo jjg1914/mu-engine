@@ -33,11 +33,13 @@ export * from "./systems/collision-mediator-system";
 export * from "./systems/control-2-way-system";
 export * from "./systems/input-system";
 export * from "./systems/interval-system";
+export * from "./systems/landing-system";
 export * from "./systems/move-system";
 export * from "./systems/move-mediator-system";
 export * from "./systems/path-system";
 export * from "./systems/render-system";
 export * from "./systems/render-mediator-system";
+export * from "./systems/restrict-system";
 
 export * from "./components/accel-component";
 export * from "./components/animation-component";

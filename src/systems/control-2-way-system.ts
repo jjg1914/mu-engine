@@ -26,8 +26,10 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
       entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
       if (entity.accel.xAccel < 0) {
+        entity.movement.xSpeed = Math.min(entity.movement.xSpeed, 0);
         entity.send("start-left", new ControlEvent("start-left"));
       } else {
+        entity.movement.xSpeed = Math.max(entity.movement.xSpeed, 0);
         entity.send("stop-left", new ControlEvent("stop-left"));
       }
 
@@ -37,8 +39,10 @@ export function Control2WaySystem(entity: Control2WayEntity): void {
       entity.accel.xAccel = _accel(entity.control.xAccel, _left, _right);
 
       if (entity.accel.xAccel > 0) {
+        entity.movement.xSpeed = Math.max(entity.movement.xSpeed, 0);
         entity.send("start-right", new ControlEvent("start-right"));
       } else {
+        entity.movement.xSpeed = Math.min(entity.movement.xSpeed, 0);
         entity.send("stop-right", new ControlEvent("stop-right"));
       }
 
