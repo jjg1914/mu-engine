@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "scripts": {
+    "test": "tsc && tslint --project .",
     "prepublish": "tsc",
     "lint": "tslint --project .",
     "clean": "rm -rf lib"
