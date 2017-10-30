@@ -18,7 +18,8 @@ export function AnimationSystem(entity: AnimationEntity): void {
   });
 
   entity.on("prerender", (ev: RenderEventData) => {
-    if (entity.animation.tag.length > 0 && entity.render.sprite != null) {
+    if (entity.animation.tag.length > 0 &&
+        entity.render.sprite !== undefined) {
       const sprite = ev.backend.assets().loadSprite(entity.render.sprite);
 
       if (entity.animation.duration <= entity.animation.t) {
@@ -40,7 +41,7 @@ export function AnimationSystem(entity: AnimationEntity): void {
 function _isAnimationEnd(index: number, entity: AnimationEntity): boolean {
   const currentIndex = entity.render.spriteFrame;
 
-  if (currentIndex != null) {
+  if (currentIndex !== undefined) {
     return !entity.animation.loop && index < currentIndex;
   } else {
     return false;

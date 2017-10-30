@@ -1,5 +1,5 @@
 import { Entity } from "../entities/entity";
-import { PositionData } from "../components/position-component"
+import { PositionData } from "../components/position-component";
 import { shapeFor } from "../modules/shape";
 import { Bounds, Dimensions } from "../util/shape";
 import { RenderEventData } from "../events/render-event";
@@ -8,7 +8,7 @@ export interface CameraConfig {
   camera: {
     bounds: Bounds;
     dimensions: Dimensions;
-  }
+  };
 }
 
 export interface CameraEntity {
@@ -20,8 +20,8 @@ export function CameraSystem(entity: Entity,
                              config: CameraConfig): void {
   entity.on("prerender", (ev: RenderEventData) => {
     const targetBounds = shapeFor(target).bounds();
-    const cameraW =  config.camera.dimensions.width;
-    const cameraH =  config.camera.dimensions.height;
+    const cameraW = config.camera.dimensions.width;
+    const cameraH = config.camera.dimensions.height;
 
     let [ x, y ] = [
       (targetBounds.left + targetBounds.right) / 2,

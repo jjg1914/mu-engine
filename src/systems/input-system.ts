@@ -27,7 +27,7 @@ export function InputSystem(entity: Entity, config: InputConfig): void {
 }
 
 function _normalizeKey(ev: KeyboardEvent) {
-  if (ev.key.length == 1) {
+  if (ev.key.length === 1) {
     return ev.key.toUpperCase();
   } else {
     return ev.key;

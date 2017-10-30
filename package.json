@@ -16,9 +16,12 @@
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "scripts": {
     "prepublish": "tsc",
+    "lint": "tslint --project .",
     "clean": "rm -rf lib"
   },
   "devDependencies": {
+    "tslint": "^5.8.0",
+    "tslint-config-standard": "^7.0.0",
     "typescript": "^2.4.1"
   }
 }

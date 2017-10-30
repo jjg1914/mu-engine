@@ -2,28 +2,28 @@ import { Transform } from "../util/matrix";
 import { Shape } from "../util/shape";
 
 export interface RenderData {
-  stroke?: string | null;
-  fill?: string | null;
-  image?: HTMLImageElement | HTMLCanvasElement | null;
-  sprite?: string | null;
-  spriteFrame?: number | null;
+  stroke?: string;
+  fill?: string;
+  image?: HTMLImageElement | HTMLCanvasElement;
+  sprite?: string;
+  spriteFrame?: number;
   depth?: number;
   transform?: Transform;
-  shape?: Shape | null;
-  text?: string | null;
+  shape?: Shape;
+  text?: string;
   children?: RenderData[];
 }
 
 export class RenderComponent implements RenderData {
-  stroke?: string | null;
-  fill?: string | null;
-  image?: HTMLImageElement | null;
-  sprite?: string | null;
-  spriteFrame?: number | null;
+  stroke?: string;
+  fill?: string;
+  image?: HTMLImageElement | HTMLCanvasElement;
+  sprite?: string;
+  spriteFrame?: number;
   depth?: number;
   transform?: Transform;
-  shape?: Shape | null;
-  text?: string | null;
+  shape?: Shape;
+  text?: string;
   children?: RenderData[];
 
   constructor(options?: Partial<RenderData>) {

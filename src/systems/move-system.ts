@@ -15,8 +15,8 @@ export function MoveSystem(entity: MoveEntity): void {
     let xSpeed = entity.movement.xSpeed * event.dt;
     let ySpeed = entity.movement.ySpeed * event.dt;
 
-    if (entity.collision.landing != null &&
-        entity.collision.landing.movement != null) {
+    if (entity.collision.landing !== undefined &&
+        entity.collision.landing.movement !== undefined) {
       xSpeed += entity.collision.landing.movement.xChange * 1000;
       ySpeed += entity.collision.landing.movement.yChange * 1000;
     }

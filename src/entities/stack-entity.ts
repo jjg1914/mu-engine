@@ -18,12 +18,13 @@ export class StackEntity extends BaseEntity {
       for (let i = 0; i < this._stack.length; ++i) {
         if (this._stack[i][0].send(event, ...args)) {
           return true;
-        } else if (this._stack[i][1].block != null && this._stack[i][1].block) {
+        } else if (this._stack[i][1].block !== undefined &&
+                   this._stack[i][1].block) {
           break;
         }
       }
 
-      return;
+      return false;
     });
 
     this.on("pop", (_ev: EntityDestroyEventData) => {

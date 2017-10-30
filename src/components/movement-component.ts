@@ -7,7 +7,7 @@ export interface MovementData {
   ySubpixel: number;
   xChange: number;
   yChange: number;
-  restrict?: boolean | [ number | null, number | null ];
+  restrict?: boolean | [ number , number ];
 }
 
 export class MovementComponent implements MovementData {

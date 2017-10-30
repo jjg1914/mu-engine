@@ -7,7 +7,7 @@ import {
 } from "../events/entity-event";
 
 export class CollectionEntity extends BaseEntity {
-  private _collection: { [id: number ]: Entity | null | undefined };
+  private _collection: { [id: number ]: Entity | undefined };
 
   constructor() {
     super();
@@ -17,14 +17,14 @@ export class CollectionEntity extends BaseEntity {
       for (let e in this._collection) {
         const entity = this._collection[e];
 
-        if (this._collection.hasOwnProperty(e) && entity != null) {
+        if (entity !== undefined) {
           if (entity.send(event, ...args)) {
             return true;
           }
         }
       }
 
-      return;
+      return false;
     });
 
     this.on("put", (ev: EntityAddEventData) => {

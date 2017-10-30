@@ -1,25 +1,23 @@
 import { Path } from "../util/path";
 
 export interface PathData {
-  path: Path | null;
+  path?: Path;
   repeat: boolean;
-  t: number | null;
+  t?: number;
   x: number;
   y: number;
 }
 
 export class PathComponent implements PathData {
-  path: Path | null;
+  path?: Path;
   repeat: boolean;
-  t: number | null;
+  t?: number;
   x: number;
   y: number;
 
   constructor(options?: Partial<PathData>) {
     Object.assign(this, {
-      path: null,
       repeat: false,
-      t: null,
       x: 0,
       y: 0,
     }, options);

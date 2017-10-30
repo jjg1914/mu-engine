@@ -25,7 +25,7 @@ export function RestrictSystem(entity: RestrictEntity): void {
       const restrictX = restrict[0];
       const restrictY = restrict[1];
 
-      if (restrictX != null) {
+      if (!isNaN(restrictX)) {
         if (restrictX >= 0) {
           entity.position.x = Math.min(event.bounds.right - w + 1,
                                        entity.position.x);
@@ -37,7 +37,7 @@ export function RestrictSystem(entity: RestrictEntity): void {
         }
       }
 
-      if (restrictY != null) {
+      if (!isNaN(restrictY)) {
         if (restrictY >= 0) {
           entity.position.y = Math.min(event.bounds.bottom - h + 1,
                                        entity.position.y);
