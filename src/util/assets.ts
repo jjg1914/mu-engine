@@ -6,7 +6,7 @@ import { Tileset } from "./tileset";
 type Cacheable = Sprite | Tileset;
 
 export type AssetItem = { type: string, data: any };
-export type AssetTable = { [ key: string ]: AssetItem };
+export type AssetTable = { [ key: string ]: AssetItem | undefined };
 export interface AssetConfig {
   preload?: boolean;
   assets: AssetTable;
@@ -14,13 +14,13 @@ export interface AssetConfig {
 
 export class Assets {
   private _config: AssetConfig;
-  private _cache: { [ key: string ]: Cacheable };
+  private _cache: { [ key: string ]: Cacheable | undefined };
 
   constructor(config: AssetConfig) {
     this._config = config;
     this._cache = {};
 
-    if (this._config.preload != null && this._config.preload) {
+    if (this._config.preload !== undefined && this._config.preload) {
       this._preload();
     }
   }
@@ -29,7 +29,7 @@ export class Assets {
     const value = this.load(asset);
 
     if (!(value instanceof Path)) {
-      throw "not a path: " + asset;
+      throw new Error("not a path: " + asset);
     }
 
     return value;
@@ -39,7 +39,7 @@ export class Assets {
     const value = this.load(asset);
 
     if (!(value instanceof Stage)) {
-      throw "not a stage : " + asset;
+      throw new Error("not a stage : " + asset);
     }
 
     return value;
@@ -49,7 +49,7 @@ export class Assets {
     const value = this.load(asset);
 
     if (!(value instanceof Sprite)) {
-      throw "not a sprite: " + asset;
+      throw new Error("not a sprite: " + asset);
     }
 
     return value;
@@ -59,7 +59,7 @@ export class Assets {
     const value = this.load(asset);
 
     if (!(value instanceof Tileset)) {
-      throw "not a tileset: " + asset;
+      throw new Error("not a tileset: " + asset);
     }
 
     return value;
@@ -68,23 +68,27 @@ export class Assets {
   load(asset: string): any {
     const data = this._config.assets[asset];
 
-    switch (data.type) {
-      case "path":
-        return Path.unserialize(data.data);
-      case "stage":
-        return Stage.unserialize(data.data);
-      case "sprite":
-        if (this._cache[asset] == null) {
-          this._cache[asset] = Sprite.unserialize(data.data);
-        }
+    if (data !== undefined) {
+      switch (data.type) {
+        case "path":
+          return Path.unserialize(data.data);
+        case "stage":
+          return Stage.unserialize(data.data);
+        case "sprite":
+          if (this._cache[asset] === undefined) {
+            this._cache[asset] = Sprite.unserialize(data.data);
+          }
 
-        return this._cache[asset];
-      case "tileset":
-        if (this._cache[asset] == null) {
-          this._cache[asset] = Tileset.unserialize(data.data);
-        }
+          return this._cache[asset];
+        case "tileset":
+          if (this._cache[asset] === undefined) {
+            this._cache[asset] = Tileset.unserialize(data.data);
+          }
 
-        return this._cache[asset];
+          return this._cache[asset];
+      }
+    } else {
+      throw new Array("no asset: " + asset);
     }
   }
 
@@ -104,12 +108,13 @@ export class Assets {
     return this._filterType("tileset");
   }
 
-  private _filterType(type: string): string[] { 
+  private _filterType(type: string): string[] {
     const rval: string[] = [];
 
     for (let e in this._config.assets) {
-      if (this._config.assets.hasOwnProperty(e) && 
-          this._config.assets[e].type === type) {
+      const asset = this._config.assets[e];
+
+      if (asset !== undefined && asset.type === type) {
         rval.push(e);
       }
     }
@@ -118,21 +123,19 @@ export class Assets {
   }
 
   private _preload(): void {
-    
     for (let e in this._config.assets) {
-      if (this._config.assets.hasOwnProperty(e) && this._cache[e] == null) {
-        const value = this._config.assets[e];
+      const value = this._config.assets[e];
 
+      if (value !== undefined && this._cache[e] === undefined) {
         switch (value.type) {
-        case "sprite":
-          this._cache[e] = Sprite.unserialize(value.data);
-          break;
-        case "tileset":
-          this._cache[e] = Tileset.unserialize(value.data);
-          break;
+          case "sprite":
+            this._cache[e] = Sprite.unserialize(value.data);
+            break;
+          case "tileset":
+            this._cache[e] = Tileset.unserialize(value.data);
+            break;
         }
       }
     }
   }
 }
-

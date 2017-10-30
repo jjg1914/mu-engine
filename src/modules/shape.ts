@@ -4,7 +4,7 @@ import { Shape, Polygon, Circle } from "../util/shape";
 export function shapeFor(entity: { position: PositionData }): Shape {
   let mask = entity.position.mask;
 
-  if (mask == null) {
+  if (mask === undefined) {
     const width = entity.position.width;
     const height = entity.position.height;
 
@@ -20,7 +20,7 @@ export function shapeFor(entity: { position: PositionData }): Shape {
 
   const rotate = entity.position.rotate;
 
-  if (rotate != null) {
+  if (rotate !== undefined) {
     mask = mask.rotate(rotate);
   }
 

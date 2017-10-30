@@ -19,10 +19,10 @@ export function RenderSystem(entity: RenderEntity): void {
       render: entity.render,
     };
 
-    if (entity.position.mask != null) {
+    if (entity.position.mask !== undefined) {
       data.render.shape = shapeFor(entity);
     } else {
-      data.render.shape = null;
+      data.render.shape = undefined;
     }
 
     event.backend.add(data);

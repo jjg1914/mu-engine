@@ -5,8 +5,8 @@ export interface PositionData {
   y: number;
   width: number;
   height: number;
-  rotate: number;
-  mask?: Shape | null;
+  rotate?: number;
+  mask?: Shape;
 }
 
 export class PositionComponent implements PositionData {
@@ -14,8 +14,8 @@ export class PositionComponent implements PositionData {
   y: number;
   width: number;
   height: number;
-  rotate: number;
-  mask: Shape | null;
+  rotate?: number;
+  mask?: Shape;
 
   constructor(options?: Partial<PositionData>) {
     Object.assign(this, {
@@ -23,8 +23,6 @@ export class PositionComponent implements PositionData {
       y: 0,
       width: 0,
       height: 0,
-      rotate: 0,
-      mask: null,
     }, options);
   }
 }

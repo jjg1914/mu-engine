@@ -6,7 +6,7 @@ export type RenderEventType = "prerender" | "render" | "postrender";
 export interface RenderEventData {
   type: RenderEventType;
   backend: RenderBackend;
-  width: number;  
+  width: number;
   height: number;
   viewport: Bounds;
 }
@@ -14,7 +14,7 @@ export interface RenderEventData {
 export class RenderEvent implements RenderEventData {
   type: RenderEventType;
   backend: RenderBackend;
-  width: number;  
+  width: number;
   height: number;
   viewport: Bounds;
 
@@ -27,6 +27,6 @@ export class RenderEvent implements RenderEventData {
       top: 0,
       right: width - 1,
       bottom: height - 1,
-    }
+    };
   }
 }

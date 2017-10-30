@@ -1,36 +1,4 @@
 export class Tileset {
-  static fromTMX(data: any): Tileset {
-    const tileWidth = Number(data.tileset.$.tilewidth);
-    const tileHeight = Number(data.tileset.$.tileheight);
-    const width = Number(data.tileset.image[0].width);
-    const height = Number(data.tileset.image[0].height);
-
-    const image = new Image();
-    image.src = "/assets/" + data.tileset.image[0].source;
-
-    return new Tileset(image, width, height, tileWidth, tileHeight);
-  }
-
-  static fromJSON(data: any): Tileset {
-    const tileWidth = Number(data.tilewidth);
-    const tileHeight = Number(data.tileheight);
-    const width = Number(data.imagewidth);
-    const height = Number(data.imageheight);
-
-    const image = new Image();
-    image.src = "/assets/" + data.image;
-
-    return new Tileset(image, width, height, tileWidth, tileHeight);
-  }
-
-  static unserialize(data: any): Tileset  {
-    if (data.tileset != null) {
-      return Tileset.fromTMX(data);
-    } else {
-      return Tileset.fromJSON(data);
-    }
-  }
-
   private _image: HTMLImageElement;
   private _width: number;
   private _height: number;
@@ -59,6 +27,38 @@ export class Tileset {
     });
   }
 
+  static fromTMX(data: any): Tileset {
+    const tileWidth = Number(data.tileset.$.tilewidth);
+    const tileHeight = Number(data.tileset.$.tileheight);
+    const width = Number(data.tileset.image[0].width);
+    const height = Number(data.tileset.image[0].height);
+
+    const image = new Image();
+    image.src = "/assets/" + data.tileset.image[0].source;
+
+    return new Tileset(image, width, height, tileWidth, tileHeight);
+  }
+
+  static fromJSON(data: any): Tileset {
+    const tileWidth = Number(data.tilewidth);
+    const tileHeight = Number(data.tileheight);
+    const width = Number(data.imagewidth);
+    const height = Number(data.imageheight);
+
+    const image = new Image();
+    image.src = "/assets/tilesets/" + data.image;
+
+    return new Tileset(image, width, height, tileWidth, tileHeight);
+  }
+
+  static unserialize(data: any): Tileset {
+    if (data.tileset !== undefined) {
+      return Tileset.fromTMX(data);
+    } else {
+      return Tileset.fromJSON(data);
+    }
+  }
+
   drawTile(ctx: CanvasRenderingContext2D, n: number, x: number, y: number) {
     if (n !== 0 && n <= this._columns * this._rows) {
       n -= 1;
@@ -74,6 +74,7 @@ export class Tileset {
   }
 
   ready(f: Function) {
-    this._ready.then(() => f());
+    // tslint:disable-next-line:no-floating-promises
+    this._ready.then(() => { f(); });
   }
 }

@@ -1,0 +1,12 @@
+{
+"extends": "tslint-config-standard",
+  "rules": {
+    "trailing-comma": { "multiline": "always", "singleline": "never" },
+    "semicolon": "always",
+    "no-extra-semi": false,
+    "quotemark": "double",
+    "space-before-function-paren": [ "error", "never" ],
+    "max-line-length": [ true, 80 ],
+    "no-null-keyword": true
+  }
+}

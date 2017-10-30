@@ -1,20 +1,20 @@
 export interface MovementData {
   xSpeed: number;
   ySpeed: number;
-  xMax?: number;
-  yMax?: number;
+  xMax?: number | [ number , number ];
+  yMax?: number | [ number , number ];
   xSubpixel: number;
   ySubpixel: number;
   xChange: number;
   yChange: number;
-  restrict?: boolean | [ number | null, number | null ];
+  restrict?: boolean | [ number , number ];
 }
 
 export class MovementComponent implements MovementData {
   xSpeed: number;
   ySpeed: number;
-  xMax: number;
-  yMax: number;
+  xMax?: number | [ number , number ];
+  yMax?: number | [ number , number ];
   xSubpixel: number;
   ySubpixel: number;
   xChange: number;

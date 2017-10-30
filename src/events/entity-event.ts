@@ -14,6 +14,7 @@ export interface EntityAddEventData {
 
 export interface EntityDestroyEventData {
   type: "remove" | "pop";
+  target: Entity;
 }
 
 export type EntityEventData = EntityAddEventData | EntityDestroyEventData;
@@ -34,8 +35,10 @@ export class EntityAddEvent implements EntityAddEventData {
 
 export class EntityDestroyEvent implements EntityDestroyEventData {
   type: "remove" | "pop";
+  target: Entity;
 
-  constructor(type: "remove" | "pop") {
+  constructor(type: "remove" | "pop", target: Entity) {
     this.type = type;
+    this.target = target;
   }
 }

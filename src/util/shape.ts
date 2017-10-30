@@ -29,6 +29,10 @@ export interface Shape {
 export class Polygon implements Shape {
   verticies: Vertex[];
 
+  constructor(verticies: Vertex[]) {
+    this.verticies = verticies;
+  }
+
   static fromBounds(bounds: Bounds): Polygon {
     return new Polygon([
       [ bounds.left, bounds.top ],
@@ -36,10 +40,6 @@ export class Polygon implements Shape {
       [ bounds.right, bounds.bottom ],
       [ bounds.left, bounds.bottom ],
     ]);
-  }
-
-  constructor(verticies: Vertex[]) {
-    this.verticies = verticies;
   }
 
   clone(): Polygon {
@@ -62,7 +62,7 @@ export class Polygon implements Shape {
   }
 
   rotate(r: number): this {
-    if (isNaN(r) || r == null || r === 0) {
+    if (isNaN(r) || r === 0) {
       return this;
     }
 
@@ -73,7 +73,7 @@ export class Polygon implements Shape {
     const s = Math.sin(r);
 
     const const1 = -c * x + s * y + x;
-    const const2  = -s * x - c * y + y;
+    const const2 = -s * x - c * y + y;
 
     for (let v of this.verticies) {
       v[0] = c * v[0] - s * v[1] + const1;
@@ -154,7 +154,7 @@ export class Polygon implements Shape {
         } else {
           const slope = (b[1] - a[1]) / (b[0] - a[0]);
           const int = a[1] - (slope * a[0]);
-          const cap = Math.min(a[1], b[1])
+          const cap = Math.min(a[1], b[1]);
 
           min = Math.min(Math.max((slope * left) + int, cap),
                          Math.max((slope * right) + int, cap), min);
@@ -218,7 +218,7 @@ export class Circle implements Shape {
 
       return [ [ x, y ] ];
     } else if (other instanceof Polygon) {
-      let normal = null;
+      let normal;
       let magnitude = Infinity;
 
       for (let v of other.verticies) {
@@ -232,7 +232,7 @@ export class Circle implements Shape {
         }
       }
 
-      return (normal == null ? [] : [ normal ]);
+      return (normal === undefined ? [] : [ normal ]);
     } else {
       throw new Error("unsupported shape");
     }
@@ -267,7 +267,9 @@ export class Circle implements Shape {
   path(): Path2D {
     const path = new Path2D();
 
-    path.ellipse(this._x, this._y, this._radius, this._radius, 0, 0, 2 * Math.PI);
+    path.ellipse(this._x, this._y,
+                 this._radius, this._radius,
+                 0, 0, 2 * Math.PI);
 
     return path;
   }

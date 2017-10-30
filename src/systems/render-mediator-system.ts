@@ -11,7 +11,7 @@ export function RenderMediatorSystem(entity: Entity,
   let timeout: number | undefined;
 
   window.addEventListener("resize", () => {
-    if (timeout == undefined) {
+    if (timeout === undefined) {
       timeout = setTimeout(() => {
         timeout = undefined;
         buffer.resize();

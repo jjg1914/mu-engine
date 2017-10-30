@@ -3,10 +3,11 @@ import { Entity } from "./entity";
 export class BaseEntity implements Entity {
   private static _idCounter: number = 0;
 
-  private _handlers: { [event: string]: Function[] | null | undefined };
-  private _active: boolean;
-
   id: number;
+  parent?: Entity;
+
+  private _handlers: { [event: string]: Function[] | undefined };
+  private _active: boolean;
 
   constructor() {
     this.id = ++BaseEntity._idCounter;
@@ -22,7 +23,7 @@ export class BaseEntity implements Entity {
     const handlers = this._handlers[event];
     let rval = true;
 
-    if (handlers != null) {
+    if (handlers !== undefined) {
       let i = 0;
       const _f = () => {
         i += 1;
@@ -46,14 +47,14 @@ export class BaseEntity implements Entity {
     } else if (event !== "_last") {
       return this.send("_last", event, ...args);
     } else {
-      return false
+      return false;
     }
   }
 
   around(event: string, handler: Function): this {
     const handlers = this._handlers[event];
 
-    if (handlers != null) {
+    if (handlers !== undefined) {
       handlers.unshift(handler);
     } else {
       this._handlers[event] = [ handler ];
@@ -91,7 +92,7 @@ export class BaseEntity implements Entity {
       }
     };
 
-    if (handlers != null) {
+    if (handlers !== undefined) {
       handlers.push(wrapper);
     } else {
       this._handlers[event] = [ wrapper ];

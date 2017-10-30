@@ -10,7 +10,7 @@ export function transform(dest: Transform) {
     transform(dest, arguments[1][1], arguments[1][2], arguments[1][3],
                     arguments[1][4], arguments[1][5], arguments[1][6]);
   } else {
-    // args     dest 
+    // args     dest
     // a b c    x y z
     // e g f    u v w
     // 0 0 1    0 0 1

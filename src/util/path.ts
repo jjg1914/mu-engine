@@ -18,20 +18,31 @@ export interface PathOptions {
 export type Interpolate = [ number, number ];
 
 export class Path {
+  private _vertceies: PathVertex[];
+  private _closed: boolean;
+
+  constructor(vertecies: PathVertex[] = [],
+              options: Partial<PathOptions> = {}) {
+    this._vertceies = vertecies;
+    this._closed = options.closed !== undefined ? options.closed : false;
+  }
+
   static unserialize(data: any) {
     return new Path(data.vertecies, data);
   }
 
-  static interpolate(t: number, start: PathVertex, end: PathVertex): Interpolate {
+  static interpolate(t: number,
+                     start: PathVertex,
+                     end: PathVertex): Interpolate {
     switch (end.interpolate) {
-    case "polar":
-      return Path.polar(t, start, end);
-    case "polynomial":
-      return Path.polynomial(t, start, end);
-    case "linear":
-      return Path.linear(t, start, end);
-    default:
-      return [ end.x, end.y ];
+      case "polar":
+        return Path.polar(t, start, end);
+      case "polynomial":
+        return Path.polynomial(t, start, end);
+      case "linear":
+        return Path.linear(t, start, end);
+      default:
+        return [ end.x, end.y ];
     }
   }
 
@@ -42,7 +53,9 @@ export class Path {
     return [ start.x + (t * dx), start.y + (t * dy) ];
   }
 
-  static polynomial(t: number, start: PathVertex, end: PathVertex): Interpolate {
+  static polynomial(t: number,
+                    start: PathVertex,
+                    end: PathVertex): Interpolate {
     const h00 = (2 * t * t * t) - (3 * t * t) + 1;
     const h10 = (t * t * t) - (2 * t * t) + t;
     const h01 = (-2 * t * t * t) + (3 * t * t);
@@ -74,14 +87,6 @@ export class Path {
     const r = r1 + (r2 - r1) * t;
 
     return [ r * Math.cos(a) + cx, r * Math.sin(a) + cy ];
-  }
-
-  private _vertceies: PathVertex[];
-  private _closed: boolean;
-
-  constructor(vertecies: PathVertex[] = [], options: Partial<PathOptions> = {}) {
-    this._vertceies = vertecies;
-    this._closed = options.closed != null ? options.closed : false;
   }
 
   serialize(): any {
@@ -135,12 +140,12 @@ export class Path {
 
   calc(): PathVertex[] {
     const rval = new Array();
-    let prev: PathVertex | null  = null;
+    let prev: PathVertex | undefined;
 
     this._vertceies.forEach((e) => {
-      let v = Object.assign({}, e)
+      let v = Object.assign({}, e);
 
-      if (prev != null && !v.absolute) {
+      if (prev !== undefined && !v.absolute) {
         v.x += prev.x;
         v.y += prev.y;
       }
@@ -148,7 +153,7 @@ export class Path {
       rval.push(v);
       prev = v;
     });
-    
+
     return rval;
   }
 
@@ -175,12 +180,8 @@ export class Path {
     return this._vertceies.length === 0;
   }
 
-  closed(): boolean;
-  closed(value: null): boolean;
-  closed(value: boolean): void;
-
-  closed(value?: boolean | null): boolean | void {
-    if (value == null) {
+  closed(value?: boolean): boolean | void {
+    if (value === undefined) {
       return this._closed;
     } else {
       this._closed = value;
@@ -199,7 +200,8 @@ export class Path {
   tangentIndexAt(x: number, y: number, r: number = 0): number {
     return this.calc().findIndex((e, i, c) => {
       if ((i < c.length - 1 && c[i + 1].interpolate === "polynomial") ||
-          (this._closed && i === c.length - 1 && c[0].interpolate === "polynomial") ||
+          (this._closed && i === c.length - 1 &&
+           c[0].interpolate === "polynomial") ||
           ((this._closed || i > 0) && e.interpolate === "polar")) {
         const dx = (e.x + e.dx) - x;
         const dy = (e.y + e.dy) - y;

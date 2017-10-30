@@ -21,11 +21,11 @@ export interface CollisionEntity extends Entity {
   collision: CollisionData;
   movement?: MovementData;
   accel?: AccelData;
-};
+}
 
 interface Node extends Bounds {
   entities: ([ CollisionEntity, Bounds ])[];
-  children?: Node[] | null;
+  children?: Node[];
 }
 
 export interface QueryData {
@@ -52,12 +52,13 @@ export class Collision {
     return _checkBounds(shapeFor(target).bounds(), bounds);
   }
 
-  static check(target: { position: PositionData }, other: { position: PositionData }) {
+  static check(target: { position: PositionData },
+               other: { position: PositionData }) {
     let mask1 = shapeFor(target);
     let mask2 = shapeFor(other);
 
-    return _checkImpl(_hasNPhase(target) ? mask1 : null,
-                      _hasNPhase(other) ? mask2: null,
+    return _checkImpl(_hasNPhase(target) ? mask1 : undefined,
+                      _hasNPhase(other) ? mask2 : undefined,
                       mask1.bounds(), mask2.bounds());
   }
 
@@ -86,7 +87,7 @@ export class Collision {
     const dest = new Map();
     const rval = [];
 
-    _query(dest, id, this._root, bounds, null);
+    _query(dest, id, this._root, bounds);
 
     for (let e of dest) {
       if (e[1]) {
@@ -103,7 +104,7 @@ export class Collision {
     const rval = [];
 
     _query(dest, entity.id, this._root,
-           mask.bounds(), _hasNPhase(entity) ? mask : null);
+           mask.bounds(), _hasNPhase(entity) ? mask : undefined);
 
     for (let e of dest) {
       if (e[1]) {
@@ -121,7 +122,7 @@ function _add(entity: CollisionEntity,
               depth: number)
 : boolean {
   if (depth < DEPTH_LIMIT &&
-      node.children == null &&
+      node.children === undefined &&
       node.entities.length > 4) {
     _rebalanceNode(node);
   }
@@ -147,8 +148,8 @@ function _add(entity: CollisionEntity,
 
 function _query(dest: Map<number, QueryData | false>,
                 id: number, node: Node,
-                bounds: Bounds, mask: Shape | null): void {
-  if (node.children != null) {
+                bounds: Bounds, mask?: Shape): void {
+  if (node.children !== undefined) {
     for (let e of node.children) {
       if (_checkBounds(bounds, e)) {
         _query(dest, id, e, bounds, mask);
@@ -156,12 +157,12 @@ function _query(dest: Map<number, QueryData | false>,
     }
   } else {
     for (let e of node.entities) {
-      if (e[0].id != id && !dest.has(e[0].id)) {
+      if (e[0].id !== id && !dest.has(e[0].id)) {
         let vectors = _checkImpl(mask,
-                                 _hasNPhase(e[0]) ? shapeFor(e[0]) : null,
+                                 _hasNPhase(e[0]) ? shapeFor(e[0]) : undefined,
                                  bounds, e[1]);
 
-        if (vectors)  {
+        if (vectors) {
           dest.set(e[0].id, { entity: e[0], vectorData: vectors });
         } else {
           dest.set(e[0].id, false);
@@ -197,16 +198,16 @@ function _rebalanceNode(node: Node): void {
   }
 }
 
-function _checkImpl(target: Shape | null, other: Shape | null,
+function _checkImpl(target: Shape | undefined, other: Shape | undefined,
                     targetBounds: Bounds, otherBounds: Bounds)
 : Vector[] | false {
   let vectors = _checkBounds(targetBounds, otherBounds);
 
-  if (vectors && (target != null || other != null)) {
+  if (vectors && (target !== undefined || other !== undefined)) {
     vectors = _checkMasks(target, other, targetBounds, otherBounds);
   }
 
-  if (vectors)  {
+  if (vectors) {
     return vectors;
   } else {
     return false;
@@ -220,21 +221,21 @@ function _checkBounds(a: Bounds, b: Bounds): Vector[] | false {
       [ b.left - a.right - 1, 0 ],
       [ b.right - a.left + 1, 0 ],
       [ 0, b.top - a.bottom - 1 ],
-      [ 0, b.bottom - a.top  + 1 ],
+      [ 0, b.bottom - a.top + 1 ],
     ];
   } else {
     return false;
   }
 }
 
-function _checkMasks(a: Shape | null, b: Shape | null,
+function _checkMasks(a: Shape | undefined, b: Shape | undefined,
                      aBounds: Bounds, bBounds: Bounds)
 : Vector[] | false {
-  if (a == null) {
+  if (a === undefined) {
     a = Polygon.fromBounds(aBounds);
   }
 
-  if (b == null) {
+  if (b === undefined) {
     b = Polygon.fromBounds(bBounds);
   }
 

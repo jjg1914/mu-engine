@@ -12,8 +12,8 @@ export interface PathEntity extends Entity {
 
 export function PathSystem(entity: PathEntity): void {
   entity.on("premove", (event: MoveEventData) => {
-    if (entity.path.path != null) {
-      if (entity.path.t == null) {
+    if (entity.path.path !== undefined) {
+      if (entity.path.t === undefined) {
         entity.path.t = 0;
         entity.path.x = entity.position.x;
         entity.path.y = entity.position.y;

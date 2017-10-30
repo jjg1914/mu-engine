@@ -1,6 +1,6 @@
 import { Bounds } from "../util/shape";
 
-export type MoveEventType = "move" | "premove" | "postmove"
+export type MoveEventType = "move" | "premove" | "postmove";
 
 export interface MoveEventData {
   type: MoveEventType;
