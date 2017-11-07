@@ -17,6 +17,7 @@
   "scripts": {
     "test": "tsc && tslint --project .",
     "prepublish": "tsc",
+    "build": "tsc",
     "lint": "tslint --project .",
     "clean": "rm -rf lib"
   },
