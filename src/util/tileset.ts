@@ -1,7 +1,7 @@
 export class Tileset {
   private _image: HTMLImageElement;
-  private _width: number;
-  private _height: number;
+  // private _width: number;
+  // private _height: number;
   private _tileHeight: number;
   private _tileWidth: number;
   private _rows: number;
@@ -12,8 +12,8 @@ export class Tileset {
               width: number, height: number,
               tileWidth: number, tileHeight: number) {
     this._image = image;
-    this._width = width;
-    this._height = height;
+    // this._width = width;
+    // this._height = height;
     this._tileWidth = tileWidth;
     this._tileHeight = tileHeight;
 
