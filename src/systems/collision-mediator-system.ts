@@ -99,6 +99,8 @@ export function CollisionMediatorSystem(entity: Entity,
                 mtv: [ adjustedX, adjustedY ] as Vector,
               };
               d = tmpD;
+            } else {
+              // ignore
             }
           }
 
@@ -189,8 +191,16 @@ export function CollisionMediatorSystem(entity: Entity,
 
           if (target !== undefined) {
             visits[c.entity.id] = true;
-            e.send("collision", new ResolutionEvent("collision",
-                                                    c.entity, target));
+
+            if (!e.collision.ignoreSolid &&
+                typeof c.entity.collision.solid === "boolean" &&
+                c.entity.collision.solid) {
+              e.send("crush", new ResolutionEvent("crush",
+                                                  c.entity, target));
+            } else {
+              e.send("collision", new ResolutionEvent("collision",
+                                                      c.entity, target));
+            }
           }
         }
       }

@@ -1,6 +1,6 @@
 import { CollisionEntity, Vector } from "../util/collision";
 
-export type ResolutionEventType = "collision" | "bump";
+export type ResolutionEventType = "collision" | "bump" | "crush";
 
 export interface ResolutionEventData {
   type: ResolutionEventType;
