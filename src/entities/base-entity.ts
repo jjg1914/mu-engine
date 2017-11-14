@@ -15,40 +15,8 @@ export class BaseEntity implements Entity {
     this._active = true;
   }
 
-  send(event: string, ...args: any[]): boolean {
-    if (!this._active) {
-      return false;
-    }
-
-    const handlers = this._handlers[event];
-    let rval = true;
-
-    if (handlers !== undefined) {
-      let i = 0;
-      const _f = () => {
-        i += 1;
-
-        if (i < handlers.length) {
-          handlers[i].apply(this, args);
-        } else {
-          rval = false;
-        }
-
-        if (event !== "_last") {
-          return this.send("_last", event, ...(args.slice(1)));
-        } else {
-          return rval;
-        }
-      };
-      args.unshift(_f);
-      handlers[i].apply(this, args);
-
-      return rval;
-    } else if (event !== "_last") {
-      return this.send("_last", event, ...args);
-    } else {
-      return false;
-    }
+  send(event: string, data: any): boolean {
+    return this._implsend(event, event, data);
   }
 
   around(event: string, handler: Function): this {
@@ -64,8 +32,8 @@ export class BaseEntity implements Entity {
   }
 
   before(event: string, handler: Function): this {
-    this.around(event, (f: Function, ...args: any[]) => {
-      const rval = handler.apply(this, args);
+    this.around(event, (f: Function, data: any)=> {
+      const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
@@ -74,10 +42,10 @@ export class BaseEntity implements Entity {
   }
 
   after(event: string, handler: Function): this {
-    this.around(event, (f: Function, ...args: any[]) => {
+    this.around(event, (f: Function, data: any) => {
       const rval = f();
       if (!rval) {
-        handler.apply(this, args);
+        handler.call(this, data);
       }
     });
     return this;
@@ -85,8 +53,8 @@ export class BaseEntity implements Entity {
 
   on(event: string, handler: Function): this {
     const handlers = this._handlers[event];
-    const wrapper = (f: Function, ...args: any[]) => {
-      const rval = handler.apply(this, args);
+    const wrapper = (f: Function, data: any) => {
+      const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
@@ -102,7 +70,21 @@ export class BaseEntity implements Entity {
   }
 
   last(handler: Function): this {
-    return this.on("_last", handler);
+    const handlers = this._handlers._last;
+    const wrapper = (f: Function, event: string, data: any) => {
+      const rval = handler.call(this, event, data);
+      if (!rval) {
+        f();
+      }
+    };
+
+    if (handlers !== undefined) {
+      handlers.push(wrapper);
+    } else {
+      this._handlers._last = [ wrapper ];
+    }
+
+    return this;
   }
 
   activate(): void {
@@ -127,5 +109,49 @@ export class BaseEntity implements Entity {
 
   isInactive(): boolean {
     return !this._active;
+  }
+
+  private _implsend(handler: string, event: string, data: any): boolean {
+    if (!this._active) {
+      return false;
+    }
+
+    const handlers = this._handlers[handler];
+    let rval = true;
+
+    if (handlers !== undefined) {
+      let i = 0;
+      const _f = () => {
+        i += 1;
+
+        if (i < handlers.length) {
+          if (handler === event) {
+            handlers[i].call(this, _f, data);
+          } else {
+            handlers[i].call(this, _f, event, data);
+          }
+        } else {
+          rval = false;
+        }
+
+        if (handler !== "_last") {
+          return this._implsend("_last", event, data);
+        } else {
+          return rval;
+        }
+      };
+
+      if (handler === event) {
+        handlers[i].call(this, _f, data);
+      } else {
+        handlers[i].call(this, _f, event, data);
+      }
+
+      return rval;
+    } else if (handler !== "_last") {
+      return this._implsend("_last", event, data);
+    } else {
+      return false;
+    }
   }
 }

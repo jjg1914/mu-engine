@@ -13,12 +13,12 @@ export class CollectionEntity extends BaseEntity {
     super();
     this._collection = {};
 
-    this.last((event: string, ...args: any[]) => {
+    this.last((event: string, data: any) => {
       for (let e in this._collection) {
         const entity = this._collection[e];
 
         if (entity !== undefined) {
-          if (entity.send(event, ...args)) {
+          if (entity.send(event, data)) {
             return true;
           }
         }
