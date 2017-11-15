@@ -335,7 +335,7 @@ function _valueForProperty(type: string, value: string): BuildableProperty {
     case "file":
       return {
         type: "asset",
-        value: value,
+        value: (value.split("/").reverse()[0]),
       };
     default:
       try {

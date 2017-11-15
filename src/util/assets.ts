@@ -88,7 +88,7 @@ export class Assets {
           return this._cache[asset];
       }
     } else {
-      throw new Array("no asset: " + asset);
+      throw new Error("no asset: " + asset);
     }
   }
 
