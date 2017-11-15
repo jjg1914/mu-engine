@@ -2,6 +2,96 @@ import { Entity } from "./entity";
 
 export class BaseEntity implements Entity {
   private static _idCounter: number = 0;
+  private static _sendFrameIndex: number = 0;
+  private static _sendFrames: ({
+    target: BaseEntity;
+    index: number;
+    handle: string;
+    event: string;
+    data: any;
+    rval: boolean;
+  })[] = [];
+
+  private static _pushSendFrame(target: BaseEntity,
+                                handle: string,
+                                event: string,
+                                data: any) {
+    if (BaseEntity._sendFrameIndex == BaseEntity._sendFrames.length) {
+      const cap = (Math.max(BaseEntity._sendFrames.length, 8)) * 2;
+
+      while (BaseEntity._sendFrames.length < cap) {
+        BaseEntity._sendFrames.push({
+          target: undefined as any,
+          index: 0,
+          handle: "",
+          event: "",
+          data: undefined as any,
+          rval: true,
+        })
+      }
+    }
+
+    const frame = BaseEntity._sendFrames[BaseEntity._sendFrameIndex];
+    frame.index = 0;
+    frame.target = target;
+    frame.handle = handle;
+    frame.event = event;
+    frame.data = data;
+    frame.rval = true;
+
+    BaseEntity._sendFrameIndex += 1;
+  }
+
+  private static _popSendFrame() {
+    BaseEntity._sendFrameIndex -= 1;
+  }
+
+  private static _dispatchFunc(): boolean {
+    const frame = BaseEntity._sendFrames[BaseEntity._sendFrameIndex - 1];
+    const handlers = frame.target._handlers[frame.handle];
+
+    if (handlers !== undefined) {
+      const i = frame.index;
+      frame.index += 1;
+
+      if (i < handlers.length) {
+        if (frame.handle === frame.event) {
+          handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.data);
+        } else {
+          handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.event, frame.data);
+        }
+      } else if (frame.handle !== "_last") {
+        frame.rval = BaseEntity._sendImpl(frame.target,
+                                          "_last",
+                                          frame.event,
+                                          frame.data);
+      } else {
+        frame.rval = false;
+      }
+    } else if (frame.handle !== "_last") {
+      frame.rval = BaseEntity._sendImpl(frame.target,
+                                        "_last",
+                                        frame.event,
+                                        frame.data);
+    } else {
+      frame.rval = false;
+    } 
+
+    return frame.rval;
+  }
+
+  private static _sendImpl(target: BaseEntity,
+                           handle: string,
+                           event: string,
+                           data: any): boolean {
+    BaseEntity._pushSendFrame(target, handle, event, data);
+
+    try {
+      return BaseEntity._dispatchFunc();
+    } finally {
+      BaseEntity._popSendFrame();
+    }
+  }
 
   id: number;
   parent?: Entity;
@@ -16,7 +106,11 @@ export class BaseEntity implements Entity {
   }
 
   send(event: string, data: any): boolean {
-    return this._implsend(event, event, data);
+    if (this._active) {
+      return BaseEntity._sendImpl(this, event, event, data);
+    } else {
+      return false;
+    }
   }
 
   around(event: string, handler: Function): this {
@@ -109,49 +203,5 @@ export class BaseEntity implements Entity {
 
   isInactive(): boolean {
     return !this._active;
-  }
-
-  private _implsend(handler: string, event: string, data: any): boolean {
-    if (!this._active) {
-      return false;
-    }
-
-    const handlers = this._handlers[handler];
-    let rval = true;
-
-    if (handlers !== undefined) {
-      let i = 0;
-      const _f = () => {
-        i += 1;
-
-        if (i < handlers.length) {
-          if (handler === event) {
-            handlers[i].call(this, _f, data);
-          } else {
-            handlers[i].call(this, _f, event, data);
-          }
-        } else {
-          rval = false;
-        }
-
-        if (handler !== "_last") {
-          return this._implsend("_last", event, data);
-        } else {
-          return rval;
-        }
-      };
-
-      if (handler === event) {
-        handlers[i].call(this, _f, data);
-      } else {
-        handlers[i].call(this, _f, event, data);
-      }
-
-      return rval;
-    } else if (handler !== "_last") {
-      return this._implsend("_last", event, data);
-    } else {
-      return false;
-    }
   }
 }
