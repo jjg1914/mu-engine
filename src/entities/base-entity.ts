@@ -12,11 +12,23 @@ export class BaseEntity implements Entity {
     rval: boolean;
   })[] = [];
 
+  id: number;
+  parent?: Entity;
+
+  private _handlers: { [event: string]: Function[] | undefined };
+  private _active: boolean;
+
+  constructor() {
+    this.id = ++BaseEntity._idCounter;
+    this._handlers = {};
+    this._active = true;
+  }
+
   private static _pushSendFrame(target: BaseEntity,
                                 handle: string,
                                 event: string,
                                 data: any) {
-    if (BaseEntity._sendFrameIndex == BaseEntity._sendFrames.length) {
+    if (BaseEntity._sendFrameIndex === BaseEntity._sendFrames.length) {
       const cap = (Math.max(BaseEntity._sendFrames.length, 8)) * 2;
 
       while (BaseEntity._sendFrames.length < cap) {
@@ -27,7 +39,7 @@ export class BaseEntity implements Entity {
           event: "",
           data: undefined as any,
           rval: true,
-        })
+        });
       }
     }
 
@@ -58,7 +70,10 @@ export class BaseEntity implements Entity {
         if (frame.handle === frame.event) {
           handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.data);
         } else {
-          handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.event, frame.data);
+          handlers[i].call(frame.target,
+                           BaseEntity._dispatchFunc,
+                           frame.event,
+                           frame.data);
         }
       } else if (frame.handle !== "_last") {
         frame.rval = BaseEntity._sendImpl(frame.target,
@@ -75,7 +90,7 @@ export class BaseEntity implements Entity {
                                         frame.data);
     } else {
       frame.rval = false;
-    } 
+    }
 
     return frame.rval;
   }
@@ -91,18 +106,6 @@ export class BaseEntity implements Entity {
     } finally {
       BaseEntity._popSendFrame();
     }
-  }
-
-  id: number;
-  parent?: Entity;
-
-  private _handlers: { [event: string]: Function[] | undefined };
-  private _active: boolean;
-
-  constructor() {
-    this.id = ++BaseEntity._idCounter;
-    this._handlers = {};
-    this._active = true;
   }
 
   send(event: string, data: any): boolean {
@@ -126,12 +129,13 @@ export class BaseEntity implements Entity {
   }
 
   before(event: string, handler: Function): this {
-    this.around(event, (f: Function, data: any)=> {
+    this.around(event, (f: Function, data: any) => {
       const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
     });
+
     return this;
   }
 
@@ -142,6 +146,7 @@ export class BaseEntity implements Entity {
         handler.call(this, data);
       }
     });
+
     return this;
   }
 
