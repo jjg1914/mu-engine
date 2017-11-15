@@ -192,7 +192,8 @@ export function CollisionMediatorSystem(entity: Entity,
           if (target !== undefined) {
             visits[c.entity.id] = true;
 
-            if (!e.collision.ignoreSolid &&
+            if (query.length > 1 &&
+                !e.collision.ignoreSolid &&
                 typeof c.entity.collision.solid === "boolean" &&
                 c.entity.collision.solid) {
               e.send("crush", new ResolutionEvent("crush",
