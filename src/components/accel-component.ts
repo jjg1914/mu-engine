@@ -5,6 +5,7 @@ export interface AccelData {
   drag?: number;
   nogravity: boolean;
   nofriction: boolean;
+  restrict: boolean;
 }
 
 export class AccelComponent implements AccelData {
@@ -14,6 +15,7 @@ export class AccelComponent implements AccelData {
   drag?: number;
   nogravity: boolean;
   nofriction: boolean;
+  restrict: boolean;
 
   constructor(options?: Partial<AccelData>) {
     Object.assign(this, {
@@ -21,6 +23,7 @@ export class AccelComponent implements AccelData {
       yAccel: 0,
       nogravity: false,
       nofriction: false,
+      restrict: true,
     }, options);
   }
 }
