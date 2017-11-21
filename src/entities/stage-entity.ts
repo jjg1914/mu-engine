@@ -17,6 +17,7 @@ import { CollectionEntity } from "./collection-entity";
 import { MoveMediatorSystem } from "../systems/move-mediator-system";
 import { CollisionMediatorSystem } from "../systems/collision-mediator-system";
 import { RenderSystem } from "../systems/render-system";
+import { RenderBackendItem } from "../util/render-backend";
 
 export interface StageConfig {
   assets: Assets;
@@ -29,6 +30,7 @@ export class StageEntity extends CollectionEntity {
   render: RenderData;
 
   protected stage: Stage;
+  protected layers: RenderBackendItem[];
 
   constructor(config: StageConfig) {
     super();
@@ -52,17 +54,19 @@ export class StageEntity extends CollectionEntity {
     CollisionMediatorSystem(this, { bounds: this.stage.bounds() });
     RenderSystem(this);
 
-    const layers = this.stage.buildLayers(config);
+    this.layers = this.stage.buildLayers(config).map((e) => {
+      return {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+        render: e,
+      };
+    });
 
     this.on("render", (event: RenderEventData) => {
-      for (let e of layers) {
-        event.backend.add({
-          x: 0,
-          y: 0,
-          width: 0,
-          height: 0,
-          render: e,
-        });
+      for (let e of this.layers) {
+        event.backend.add(e);
       }
     });
   }

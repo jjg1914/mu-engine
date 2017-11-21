@@ -2,6 +2,15 @@ import { Entity } from "./entity";
 
 export class BaseEntity implements Entity {
   private static _idCounter: number = 0;
+  private static _sendFrameIndex: number = 0;
+  private static _sendFrames: ({
+    target: BaseEntity;
+    index: number;
+    handle: string;
+    event: string;
+    data: any;
+    rval: boolean;
+  })[] = [];
 
   id: number;
   parent?: Entity;
@@ -15,37 +24,93 @@ export class BaseEntity implements Entity {
     this._active = true;
   }
 
-  send(event: string, ...args: any[]): boolean {
-    if (!this._active) {
-      return false;
+  private static _pushSendFrame(target: BaseEntity,
+                                handle: string,
+                                event: string,
+                                data: any) {
+    if (BaseEntity._sendFrameIndex === BaseEntity._sendFrames.length) {
+      const cap = (Math.max(BaseEntity._sendFrames.length, 8)) * 2;
+
+      while (BaseEntity._sendFrames.length < cap) {
+        BaseEntity._sendFrames.push({
+          target: undefined as any,
+          index: 0,
+          handle: "",
+          event: "",
+          data: undefined as any,
+          rval: true,
+        });
+      }
     }
 
-    const handlers = this._handlers[event];
-    let rval = true;
+    const frame = BaseEntity._sendFrames[BaseEntity._sendFrameIndex];
+    frame.index = 0;
+    frame.target = target;
+    frame.handle = handle;
+    frame.event = event;
+    frame.data = data;
+    frame.rval = true;
+
+    BaseEntity._sendFrameIndex += 1;
+  }
+
+  private static _popSendFrame() {
+    BaseEntity._sendFrameIndex -= 1;
+  }
+
+  private static _dispatchFunc(): boolean {
+    const frame = BaseEntity._sendFrames[BaseEntity._sendFrameIndex - 1];
+    const handlers = frame.target._handlers[frame.handle];
 
     if (handlers !== undefined) {
-      let i = 0;
-      const _f = () => {
-        i += 1;
+      const i = frame.index;
+      frame.index += 1;
 
-        if (i < handlers.length) {
-          handlers[i].apply(this, args);
+      if (i < handlers.length) {
+        if (frame.handle === frame.event) {
+          handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.data);
         } else {
-          rval = false;
+          handlers[i].call(frame.target,
+                           BaseEntity._dispatchFunc,
+                           frame.event,
+                           frame.data);
         }
+      } else if (frame.handle !== "_last") {
+        frame.rval = BaseEntity._sendImpl(frame.target,
+                                          "_last",
+                                          frame.event,
+                                          frame.data);
+      } else {
+        frame.rval = false;
+      }
+    } else if (frame.handle !== "_last") {
+      frame.rval = BaseEntity._sendImpl(frame.target,
+                                        "_last",
+                                        frame.event,
+                                        frame.data);
+    } else {
+      frame.rval = false;
+    }
 
-        if (event !== "_last") {
-          return this.send("_last", event, ...(args.slice(1)));
-        } else {
-          return rval;
-        }
-      };
-      args.unshift(_f);
-      handlers[i].apply(this, args);
+    return frame.rval;
+  }
 
-      return rval;
-    } else if (event !== "_last") {
-      return this.send("_last", event, ...args);
+  private static _sendImpl(target: BaseEntity,
+                           handle: string,
+                           event: string,
+                           data: any): boolean {
+    BaseEntity._pushSendFrame(target, handle, event, data);
+
+    try {
+      return BaseEntity._dispatchFunc();
+    } finally {
+      BaseEntity._popSendFrame();
+    }
+  }
+
+  send(event: string, data: any): boolean {
+    if (this._active) {
+      return BaseEntity._sendImpl(this, event, event, data);
     } else {
       return false;
     }
@@ -64,29 +129,31 @@ export class BaseEntity implements Entity {
   }
 
   before(event: string, handler: Function): this {
-    this.around(event, (f: Function, ...args: any[]) => {
-      const rval = handler.apply(this, args);
+    this.around(event, (f: Function, data: any) => {
+      const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
     });
+
     return this;
   }
 
   after(event: string, handler: Function): this {
-    this.around(event, (f: Function, ...args: any[]) => {
+    this.around(event, (f: Function, data: any) => {
       const rval = f();
       if (!rval) {
-        handler.apply(this, args);
+        handler.call(this, data);
       }
     });
+
     return this;
   }
 
   on(event: string, handler: Function): this {
     const handlers = this._handlers[event];
-    const wrapper = (f: Function, ...args: any[]) => {
-      const rval = handler.apply(this, args);
+    const wrapper = (f: Function, data: any) => {
+      const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
@@ -102,7 +169,21 @@ export class BaseEntity implements Entity {
   }
 
   last(handler: Function): this {
-    return this.on("_last", handler);
+    const handlers = this._handlers._last;
+    const wrapper = (f: Function, event: string, data: any) => {
+      const rval = handler.call(this, event, data);
+      if (!rval) {
+        f();
+      }
+    };
+
+    if (handlers !== undefined) {
+      handlers.push(wrapper);
+    } else {
+      this._handlers._last = [ wrapper ];
+    }
+
+    return this;
   }
 
   activate(): void {

@@ -26,10 +26,14 @@ export function AccelSystem(entity: AccelEntity): void {
 
     let xSpeed = entity.movement.xSpeed;
     xSpeed = speedFor(dt, xSpeed, entity.accel.xAccel, f);
-    entity.movement.xSpeed = restrict(xSpeed, entity.movement.xMax);
+    entity.movement.xSpeed = (entity.accel.restrict ?
+                              restrict(xSpeed, entity.movement.xMax) :
+                              xSpeed);
 
     let ySpeed = entity.movement.ySpeed;
     ySpeed = speedFor(dt, ySpeed, entity.accel.yAccel + g, f);
-    entity.movement.ySpeed = restrict(ySpeed, entity.movement.yMax);
+    entity.movement.ySpeed = (entity.accel.restrict ?
+                              restrict(ySpeed, entity.movement.yMax) :
+                              ySpeed);
   });
 }

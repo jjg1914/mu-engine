@@ -10,7 +10,7 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "./lib",
-    "rootDir": "./src",
+    "rootDirs": [ "src", "test" ],
     "removeComments": true,
     "strict": true,
     "noImplicitAny": true,

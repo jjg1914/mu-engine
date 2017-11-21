@@ -14,9 +14,9 @@ export class StackEntity extends BaseEntity {
     super();
     this._stack = [];
 
-    this.last((event: string, ...args: any[]) => {
+    this.last((event: string, data: any) => {
       for (let i = 0; i < this._stack.length; ++i) {
-        if (this._stack[i][0].send(event, ...args)) {
+        if (this._stack[i][0].send(event, data)) {
           return true;
         } else if (this._stack[i][1].block !== undefined &&
                    this._stack[i][1].block) {
