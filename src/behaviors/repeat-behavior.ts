@@ -1,4 +1,4 @@
-import { Behavior, BehaviorState, BehaviorOptions  } from "./behavior";
+import { Behavior, BehaviorState, BehaviorOptions } from "./behavior";
 
 export class RepeatBehavior implements Behavior {
   private _pending: boolean;
