@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "scripts": {
-    "test": "tsc && mocha -r ts-node/register test/**/*.ts && tslint --project .",
+    "test": "mocha -r ts-node/register test/**/*.ts",
     "prepublish": "tsc",
     "build": "tsc",
     "lint": "tslint --project .",
