@@ -8,6 +8,13 @@ export * from "./util/sprite";
 export * from "./util/stage";
 export * from "./util/tileset";
 
+export * from "./behaviors/behavior";
+export * from "./behaviors/idle-behavior";
+export * from "./behaviors/repeat-behavior";
+export * from "./behaviors/select-behavior";
+export * from "./behaviors/sequence-behavior";
+export * from "./behaviors/parallel-behavior";
+
 export * from "./entities/entity";
 export * from "./entities/base-entity";
 export * from "./entities/collection-entity";
@@ -26,6 +33,7 @@ export * from "./events/render-event";
 export * from "./events/resolution-event";
 
 export * from "./systems/accel-system";
+export * from "./systems/behavior-system";
 export * from "./systems/animation-system";
 export * from "./systems/camera-system";
 export * from "./systems/collision-system";
@@ -42,6 +50,7 @@ export * from "./systems/render-mediator-system";
 export * from "./systems/restrict-system";
 
 export * from "./components/accel-component";
+export * from "./components/behavior-component";
 export * from "./components/animation-component";
 export * from "./components/collision-component";
 export * from "./components/control-component";
@@ -52,3 +61,4 @@ export * from "./components/render-component";
 
 export * from "./modules/shape";
 export * from "./modules/snap";
+export * from "./modules/behavior";
