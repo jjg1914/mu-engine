@@ -15,10 +15,11 @@
   },
   "homepage": "https://github.com/jjg1914/mu-engine#readme",
   "scripts": {
-    "test": "mocha -r ts-node/register test/**/*.ts",
-    "prepublish": "tsc",
+    "prepublish": "yarn run build",
     "build": "tsc",
+    "test": "mocha -r ts-node/register test/**/*.ts",
     "lint": "tslint --project .",
+    "check": "npm run build && npm run test && npm run lint",
     "clean": "rm -rf lib"
   },
   "devDependencies": {
