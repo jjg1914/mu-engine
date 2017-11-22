@@ -17,18 +17,40 @@
   "scripts": {
     "prepublish": "yarn run build",
     "build": "tsc",
-    "test": "mocha -r ts-node/register test/**/*.ts",
+    "test": "nyc mocha",
+    "test-watch": "npm run test -- --watch --watch-extensions ts -G",
     "lint": "tslint --project .",
     "check": "npm run build && npm run test && npm run lint",
     "clean": "rm -rf lib"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
   },
   "devDependencies": {
     "@types/chai": "^4.0.5",
     "@types/mocha": "^2.2.44",
     "@types/sinon": "^4.0.0",
+    "@types/sinon-chai": "^2.7.29",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
+    "nyc": "^11.3.0",
     "sinon": "^4.1.2",
+    "sinon-chai": "^2.14.0",
+    "source-map-support": "^0.5.0",
     "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
     "tslint-config-standard": "^7.0.0",
