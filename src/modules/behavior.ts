@@ -10,7 +10,7 @@ export interface BehaviorDSLLeaf {
 }
 
 export interface BehaviorDSLIdle {
-  idle: null
+  idle: undefined;
 }
 
 export interface BehaviorDSLRepeat {
@@ -37,27 +37,27 @@ export type BehaviorDSL = BehaviorDSLLeaf |
                           BehaviorDSLSequence;
 
 function isLeaf(dsl: BehaviorDSL): dsl is BehaviorDSLLeaf {
-  return (dsl as BehaviorDSLLeaf).leaf !== undefined;
+  return dsl.hasOwnProperty("leaf");
 }
 
 function isIdle(dsl: BehaviorDSL): dsl is BehaviorDSLIdle {
-  return (dsl as BehaviorDSLIdle).idle !== undefined;
+  return dsl.hasOwnProperty("idle");
 }
 
 function isRepeat(dsl: BehaviorDSL): dsl is BehaviorDSLRepeat {
-  return (dsl as BehaviorDSLRepeat).repeat !== undefined;
+  return dsl.hasOwnProperty("repeat");
 }
 
 function isParallel(dsl: BehaviorDSL): dsl is BehaviorDSLParallel {
-  return (dsl as BehaviorDSLParallel).parallel !== undefined;
+  return dsl.hasOwnProperty("parallel");
 }
 
 function isSelect(dsl: BehaviorDSL): dsl is BehaviorDSLSelect {
-  return (dsl as BehaviorDSLSelect).select !== undefined;
+  return dsl.hasOwnProperty("select");
 }
 
 function isSequence(dsl: BehaviorDSL): dsl is BehaviorDSLSequence {
-  return (dsl as BehaviorDSLSequence).sequence !== undefined;
+  return dsl.hasOwnProperty("sequence");
 }
 
 export function buildBehavior(dsl: BehaviorDSL): Behavior {

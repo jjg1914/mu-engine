@@ -1,4 +1,4 @@
-import { Behavior, BehaviorState, BehaviorOptions  } from "./behavior";
+import { Behavior, BehaviorState, BehaviorOptions } from "./behavior";
 
 export class ParallelBehavior implements Behavior {
   private _children: Behavior[];

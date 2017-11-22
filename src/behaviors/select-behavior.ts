@@ -1,4 +1,4 @@
-import { Behavior, BehaviorState, BehaviorOptions  } from "./behavior";
+import { Behavior, BehaviorState, BehaviorOptions } from "./behavior";
 
 export class SelectBehavior implements Behavior {
   private _index: number;
