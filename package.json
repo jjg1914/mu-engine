@@ -21,6 +21,7 @@
     "test-watch": "npm run test -- --watch --watch-extensions ts -G",
     "lint": "tslint --project .",
     "check": "npm run build && npm run test && npm run lint",
+    "coverage": "coveralls < coverage/lcov.info",
     "clean": "rm -rf lib"
   },
   "nyc": {
@@ -35,7 +36,7 @@
     ],
     "reporter": [
       "text-summary",
-      "html"
+      "lcov"
     ],
     "sourceMap": true,
     "instrument": true
@@ -46,6 +47,7 @@
     "@types/sinon": "^4.0.0",
     "@types/sinon-chai": "^2.7.29",
     "chai": "^4.1.2",
+    "coveralls": "^3.0.0",
     "mocha": "^4.0.1",
     "nyc": "^11.3.0",
     "sinon": "^4.1.2",
