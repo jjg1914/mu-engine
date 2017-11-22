@@ -1,6 +1,7 @@
-# shmup
+# mu-engine
 
-[![Build Status](https://travis-ci.org/jjg1914/shmup.svg?branch=master)](https://travis-ci.org/jjg1914/shmup)
+[![npm version](https://badge.fury.io/js/mu-engine.svg)](https://badge.fury.io/js/mu-engine)
+[![Build Status](https://travis-ci.org/mu-engine/mu-engine.svg?branch=master)](https://travis-ci.org/mu-engine/mu-engine)
 [![Coverage Status](https://coveralls.io/repos/github/mu-engine/mu-engine/badge.svg?branch=master)](https://coveralls.io/github/mu-engine/mu-engine?branch=master)
 [![Dependency Status](https://david-dm.org/mu-engine/mu-engine.svg)](https://david-dm.org/mu-engine/mu-engine)
 
