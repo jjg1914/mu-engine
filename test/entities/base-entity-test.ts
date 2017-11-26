@@ -1,10 +1,7 @@
-import "mocha";
+import "../test_helper";
 
-import * as chai  from "chai";
+import { expect } from "chai";
 import * as sinon from "sinon";
-import * as sinonChai from "sinon-chai";
-const expect = chai.expect;
-chai.use(sinonChai);
 
 import { BaseEntity } from "../../src/entities/base-entity";
 
