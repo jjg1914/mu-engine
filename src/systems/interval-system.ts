@@ -2,8 +2,8 @@ import { Entity } from "../entities/entity";
 import { IntervalEvent } from "../events/interval-event";
 
 const Now = (() => {
-  // tslint:disable-next-line:strict-type-predicates
   try {
+    // tslint:disable-next-line:strict-type-predicates
     if (typeof performance.now !== "function") {
       return () => performance.now();
     } else {
