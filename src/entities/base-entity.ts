@@ -1,5 +1,8 @@
 import { Entity } from "./entity";
 
+export interface BaseEntityConfig {
+}
+
 export class BaseEntity implements Entity {
   private static _idCounter: number = 0;
   private static _sendFrameIndex: number = 0;
@@ -18,7 +21,7 @@ export class BaseEntity implements Entity {
   private _handlers: { [event: string]: Function[] | undefined };
   private _active: boolean;
 
-  constructor() {
+  constructor(_config?: BaseEntityConfig) {
     this.id = ++BaseEntity._idCounter;
     this._handlers = {};
     this._active = true;
