@@ -9,7 +9,6 @@ export interface CanvasBufferConfig {
   height?: number;
   scale?: number;
   smoothing?: boolean;
-  background?: string;
   assets?: Assets;
 }
 
