@@ -23,12 +23,7 @@ interface BuildableTileLayer {
   data: number[][];
 }
 
-interface EntityDefinition {
-  new(config: { [ key: string ]: any }): any;
-}
-
 export interface BuildConfig {
-  // entities: { [ key: string ]: EntityDefinition | undefined };
   assets: { load(asset: string): any };
 }
 
@@ -248,7 +243,7 @@ export class Stage {
     const rval = [];
 
     for (let e of this._entities) {
-      const ctor = config.assets.load(e.type + "-entity") as EntityDefinition;
+      const ctor = config.assets.load(e.type + "-entity");
 
       if (ctor !== undefined) {
         const components = {} as {
