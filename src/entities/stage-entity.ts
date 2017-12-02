@@ -1,5 +1,5 @@
 import { Assets } from "../util/assets";
-import { Stage, EntityDefinition } from "../util/stage";
+import { Stage } from "../util/stage";
 import { RenderEventData } from "../events/render-event";
 
 import {
@@ -22,7 +22,6 @@ import { RenderBackendItem } from "../util/render-backend";
 export interface StageConfig {
   assets: Assets;
   stage: string;
-  entities: { [ key: string ]: EntityDefinition };
 }
 
 export class StageEntity extends CollectionEntity {
