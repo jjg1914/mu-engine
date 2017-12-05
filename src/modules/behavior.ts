@@ -2,7 +2,10 @@ import { Behavior } from "../behaviors/behavior";
 import { IdleBehavior } from "../behaviors/idle-behavior";
 import { RepeatBehavior } from "../behaviors/repeat-behavior";
 import { ParallelBehavior } from "../behaviors/parallel-behavior";
-import { PhaseBehavior, PhaseBehaviorConfig } from "../behaviors/phase-behavior";
+import {
+  PhaseBehavior,
+  PhaseBehaviorConfig,
+} from "../behaviors/phase-behavior";
 import { SelectBehavior } from "../behaviors/select-behavior";
 import { SequenceBehavior } from "../behaviors/sequence-behavior";
 
