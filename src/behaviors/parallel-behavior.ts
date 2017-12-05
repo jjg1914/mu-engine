@@ -14,17 +14,28 @@ export class ParallelBehavior implements Behavior {
   }
 
   call(options: BehaviorOptions): BehaviorState {
+    let status = 2;
+
     for (let i = 0; i < this._children.length; ++i) {
       switch (this._children[i].call(options)) {
         case "success":
-          return "success";
+          status = Math.min(status, 2);
+          break;
         case "failure":
-          return "failure";
+          status = Math.min(status, 1);
+          break;
         case "pending":
+          status = Math.min(status, 0);
           break;
       }
     }
 
-    return "pending";
+    if (status === 0) {
+      return "pending";
+    } else if (status === 1) {
+      return "failure";
+    } else {
+      return "success";
+    }
   }
 }
