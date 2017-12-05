@@ -2,6 +2,7 @@ import { Behavior } from "../behaviors/behavior";
 import { IdleBehavior } from "../behaviors/idle-behavior";
 import { RepeatBehavior } from "../behaviors/repeat-behavior";
 import { ParallelBehavior } from "../behaviors/parallel-behavior";
+import { PhaseBehavior, PhaseBehaviorConfig } from "../behaviors/phase-behavior";
 import { SelectBehavior } from "../behaviors/select-behavior";
 import { SequenceBehavior } from "../behaviors/sequence-behavior";
 
@@ -29,9 +30,15 @@ export interface BehaviorDSLSequence {
   sequence: BehaviorDSL[];
 }
 
+export interface BehaviorDSLPhase {
+  phase: BehaviorDSL;
+  params: PhaseBehaviorConfig;
+}
+
 export type BehaviorDSL = BehaviorDSLLeaf |
                           BehaviorDSLIdle |
                           BehaviorDSLRepeat |
+                          BehaviorDSLPhase |
                           BehaviorDSLParallel |
                           BehaviorDSLSelect |
                           BehaviorDSLSequence;
@@ -52,6 +59,10 @@ function isParallel(dsl: BehaviorDSL): dsl is BehaviorDSLParallel {
   return dsl.hasOwnProperty("parallel");
 }
 
+function isPhase(dsl: BehaviorDSL): dsl is BehaviorDSLPhase {
+  return dsl.hasOwnProperty("phase");
+}
+
 function isSelect(dsl: BehaviorDSL): dsl is BehaviorDSLSelect {
   return dsl.hasOwnProperty("select");
 }
@@ -67,6 +78,8 @@ export function buildBehavior(dsl: BehaviorDSL): Behavior {
     return new RepeatBehavior(buildBehavior(dsl.repeat));
   } else if (isParallel(dsl)) {
     return new ParallelBehavior(...dsl.parallel.map(buildBehavior));
+  } else if (isPhase(dsl)) {
+    return new PhaseBehavior(dsl.params, buildBehavior(dsl.phase));
   } else if (isSelect(dsl)) {
     return new SelectBehavior(...dsl.select.map(buildBehavior));
   } else if (isSequence(dsl)) {
