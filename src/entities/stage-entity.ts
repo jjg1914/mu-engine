@@ -21,7 +21,7 @@ import { RenderBackendItem } from "../util/render-backend";
 
 export interface StageConfig {
   assets: Assets;
-  stage: string;
+  stage: string | Stage;
 }
 
 export class StageEntity extends CollectionEntity {
@@ -34,7 +34,11 @@ export class StageEntity extends CollectionEntity {
   constructor(config: StageConfig) {
     super();
 
-    this.stage = config.assets.load(config.stage);
+    if (typeof config.stage === "string") {
+      this.stage = config.assets.load(config.stage);
+    } else {
+      this.stage = config.stage;
+    }
 
     this.position = new PositionComponent({
       width: this.stage.bounds().right + 1,
