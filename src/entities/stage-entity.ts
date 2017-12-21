@@ -22,6 +22,7 @@ import { RenderBackendItem } from "../util/render-backend";
 export interface StageConfig {
   assets: Assets;
   stage: string | Stage;
+  gravity?: number;
 }
 
 export class StageEntity extends CollectionEntity {
@@ -53,7 +54,10 @@ export class StageEntity extends CollectionEntity {
       this.put(e);
     }
 
-    MoveMediatorSystem(this, { gravity: 480, bounds: this.stage.bounds() });
+    MoveMediatorSystem(this, {
+      gravity: config.gravity || 0,
+      bounds: this.stage.bounds(),
+    });
     CollisionMediatorSystem(this, { bounds: this.stage.bounds() });
     RenderSystem(this);
 
