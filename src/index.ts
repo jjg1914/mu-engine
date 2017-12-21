@@ -39,6 +39,7 @@ export * from "./systems/camera-system";
 export * from "./systems/collision-system";
 export * from "./systems/collision-mediator-system";
 export * from "./systems/control-2-way-system";
+export * from "./systems/control-4-way-system";
 export * from "./systems/input-system";
 export * from "./systems/interval-system";
 export * from "./systems/landing-system";
