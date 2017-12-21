@@ -3,21 +3,21 @@ import { Tileset } from "./tileset";
 import { Bounds, Circle, Polygon } from "./shape";
 import { RenderData } from "../components/render-component";
 
-interface BuildableProperty {
+export interface BuildableProperty {
   value: any;
   type: "value" | "asset";
 }
 
-interface BuildableComponent {
+export interface BuildableComponent {
   [key: string]: BuildableProperty | undefined;
 }
 
-interface BuildableEntity {
+export interface BuildableEntity {
   type: string;
   components: { [key: string]: BuildableComponent | undefined };
 }
 
-interface BuildableTileLayer {
+export interface BuildableTileLayer {
   width: number;
   height: number;
   data: number[][];
@@ -91,7 +91,7 @@ export class Stage {
           }
         }
 
-        stage._tiles.push({
+        stage.addLayer({
           width: width,
           height: height,
           data: tiles,
@@ -171,7 +171,7 @@ export class Stage {
             }
           }
 
-          stage._addEntity(entity);
+          stage.addEntity(entity);
         }
       }
     }
@@ -287,10 +287,13 @@ export class Stage {
     return rval;
   }
 
-  private _addEntity(entity: BuildableEntity): void {
+  addEntity(entity: BuildableEntity): void {
     this._entities.push(entity);
   }
 
+  addLayer(layer: BuildableTileLayer): void {
+    this._tiles.push(layer);
+  }
 }
 
 function _set(dest: BuildableEntity,
