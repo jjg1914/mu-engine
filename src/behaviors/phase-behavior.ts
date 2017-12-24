@@ -5,7 +5,7 @@ import {
 } from "./behavior";
 
 export interface PhaseBehaviorConfig {
-  period: number;
+  period: number | (() => number);
 }
 
 export class PhaseBehavior implements Behavior {
@@ -32,7 +32,11 @@ export class PhaseBehavior implements Behavior {
       const status = this._child.call(options);
 
       if (status === "success") {
-        this._t = this._config.period;
+        if (typeof this._config.period === "function") {
+          this._t = this._config.period();
+        } else{
+          this._t = this._config.period;
+        }
       }
 
       return status;

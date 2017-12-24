@@ -4,7 +4,7 @@ export class SequenceBehavior implements Behavior {
   private _index: number;
   private _children: Behavior[];
 
-  constructor(...args: Behavior[]) {
+  constructor(args: Behavior[]) {
     this._index = 0;
     this._children = [ ...args ];
   }

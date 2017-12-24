@@ -3,7 +3,7 @@ import { Behavior, BehaviorState, BehaviorOptions } from "./behavior";
 export class ParallelBehavior implements Behavior {
   private _children: Behavior[];
 
-  constructor(...args: Behavior[]) {
+  constructor(args: Behavior[]) {
     this._children = [ ...args ];
   }
 

@@ -6,14 +6,17 @@ export * from "./util/path";
 export * from "./util/shape";
 export * from "./util/sprite";
 export * from "./util/stage";
+export * from "./util/store";
 export * from "./util/tileset";
 
 export * from "./behaviors/behavior";
 export * from "./behaviors/idle-behavior";
+export * from "./behaviors/parallel-behavior";
+export * from "./behaviors/phase-behavior";
 export * from "./behaviors/repeat-behavior";
 export * from "./behaviors/select-behavior";
 export * from "./behaviors/sequence-behavior";
-export * from "./behaviors/parallel-behavior";
+export * from "./behaviors/whilst-behavior";
 
 export * from "./entities/entity";
 export * from "./entities/base-entity";
