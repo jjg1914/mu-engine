@@ -11,6 +11,7 @@ export interface RenderData {
   transform?: Transform;
   shape?: Shape;
   text?: string;
+  font?: string;
   children?: RenderData[];
 }
 
@@ -24,6 +25,7 @@ export class RenderComponent implements RenderData {
   transform?: Transform;
   shape?: Shape;
   text?: string;
+  font?: string;
   children?: RenderData[];
 
   constructor(options?: Partial<RenderData>) {

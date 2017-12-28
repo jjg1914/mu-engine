@@ -87,16 +87,37 @@ function _render(ctx: CanvasRenderingContext2D,
       ctx.fill(path as any); // TODO
     }
   } else if (data.text !== undefined) {
-    ctx.font = "8pt monospace";
+    const fontset = _parseFontset(data.font);
 
-    if (data.stroke !== undefined) {
-      ctx.strokeStyle = data.stroke;
-      ctx.strokeText(data.text, root.x, root.y);
-    }
+    if (fontset !== undefined) {
+      ctx.save();
+      try {
+        const tileset = assets.loadTileset(fontset);
+        ctx.translate(root.x, root.y);
 
-    if (data.fill !== undefined) {
-      ctx.fillStyle = data.fill;
-      ctx.fillText(data.text, root.x, root.y);
+        for (let i = 0; i < data.text.length; ++i) {
+          const c = data.text.charCodeAt(i) + 1;
+          tileset.drawTile(ctx, c, i, 0);
+        }
+      } finally {
+        ctx.restore();
+      }
+    } else {
+      if (data.font !== undefined) {
+        ctx.font = data.font;
+      } else {
+        ctx.font = "8pt monospace";
+      }
+ 
+      if (data.stroke !== undefined) {
+        ctx.strokeStyle = data.stroke;
+        ctx.strokeText(data.text, root.x, root.y);
+      }
+
+      if (data.fill !== undefined) {
+        ctx.fillStyle = data.fill;
+        ctx.fillText(data.text, root.x, root.y);
+      }
     }
   } else {
     if (data.stroke !== undefined) {
@@ -117,4 +138,14 @@ function _render(ctx: CanvasRenderingContext2D,
   }
 
   ctx.restore();
+}
+
+function _parseFontset(s?: string): string | void {
+  if (s !== undefined) {
+    const i = s.indexOf("!");
+
+    if (i >= 0 && s.substr(0, i)) {
+      return s.substr(i + 1);
+    }
+  }
 }
