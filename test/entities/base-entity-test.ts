@@ -268,6 +268,45 @@ describe("BaseEntity", function() {
     });
   });
 
+  describe("#off", function() {
+    it("should not invoke handler", function() {
+      const spy1 = sinon.spy();
+      this.entity.on("foo", spy1);
+      const spy2 = sinon.spy();
+      this.entity.on("foo", spy2);
+      this.entity.on("bar", spy2);
+      const spy3 = sinon.spy();
+      this.entity.on("foo", spy3);
+      this.entity.on("foo", spy2);
+
+      this.entity.off(spy2);
+
+      this.entity.send("foo", "foo");
+      this.entity.send("bar", "foo");
+
+      expect(spy2).not.to.have.been.called;
+    });
+
+    it("should invoke other handlers", function() {
+      const spy1 = sinon.spy();
+      this.entity.on("foo", spy1);
+      const spy2 = sinon.spy();
+      this.entity.on("foo", spy2);
+      this.entity.on("bar", spy2);
+      const spy3 = sinon.spy();
+      this.entity.on("foo", spy3);
+      this.entity.on("foo", spy2);
+
+      this.entity.off(spy2);
+
+      this.entity.send("foo", "foo");
+      this.entity.send("bar", "foo");
+
+      sinon.assert.callOrder(spy1.withArgs("foo"),
+                             spy3.withArgs("foo"));
+    });
+  });
+
   describe("#activate", function() {
     it("should set active to true", function () {
       this.entity.setActive(false);

@@ -6,6 +6,7 @@ export interface Entity {
   before(event: string, handler: Function): this;
   after(event: string, handler: Function): this;
   around(event: string, handler: Function): this;
+  off(handler: Function): this;
   activate(): void;
   deactivate(): void;
   toggle(): void;
