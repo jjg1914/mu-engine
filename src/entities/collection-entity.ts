@@ -8,10 +8,12 @@ import {
 
 export class CollectionEntity extends BaseEntity {
   private _collection: { [id: number ]: Entity | undefined };
+  private _length: number;
 
   constructor() {
     super();
     this._collection = {};
+    this._length = 0;
 
     this.last((event: string, data: any) => {
       for (let e in this._collection) {
@@ -36,10 +38,15 @@ export class CollectionEntity extends BaseEntity {
     });
   }
 
+  size(): number {
+    return this._length;
+  }
+
   put(entity: Entity): this {
     if (entity.parent === undefined) {
       this._collection[entity.id] = entity;
       entity.parent = this;
+      this._length += 1;
     }
 
     return this;
@@ -49,6 +56,7 @@ export class CollectionEntity extends BaseEntity {
     if (entity.parent === this) {
       delete entity.parent;
       delete this._collection[entity.id];
+      this._length -= 1;
     }
 
     return this;
