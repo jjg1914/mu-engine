@@ -30,7 +30,7 @@ export function RenderMediatorSystem(entity: Entity,
     ev.type = "render";
     entity.send("render", ev);
 
-    ev.backend.render(ev.viewport);
+    buffer.render(ev.viewport);
 
     ev.type = "postrender";
     entity.send("postrender", ev);

@@ -12,6 +12,6 @@ export interface RenderBackendItem {
 
 export interface RenderBackend {
   add(data: RenderBackendItem): void;
-  render(viewport: Bounds): void;
+  render(viewport: Bounds, buffer: HTMLCanvasElement): void;
   assets(): Assets;
 }

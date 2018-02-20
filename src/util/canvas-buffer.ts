@@ -1,4 +1,5 @@
 import { Assets } from "./assets";
+import { Bounds } from "./shape";
 import { RenderEventData, RenderEvent } from "../events/render-event";
 import { RenderBackend } from "./render-backend";
 import { RenderBackend2D } from "./render-backends/render-backend-2d";
@@ -53,6 +54,10 @@ export class CanvasBuffer {
 
   emit(): RenderEventData {
     return new RenderEvent(this._backend, this._width, this._height);
+  }
+
+  render(viewport: Bounds): void {
+    this._backend.render(viewport, this._buffer);
   }
 
   flip(): void {

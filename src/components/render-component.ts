@@ -1,29 +1,33 @@
 import { Transform } from "../util/matrix";
-import { Shape } from "../util/shape";
+import { Shape, Dimensions } from "../util/shape";
 
 export interface RenderData {
+  visible?: boolean;
+  wraparound?: boolean;
   stroke?: string;
   fill?: string;
-  image?: HTMLImageElement | HTMLCanvasElement;
+  image?: HTMLImageElement | HTMLCanvasElement | string;
   sprite?: string;
   spriteFrame?: number;
   depth?: number;
   transform?: Transform;
-  shape?: Shape;
+  shape?: Shape | Dimensions;
   text?: string;
   font?: string;
   children?: RenderData[];
 }
 
 export class RenderComponent implements RenderData {
+  visible?: boolean;
+  wraparound?: boolean;
   stroke?: string;
   fill?: string;
-  image?: HTMLImageElement | HTMLCanvasElement;
+  image?: HTMLImageElement | HTMLCanvasElement | string;
   sprite?: string;
   spriteFrame?: number;
   depth?: number;
   transform?: Transform;
-  shape?: Shape;
+  shape?: Shape | Dimensions;
   text?: string;
   font?: string;
   children?: RenderData[];
