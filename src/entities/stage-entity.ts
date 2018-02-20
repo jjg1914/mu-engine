@@ -46,9 +46,7 @@ export class StageEntity extends CollectionEntity {
       height: this.stage.bounds().bottom + 1,
     });
 
-    this.render = new RenderComponent({
-      fill: "#FFFFFF",
-    });
+    this.render = new RenderComponent();
 
     for (let e of this.stage.buildEntities(config)) {
       this.put(e);
