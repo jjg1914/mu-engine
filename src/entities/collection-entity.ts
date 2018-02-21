@@ -4,6 +4,7 @@ import { BaseEntity } from "./base-entity";
 import {
   EntityAddEventData,
   EntityDestroyEventData,
+  EntityChildEvent,
 } from "../events/entity-event";
 
 export class CollectionEntity extends BaseEntity {
@@ -47,6 +48,8 @@ export class CollectionEntity extends BaseEntity {
       this._collection[entity.id] = entity;
       entity.parent = this;
       this._length += 1;
+
+      entity.send("enter", new EntityChildEvent("enter"));
     }
 
     return this;
@@ -54,6 +57,8 @@ export class CollectionEntity extends BaseEntity {
 
   remove(entity: Entity): this {
     if (entity.parent === this) {
+      entity.send("exit", new EntityChildEvent("exit"));
+
       delete entity.parent;
       delete this._collection[entity.id];
       this._length -= 1;
