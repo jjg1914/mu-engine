@@ -34,7 +34,7 @@ export class PhaseBehavior implements Behavior {
       if (status === "success") {
         if (typeof this._config.period === "function") {
           this._t = this._config.period();
-        } else{
+        } else {
           this._t = this._config.period;
         }
       }

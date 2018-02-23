@@ -18,7 +18,7 @@ export function interval(entity: Entity,
       count = count - delay;
       f();
     }
-  }
+  };
 
   entity.on("interval", handler);
 
@@ -26,5 +26,5 @@ export function interval(entity: Entity,
     cancel: function() {
       entity.off(handler);
     },
-  }
+  };
 }

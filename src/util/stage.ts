@@ -175,7 +175,8 @@ export class Stage {
                 type: "value",
               };
             } else if (f.polygon) {
-              const points = f.polygon[0].$.points.split(" ").map((e: string) => {
+              const pairs = f.polygon[0].$.points.split(" ");
+              const points = pairs.map((e: string) => {
                 return e.split(",", 2).map((e) => Number(e));
               }) as ([ number, number ])[];
 
@@ -354,9 +355,9 @@ function _set(dest: BuildableEntity,
     throw new Error("invalid path: " + path);
   } else {
     const [ component, key] = parts;
-    const destComponent = dest.components[component];
 
-    if (destComponent !== undefined) {
+    if (dest.components.hasOwnProperty(component)) {
+      const destComponent = dest.components[component];
       destComponent[key] = _valueForProperty(type, value);
     } else {
       dest.components[component] = {

@@ -77,7 +77,6 @@ export class Assets {
     return value;
   }
 
-
   load(asset: string): any {
     const data = this._config.assets[asset];
 

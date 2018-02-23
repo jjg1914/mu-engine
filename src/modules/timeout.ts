@@ -18,7 +18,7 @@ export function timeout(entity: Entity,
       entity.off(handler);
       f();
     }
-  }
+  };
 
   entity.on("interval", handler);
 
@@ -26,5 +26,5 @@ export function timeout(entity: Entity,
     cancel: function() {
       entity.off(handler);
     },
-  }
+  };
 }

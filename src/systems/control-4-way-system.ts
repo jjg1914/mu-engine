@@ -22,7 +22,7 @@ export function Control4WaySystem(entity: Control4WaySystemEntity): void {
     const left = _isLeft(ev.inputs);
     const right = _isRight(ev.inputs);
 
-    switch (_directionFor(ev.which))  {
+    switch (_directionFor(ev.which)) {
       case "up":
         entity.accel.yAccel = _accelFor(entity.control.yAccel, up, down);
 
@@ -31,7 +31,7 @@ export function Control4WaySystem(entity: Control4WaySystemEntity): void {
           entity.send("start-up", new ControlEvent("start-up"));
         } else {
           entity.movement.ySpeed = Math.max(entity.movement.ySpeed, 0);
-        
+
           if (entity.accel.xAccel < 0) {
             entity.send("start-left", new ControlEvent("start-left"));
           } else if (entity.accel.xAccel > 0) {
@@ -108,7 +108,7 @@ export function Control4WaySystem(entity: Control4WaySystemEntity): void {
     const left = _isLeft(ev.inputs);
     const right = _isRight(ev.inputs);
 
-    switch (_directionFor(ev.which))  {
+    switch (_directionFor(ev.which)) {
       case "up":
         entity.accel.yAccel = _accelFor(entity.control.yAccel, up, down);
 
@@ -170,7 +170,7 @@ export function Control4WaySystem(entity: Control4WaySystemEntity): void {
 }
 
 function _directionFor(which: string): "up" | "down" | "left" | "right" | "" {
-  switch (which)  {
+  switch (which) {
     case "ArrowLeft":
     case "A":
       return "left";

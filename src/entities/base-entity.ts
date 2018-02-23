@@ -71,7 +71,9 @@ export class BaseEntity implements Entity {
 
       if (i < handlers.length) {
         if (frame.handle === frame.event) {
-          handlers[i][0].call(frame.target, BaseEntity._dispatchFunc, frame.data);
+          handlers[i][0].call(frame.target,
+                              BaseEntity._dispatchFunc,
+                              frame.data);
         } else {
           handlers[i][0].call(frame.target,
                               BaseEntity._dispatchFunc,
@@ -120,7 +122,7 @@ export class BaseEntity implements Entity {
   }
 
   around(event: string, handler: Function): this {
-    this._fetchHandlers(event).unshift([ handler, handler ])
+    this._fetchHandlers(event).unshift([ handler, handler ]);
 
     return this;
   }
@@ -216,7 +218,7 @@ export class BaseEntity implements Entity {
   private _fetchHandlers(event: string): ([ Function | Function ])[] {
     const handlers = this._handlers[event];
 
-    if (handlers == undefined) {
+    if (handlers === undefined) {
       return (this._handlers[event] = []);
     } else {
       return handlers;

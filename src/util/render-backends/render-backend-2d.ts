@@ -181,7 +181,7 @@ function _render(ctx: CanvasRenderingContext2D,
       } else {
         ctx.font = "8pt monospace";
       }
- 
+
       if (data.stroke !== undefined) {
         ctx.strokeStyle = data.stroke;
         ctx.strokeText(data.text, root.x, root.y);
