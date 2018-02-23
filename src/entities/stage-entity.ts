@@ -21,7 +21,8 @@ import { RenderBackendItem } from "../util/render-backend";
 
 export interface StageConfig {
   assets: Assets;
-  stage: string;
+  stage: string | Stage;
+  gravity?: number;
 }
 
 export class StageEntity extends CollectionEntity {
@@ -34,22 +35,27 @@ export class StageEntity extends CollectionEntity {
   constructor(config: StageConfig) {
     super();
 
-    this.stage = config.assets.load(config.stage);
+    if (typeof config.stage === "string") {
+      this.stage = config.assets.load(config.stage);
+    } else {
+      this.stage = config.stage;
+    }
 
     this.position = new PositionComponent({
       width: this.stage.bounds().right + 1,
       height: this.stage.bounds().bottom + 1,
     });
 
-    this.render = new RenderComponent({
-      fill: "#FFFFFF",
-    });
+    this.render = new RenderComponent();
 
     for (let e of this.stage.buildEntities(config)) {
       this.put(e);
     }
 
-    MoveMediatorSystem(this, { gravity: 480, bounds: this.stage.bounds() });
+    MoveMediatorSystem(this, {
+      gravity: config.gravity || 0,
+      bounds: this.stage.bounds(),
+    });
     CollisionMediatorSystem(this, { bounds: this.stage.bounds() });
     RenderSystem(this);
 

@@ -1,3 +1,5 @@
+import { Store } from "../util/store";
+
 import { Behavior } from "../behaviors/behavior";
 import { IdleBehavior } from "../behaviors/idle-behavior";
 import { RepeatBehavior } from "../behaviors/repeat-behavior";
@@ -8,9 +10,10 @@ import {
 } from "../behaviors/phase-behavior";
 import { SelectBehavior } from "../behaviors/select-behavior";
 import { SequenceBehavior } from "../behaviors/sequence-behavior";
+import { WhilstBehavior } from "../behaviors/whilst-behavior";
 
 export interface BehaviorDSLLeaf {
-  leaf: Behavior;
+  leaf: Behavior | ((store: Store) => Behavior);
 }
 
 export interface BehaviorDSLIdle {
@@ -33,6 +36,11 @@ export interface BehaviorDSLSequence {
   sequence: BehaviorDSL[];
 }
 
+export interface BehaviorDSLWhilst {
+  whilst: BehaviorDSL;
+  loop: BehaviorDSL;
+}
+
 export interface BehaviorDSLPhase {
   phase: BehaviorDSL;
   params: PhaseBehaviorConfig;
@@ -44,7 +52,8 @@ export type BehaviorDSL = BehaviorDSLLeaf |
                           BehaviorDSLPhase |
                           BehaviorDSLParallel |
                           BehaviorDSLSelect |
-                          BehaviorDSLSequence;
+                          BehaviorDSLSequence |
+                          BehaviorDSLWhilst;
 
 function isLeaf(dsl: BehaviorDSL): dsl is BehaviorDSLLeaf {
   return dsl.hasOwnProperty("leaf");
@@ -74,19 +83,40 @@ function isSequence(dsl: BehaviorDSL): dsl is BehaviorDSLSequence {
   return dsl.hasOwnProperty("sequence");
 }
 
-export function buildBehavior(dsl: BehaviorDSL): Behavior {
+function isWhilst(dsl: BehaviorDSL): dsl is BehaviorDSLWhilst {
+  return dsl.hasOwnProperty("whilst");
+}
+
+export function buildBehavior(dsl: BehaviorDSL, store?: Store): Behavior {
+  if (store === undefined) {
+    store = new Store();
+  }
+
   if (isLeaf(dsl)) {
-    return dsl.leaf;
+    if (typeof dsl.leaf === "function") {
+      return dsl.leaf(store);
+    } else {
+      return dsl.leaf;
+    }
   } else if (isRepeat(dsl)) {
     return new RepeatBehavior(buildBehavior(dsl.repeat));
   } else if (isParallel(dsl)) {
-    return new ParallelBehavior(...dsl.parallel.map(buildBehavior));
+    return new ParallelBehavior(dsl.parallel.map((e) => {
+      return buildBehavior(e, store);
+    }));
   } else if (isPhase(dsl)) {
-    return new PhaseBehavior(dsl.params, buildBehavior(dsl.phase));
+    return new PhaseBehavior(dsl.params, buildBehavior(dsl.phase, store));
   } else if (isSelect(dsl)) {
-    return new SelectBehavior(...dsl.select.map(buildBehavior));
+    return new SelectBehavior(dsl.select.map((e) => {
+      return buildBehavior(e, store);
+    }));
   } else if (isSequence(dsl)) {
-    return new SequenceBehavior(...dsl.sequence.map(buildBehavior));
+    return new SequenceBehavior(dsl.sequence.map((e) => {
+      return buildBehavior(e, store);
+    }));
+  } else if (isWhilst(dsl)) {
+    return new WhilstBehavior(buildBehavior(dsl.whilst, store),
+                              buildBehavior(dsl.loop, store));
   } else if (isIdle(dsl)) {
     return new IdleBehavior();
   } else {

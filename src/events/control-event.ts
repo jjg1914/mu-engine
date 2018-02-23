@@ -1,7 +1,11 @@
 export type ControlEventType = "start-left" |
                                "start-right" |
+                               "start-up" |
+                               "start-down" |
                                "stop-left" |
-                               "stop-right";
+                               "stop-right" |
+                               "stop-up" |
+                               "stop-down";
 
 export interface ControlEventData {
   type: ControlEventType;

@@ -5,10 +5,8 @@ import { Bounds, Dimensions } from "../util/shape";
 import { RenderEventData } from "../events/render-event";
 
 export interface CameraConfig {
-  camera: {
-    bounds: Bounds;
-    dimensions: Dimensions;
-  };
+  bounds: Bounds;
+  dimensions: Dimensions;
 }
 
 export interface CameraEntity {
@@ -20,8 +18,8 @@ export function CameraSystem(entity: Entity,
                              config: CameraConfig): void {
   entity.on("prerender", (ev: RenderEventData) => {
     const targetBounds = shapeFor(target).bounds();
-    const cameraW = config.camera.dimensions.width;
-    const cameraH = config.camera.dimensions.height;
+    const cameraW = config.dimensions.width;
+    const cameraH = config.dimensions.height;
 
     let [ x, y ] = [
       (targetBounds.left + targetBounds.right) / 2,
@@ -34,10 +32,10 @@ export function CameraSystem(entity: Entity,
     x = Number((Math.floor(x) + (targetBounds.left % 1)).toFixed(4));
     y = Number((Math.floor(y) + (targetBounds.top % 1)).toFixed(4));
 
-    x = Math.min(Math.max(x, config.camera.bounds.left),
-                 config.camera.bounds.right - cameraW + 1);
-    y = Math.min(Math.max(y, config.camera.bounds.top),
-                 config.camera.bounds.bottom - cameraH + 1);
+    x = Math.min(Math.max(x, config.bounds.left),
+                 config.bounds.right - cameraW + 1);
+    y = Math.min(Math.max(y, config.bounds.top),
+                 config.bounds.bottom - cameraH + 1);
 
     ev.viewport.left = x;
     ev.viewport.top = y;

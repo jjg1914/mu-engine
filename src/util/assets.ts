@@ -3,7 +3,8 @@ import { Sprite } from "./sprite";
 import { Stage } from "./stage";
 import { Tileset } from "./tileset";
 
-type Cacheable = Sprite | Tileset;
+export type RawImage = HTMLImageElement | HTMLCanvasElement;
+type Cacheable = Sprite | Tileset | RawImage;
 
 export type AssetItem = { type: string, data: any };
 export type AssetTable = { [ key: string ]: AssetItem | undefined };
@@ -65,6 +66,17 @@ export class Assets {
     return value;
   }
 
+  loadRawimage(asset: string): RawImage {
+    const value = this.load(asset);
+
+    if (!(value instanceof HTMLImageElement) &&
+        !(value instanceof HTMLCanvasElement)) {
+      throw new Error("not a rawimage: " + asset);
+    }
+
+    return value;
+  }
+
   load(asset: string): any {
     const data = this._config.assets[asset];
 
@@ -74,6 +86,15 @@ export class Assets {
           return Path.unserialize(data.data);
         case "stage":
           return Stage.unserialize(data.data);
+        case "rawimage":
+          if (this._cache[asset] === undefined) {
+            const image = new Image();
+            image.src = data.data;
+
+            this._cache[asset] = image;
+          }
+
+          return this._cache[asset];
         case "sprite":
           if (this._cache[asset] === undefined) {
             this._cache[asset] = Sprite.unserialize(data.data);
@@ -110,6 +131,10 @@ export class Assets {
     return this._filterType("tileset");
   }
 
+  rawimages(): string[] {
+    return this._filterType("rawimage");
+  }
+
   private _filterType(type: string): string[] {
     const rval: string[] = [];
 
@@ -135,6 +160,12 @@ export class Assets {
             break;
           case "tileset":
             this._cache[e] = Tileset.unserialize(value.data);
+            break;
+          case "rawimage":
+            const image = new Image();
+            image.src = value.data;
+
+            this._cache[e] = image;
             break;
         }
       }

@@ -18,7 +18,7 @@ export class BaseEntity implements Entity {
   id: number;
   parent?: Entity;
 
-  private _handlers: { [event: string]: Function[] | undefined };
+  private _handlers: { [event: string]: [ Function, Function ][] | undefined };
   private _active: boolean;
 
   constructor(_config?: BaseEntityConfig) {
@@ -71,12 +71,14 @@ export class BaseEntity implements Entity {
 
       if (i < handlers.length) {
         if (frame.handle === frame.event) {
-          handlers[i].call(frame.target, BaseEntity._dispatchFunc, frame.data);
+          handlers[i][0].call(frame.target,
+                              BaseEntity._dispatchFunc,
+                              frame.data);
         } else {
-          handlers[i].call(frame.target,
-                           BaseEntity._dispatchFunc,
-                           frame.event,
-                           frame.data);
+          handlers[i][0].call(frame.target,
+                              BaseEntity._dispatchFunc,
+                              frame.event,
+                              frame.data);
         }
       } else if (frame.handle !== "_last") {
         frame.rval = BaseEntity._sendImpl(frame.target,
@@ -120,72 +122,72 @@ export class BaseEntity implements Entity {
   }
 
   around(event: string, handler: Function): this {
-    const handlers = this._handlers[event];
-
-    if (handlers !== undefined) {
-      handlers.unshift(handler);
-    } else {
-      this._handlers[event] = [ handler ];
-    }
+    this._fetchHandlers(event).unshift([ handler, handler ]);
 
     return this;
   }
 
   before(event: string, handler: Function): this {
-    this.around(event, (f: Function, data: any) => {
+    this._fetchHandlers(event).unshift([ (f: Function, data: any) => {
       const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
-    });
+    }, handler ]);
 
     return this;
   }
 
   after(event: string, handler: Function): this {
-    this.around(event, (f: Function, data: any) => {
+    this._fetchHandlers(event).unshift([ (f: Function, data: any) => {
       const rval = f();
       if (!rval) {
         handler.call(this, data);
       }
-    });
+    }, handler ]);
 
     return this;
   }
 
   on(event: string, handler: Function): this {
-    const handlers = this._handlers[event];
-    const wrapper = (f: Function, data: any) => {
+    this._fetchHandlers(event).push([ (f: Function, data: any) => {
       const rval = handler.call(this, data);
       if (!rval) {
         f();
       }
-    };
-
-    if (handlers !== undefined) {
-      handlers.push(wrapper);
-    } else {
-      this._handlers[event] = [ wrapper ];
-    }
+    }, handler ]);
 
     return this;
   }
 
   last(handler: Function): this {
-    const handlers = this._handlers._last;
-    const wrapper = (f: Function, event: string, data: any) => {
-      const rval = handler.call(this, event, data);
-      if (!rval) {
-        f();
+    this._fetchHandlers("_last").push([
+      (f: Function, event: string, data: any) => {
+        const rval = handler.call(this, event, data);
+        if (!rval) {
+          f();
+        }
+      },
+      handler,
+    ]);
+
+    return this;
+  }
+
+  off(handler: Function): this {
+    for (let e in this._handlers) {
+      if (this._handlers.hasOwnProperty(e)) {
+        const handlers = this._fetchHandlers(e);
+
+        for (let i = 0; i < handlers.length;) {
+          if (handlers[i][1] === handler) {
+            handlers.splice(i, 1);
+          } else {
+            i += 1;
+          }
+        }
       }
-    };
-
-    if (handlers !== undefined) {
-      handlers.push(wrapper);
-    } else {
-      this._handlers._last = [ wrapper ];
     }
-
     return this;
   }
 
@@ -211,5 +213,15 @@ export class BaseEntity implements Entity {
 
   isInactive(): boolean {
     return !this._active;
+  }
+
+  private _fetchHandlers(event: string): ([ Function | Function ])[] {
+    const handlers = this._handlers[event];
+
+    if (handlers === undefined) {
+      return (this._handlers[event] = []);
+    } else {
+      return handlers;
+    }
   }
 }

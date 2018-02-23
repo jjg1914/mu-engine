@@ -4,6 +4,7 @@ import { BaseEntity } from "./base-entity";
 import {
   EntityAddEventData,
   EntityDestroyEventData,
+  EntityChildEvent,
   Config,
 } from "../events/entity-event";
 
@@ -44,12 +45,17 @@ export class StackEntity extends BaseEntity {
     if (entity.parent === undefined) {
       this._stack.unshift([ entity, config ]);
       entity.parent = this;
+      entity.send("enter", new EntityChildEvent("enter"));
     }
 
     return this;
   }
 
   pop(): this {
+    if (this._stack.length > 0) {
+      this._stack[0][0].send("exit", new EntityChildEvent("exit"));
+    }
+
     const e = this._stack.shift();
     if (e !== undefined) {
       delete e[0].parent;
