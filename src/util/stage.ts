@@ -9,12 +9,12 @@ export interface BuildableProperty {
 }
 
 export interface BuildableComponent {
-  [key: string]: BuildableProperty | undefined;
+  [key: string]: BuildableProperty;
 }
 
 export interface BuildableEntity {
   type: string;
-  components: { [key: string]: BuildableComponent | undefined };
+  components: { [key: string]: BuildableComponent };
 }
 
 export interface BuildableTileLayer {
@@ -25,6 +25,57 @@ export interface BuildableTileLayer {
 
 export interface BuildConfig {
   assets: { load(asset: string): any };
+}
+
+export interface StageTMX {
+  map: {
+    $: {
+      width: string;
+      height: string;
+      tilewidth: string;
+      tileheight: string;
+    };
+    tileset?: ({ $: { source: string } })[];
+    properties?: ({
+      property?: ({
+        $: {
+          name: string;
+          type: string;
+          value: string;
+        };
+      })[];
+    })[];
+    layer?: ({
+      $: {
+        width: string;
+        height: string;
+      };
+      data?: ({ _?: string; })[];
+    })[];
+    objectgroup?: ({
+      object?: ({
+        $: {
+          type?: string;
+          x: string;
+          y: string;
+          width: string;
+          height: string;
+          visible?: string;
+        };
+        ellipse?: {}[];
+        polygon?: ({ $: { points: string; } })[];
+        properties?: ({
+          property?: ({
+            $: {
+              name: string;
+              type: string;
+              value: string;
+            };
+          })[];
+        })[];
+      })[];
+    })[];
+  };
 }
 
 export class Stage {
@@ -40,12 +91,13 @@ export class Stage {
     this._tiles = [];
     this._width = width;
     this._height = height;
-    this._tileset = (tileset !== undefined) ?
-                    tileset.split("/").reverse()[0] : undefined;
+    if (tileset !== undefined) {
+      this._tileset = tileset.split("/").reverse()[0];
+    }
     this._props = {};
   }
 
-  static fromTMX(data: any): Stage {
+  static fromTMX(data: StageTMX): Stage {
     const width = Number(data.map.$.width) * Number(data.map.$.tilewidth);
     const height = Number(data.map.$.height) * Number(data.map.$.tileheight);
 
@@ -70,9 +122,11 @@ export class Stage {
         const height = Number(e.$.height);
 
         let data = "";
-        for (let f of e.data) {
-          if (f._ !== undefined) {
-            data += f._;
+        if (e.data !== undefined) {
+          for (let f of e.data) {
+            if (f._ !== undefined) {
+              data += f._;
+            }
           }
         }
         const dataRows = data.trim().split("\n");
@@ -101,77 +155,82 @@ export class Stage {
 
     if (data.map.objectgroup !== undefined) {
       for (let e of data.map.objectgroup) {
-        for (let f of e.object) {
-          const entity = {
-            type: (f.$.type !== undefined ? f.$.type : "default"),
-            components: {},
-          } as BuildableEntity;
+        if (e.object !== undefined) {
+          for (let f of e.object) {
+            const entity = {
+              type: (f.$.type !== undefined ? f.$.type : "default"),
+              components: {},
+            } as BuildableEntity;
 
-          let x = Number(f.$.x);
-          let y = Number(f.$.y);
-          let width = Number(f.$.width);
-          let height = Number(f.$.height);
-          let mask = undefined as BuildableProperty | undefined;
+            let x = Number(f.$.x);
+            let y = Number(f.$.y);
+            let width = Number(f.$.width);
+            let height = Number(f.$.height);
+            let mask = undefined as BuildableProperty | undefined;
 
-          if (f.ellipse) {
-            const r = Number(f.$.width) / 2;
-            mask = {
-              value: new Circle(r, 0, 0),
-              type: "value",
-            };
-          } else if (f.polygon) {
-            const points = f.polygon[0].$.points.split(" ").map((e: string) => {
-              return e.split(",", 2).map((e) => Number(e));
-            }) as ([ number, number ])[];
+            if (f.ellipse) {
+              const r = Number(f.$.width) / 2;
+              mask = {
+                value: new Circle(r, 0, 0),
+                type: "value",
+              };
+            } else if (f.polygon) {
+              const points = f.polygon[0].$.points.split(" ").map((e: string) => {
+                return e.split(",", 2).map((e) => Number(e));
+              }) as ([ number, number ])[];
 
-            let left = Infinity;
-            let top = Infinity;
-            let right = -Infinity;
-            let bottom = -Infinity;
+              let left = Infinity;
+              let top = Infinity;
+              let right = -Infinity;
+              let bottom = -Infinity;
 
-            for (let e of points) {
-              left = Math.min(e[0], left);
-              top = Math.min(e[1], top);
-              right = Math.max(e[0], right);
-              bottom = Math.max(e[1], bottom);
+              for (let e of points) {
+                left = Math.min(e[0], left);
+                top = Math.min(e[1], top);
+                right = Math.max(e[0], right);
+                bottom = Math.max(e[1], bottom);
+              }
+
+              x += left;
+              y += top;
+              width = right - left + 1;
+              height = bottom - top + 1;
+
+              mask = {
+                type: "value",
+                value: new Polygon(points.map((e) => {
+                  return [ e[0] - left, e[1] - top ] as [ number, number ];
+                })),
+              };
             }
 
-            x += left;
-            y += top;
-            width = right - left + 1;
-            height = bottom - top + 1;
-
-            mask = {
-              type: "value",
-              value: new Polygon(points.map((e) => {
-                return [ e[0] - left, e[1] - top ] as [ number, number ];
-              })),
+            entity.components.position = {
+              x: { value: x, type: "value" },
+              y: { value: y, type: "value" },
+              width: { value: width, type: "value" },
+              height: { value: height, type: "value" },
             };
-          }
 
-          entity.components.position = {
-            x: { value: x, type: "value" },
-            y: { value: y, type: "value" },
-            width: { value: width, type: "value" },
-            height: { value: height, type: "value" },
-            mask: mask,
-          };
+            if (mask !== undefined) {
+              entity.components.position.mask = mask;
+            }
 
-          if (f.$.visible === undefined || Number(f.$.visible) !== 0) {
-            entity.components.render = {};
-          }
+            if (f.$.visible === undefined || Number(f.$.visible) !== 0) {
+              entity.components.render = {};
+            }
 
-          if (f.properties !== undefined) {
-            for (let g of f.properties) {
-              if (g.property !== undefined) {
-                for (let h of g.property) {
-                  _set(entity, h.$.name, h.$.value, h.$.type);
+            if (f.properties !== undefined) {
+              for (let g of f.properties) {
+                if (g.property !== undefined) {
+                  for (let h of g.property) {
+                    _set(entity, h.$.name, h.$.value, h.$.type);
+                  }
                 }
               }
             }
-          }
 
-          stage.addEntity(entity);
+            stage.addEntity(entity);
+          }
         }
       }
     }
@@ -211,13 +270,13 @@ export class Stage {
 
       for (let e of this._tiles) {
         const layer = document.createElement("canvas");
-        layer.width = this._width;
-        layer.height = this._height;
         const layerCtx = layer.getContext("2d");
-
         if (layerCtx === null) {
           throw new Error("Failed to create 2d context");
         }
+
+        layer.width = this._width;
+        layer.height = this._height;
 
         tileset.ready(() => {
           for (let j = 0; j < e.data.length; j += 1) {
@@ -229,9 +288,6 @@ export class Stage {
 
         rval.push({
           image: layer,
-          depth: 0,
-          transform: [ 1, 0, 0, 0, 1, 0 ],
-          children: [],
         });
       }
     }
@@ -253,28 +309,20 @@ export class Stage {
         for (let f in e.components) {
           const component = e.components[f];
 
-          if (component !== undefined) {
-            for (let g in component) {
-              const value = component[g];
+          const dest = {} as BuildableComponent;
+          components[f] = dest;
 
-              if (value !== undefined) {
-                let dest = components[f];
+          for (let g in component) {
+            const value = component[g];
 
-                if (dest === undefined) {
-                  dest = {};
-                  components[f] = dest;
-                }
-
-                switch (value.type) {
-                  case "asset":
-                    dest[g] = config.assets.load(value.value);
-                    break;
-                  case "value":
-                  default:
-                    dest[g] = value.value;
-                    break;
-                }
-              }
+            switch (value.type) {
+              case "asset":
+                dest[g] = config.assets.load(value.value);
+                break;
+              case "value":
+              default:
+                dest[g] = value.value;
+                break;
             }
           }
         }
