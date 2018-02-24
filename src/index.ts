@@ -8,6 +8,7 @@ export * from "./util/sprite";
 export * from "./util/stage";
 export * from "./util/store";
 export * from "./util/tileset";
+export * from "./util/timeline";
 
 export * from "./behaviors/behavior";
 export * from "./behaviors/idle-behavior";
