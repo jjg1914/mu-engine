@@ -4,6 +4,8 @@ import { PositionData } from "../components/position-component";
 import { MovementData } from "../components/movement-component";
 import { PathData } from "../components/path-component";
 
+import { PathEvent } from "../events/path-event";
+
 export interface PathEntity extends Entity {
   position: PositionData;
   movement: MovementData;
@@ -21,16 +23,24 @@ export function PathSystem(entity: PathEntity): void {
         entity.path.t += event.dt;
       }
 
-      const [ x, y ] = entity.path.path.interpolate(entity.path.t,
-                                                    entity.path.repeat);
-      let oldX = entity.position.x;
-      let oldY = entity.position.y;
+      if (!entity.path.repeat && entity.path.t > entity.path.path.duration()) {
+        entity.path.path = undefined;
 
-      entity.position.x = Math.trunc(x) + entity.path.x;
-      entity.position.y = Math.trunc(y) + entity.path.y;
+        entity.send("path-end", new PathEvent());
+      } else {
+        const [ x, y ] = entity.path.path.interpolate(entity.path.t,
+                                                      entity.path.repeat,
+                                                      entity.path.x,
+                                                      entity.path.y);
+        let oldX = entity.position.x;
+        let oldY = entity.position.y;
 
-      entity.movement.xChange = entity.position.x - oldX;
-      entity.movement.yChange = entity.position.y - oldY;
+        entity.position.x = Math.trunc(x);
+        entity.position.y = Math.trunc(y);
+
+        entity.movement.xChange = entity.position.x - oldX;
+        entity.movement.yChange = entity.position.y - oldY;
+      }
     }
   });
 }
