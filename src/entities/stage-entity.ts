@@ -21,8 +21,10 @@ import { RenderBackendItem } from "../util/render-backend";
 
 export interface StageConfig {
   assets: Assets;
-  stage: string | Stage;
+  stage?: string | Stage;
   gravity?: number;
+  position?: Partial<PositionData>;
+  render?: Partial<RenderData>;
 }
 
 export class StageEntity extends CollectionEntity {
@@ -35,7 +37,11 @@ export class StageEntity extends CollectionEntity {
   constructor(config: StageConfig) {
     super();
 
-    if (typeof config.stage === "string") {
+    if (config.stage === undefined) {
+      const width = config.position && config.position.width || 0;
+      const height = config.position && config.position.height || 0;
+      this.stage = new Stage(width, height);
+    } else if (typeof config.stage === "string") {
       this.stage = config.assets.load(config.stage);
     } else {
       this.stage = config.stage;

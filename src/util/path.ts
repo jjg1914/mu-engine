@@ -138,14 +138,19 @@ export class Path {
     return this._vertceies[i];
   }
 
-  calc(): PathVertex[] {
+  calc(sx: number = 0, sy: number = 0): PathVertex[] {
     const rval = new Array();
     let prev: PathVertex | undefined;
 
     this._vertceies.forEach((e) => {
       let v = Object.assign({}, e);
 
-      if (prev !== undefined && !v.absolute) {
+      if (prev === undefined) {
+        if (!v.absolute) {
+          v.x += sx;
+          v.y += sy;
+        }
+      } else if (!v.absolute) {
         v.x += prev.x;
         v.y += prev.y;
       }
@@ -178,6 +183,16 @@ export class Path {
 
   empty(): boolean {
     return this._vertceies.length === 0;
+  }
+
+  duration(): number {
+    let total = (this.closed() ? this._vertceies[0].t : 0);
+
+    for (let i = 1; i < this._vertceies.length; ++i) {
+      total += this._vertceies[i].t;
+    }
+
+    return total;
   }
 
   closed(value?: boolean): boolean | void {
@@ -226,9 +241,12 @@ export class Path {
     });
   }
 
-  interpolate(t: number, repeat: boolean = true): Interpolate {
+  interpolate(t: number,
+              repeat: boolean = true,
+              sx: number = 0,
+              sy: number = 0): Interpolate {
     let s = 0;
-    const calc = this.calc();
+    const calc = this.calc(sx, sy);
 
     if (repeat) {
       let total = (this.closed() ? calc[0].t : 0);

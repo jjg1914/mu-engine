@@ -11,7 +11,7 @@ export interface RenderData {
   spriteFrame?: number;
   depth?: number;
   transform?: Transform;
-  shape?: Shape | Dimensions;
+  shape?: Shape | Dimensions | Path2D;
   text?: string;
   font?: string;
   children?: RenderData[];

@@ -72,8 +72,9 @@ function _render(ctx: CanvasRenderingContext2D,
 
   if (data.sprite !== undefined) {
     const sprite = assets.loadSprite(data.sprite);
-    sprite.drawFrame(ctx, data.spriteFrame !== undefined ? data.spriteFrame : 0,
-                     root.x, root.y);
+    const frame = data.spriteFrame !== undefined && !isNaN(data.spriteFrame) ?
+                  data.spriteFrame : 0;
+    sprite.drawFrame(ctx, frame, root.x, root.y);
   } else if (data.image !== undefined) {
     const image = (typeof data.image === "string") ?
                   assets.loadRawimage(data.image) : data.image;
@@ -133,8 +134,18 @@ function _render(ctx: CanvasRenderingContext2D,
       }
     }
   } else if (data.shape !== undefined) {
-    if ((data.shape instanceof Polygon) ||
-        (data.shape instanceof Circle)) {
+    if (data.shape instanceof Path2D) {
+      if (data.stroke !== undefined) {
+        ctx.strokeStyle = data.stroke;
+        ctx.stroke(data.shape);
+      }
+
+      if (data.fill !== undefined) {
+        ctx.fillStyle = data.fill;
+        ctx.fill(data.shape as any); // TODO
+      }
+    } else if ((data.shape instanceof Polygon) ||
+              (data.shape instanceof Circle)) {
       const path = data.shape.path();
 
       if (data.stroke !== undefined) {
