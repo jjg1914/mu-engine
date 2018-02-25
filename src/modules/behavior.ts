@@ -1,5 +1,3 @@
-import { Store } from "../util/store";
-
 import { Behavior } from "../behaviors/behavior";
 import { IdleBehavior } from "../behaviors/idle-behavior";
 import { RepeatBehavior } from "../behaviors/repeat-behavior";
@@ -13,7 +11,7 @@ import { SequenceBehavior } from "../behaviors/sequence-behavior";
 import { WhilstBehavior } from "../behaviors/whilst-behavior";
 
 export interface BehaviorDSLLeaf {
-  leaf: Behavior | ((store: Store) => Behavior);
+  leaf: Behavior | (() => Behavior);
 }
 
 export interface BehaviorDSLIdle {
@@ -87,14 +85,10 @@ function isWhilst(dsl: BehaviorDSL): dsl is BehaviorDSLWhilst {
   return dsl.hasOwnProperty("whilst");
 }
 
-export function buildBehavior(dsl: BehaviorDSL, store?: Store): Behavior {
-  if (store === undefined) {
-    store = new Store();
-  }
-
+export function buildBehavior(dsl: BehaviorDSL): Behavior {
   if (isLeaf(dsl)) {
     if (typeof dsl.leaf === "function") {
-      return dsl.leaf(store);
+      return dsl.leaf();
     } else {
       return dsl.leaf;
     }
@@ -102,21 +96,21 @@ export function buildBehavior(dsl: BehaviorDSL, store?: Store): Behavior {
     return new RepeatBehavior(buildBehavior(dsl.repeat));
   } else if (isParallel(dsl)) {
     return new ParallelBehavior(dsl.parallel.map((e) => {
-      return buildBehavior(e, store);
+      return buildBehavior(e);
     }));
   } else if (isPhase(dsl)) {
-    return new PhaseBehavior(dsl.params, buildBehavior(dsl.phase, store));
+    return new PhaseBehavior(dsl.params, buildBehavior(dsl.phase));
   } else if (isSelect(dsl)) {
     return new SelectBehavior(dsl.select.map((e) => {
-      return buildBehavior(e, store);
+      return buildBehavior(e);
     }));
   } else if (isSequence(dsl)) {
     return new SequenceBehavior(dsl.sequence.map((e) => {
-      return buildBehavior(e, store);
+      return buildBehavior(e);
     }));
   } else if (isWhilst(dsl)) {
-    return new WhilstBehavior(buildBehavior(dsl.whilst, store),
-                              buildBehavior(dsl.loop, store));
+    return new WhilstBehavior(buildBehavior(dsl.whilst),
+                              buildBehavior(dsl.loop));
   } else if (isIdle(dsl)) {
     return new IdleBehavior();
   } else {
