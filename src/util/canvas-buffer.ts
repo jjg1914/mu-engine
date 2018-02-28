@@ -10,6 +10,7 @@ export interface CanvasBufferConfig {
   height?: number;
   scale?: number;
   smoothing?: boolean;
+  debug?: boolean;
   assets?: Assets;
 }
 
@@ -48,7 +49,7 @@ export class CanvasBuffer {
     if (backendCtx2D === null) {
       throw new Error("Failed to create 2d context");
     } else {
-      this._backend = new RenderBackend2D(backendCtx2D, config.assets);
+      this._backend = new RenderBackend2D(backendCtx2D, config);
     }
   }
 
