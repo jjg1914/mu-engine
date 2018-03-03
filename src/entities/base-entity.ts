@@ -176,15 +176,13 @@ export class BaseEntity implements Entity {
 
   off(handler: Function): this {
     for (let e in this._handlers) {
-      if (this._handlers.hasOwnProperty(e)) {
-        const handlers = this._fetchHandlers(e);
+      const handlers = this._fetchHandlers(e);
 
-        for (let i = 0; i < handlers.length;) {
-          if (handlers[i][1] === handler) {
-            handlers.splice(i, 1);
-          } else {
-            i += 1;
-          }
+      for (let i = 0; i < handlers.length;) {
+        if (handlers[i][1] === handler) {
+          handlers.splice(i, 1);
+        } else {
+          i += 1;
         }
       }
     }
@@ -215,7 +213,7 @@ export class BaseEntity implements Entity {
     return !this._active;
   }
 
-  private _fetchHandlers(event: string): ([ Function | Function ])[] {
+  private _fetchHandlers(event: string): ([ Function , Function ])[] {
     const handlers = this._handlers[event];
 
     if (handlers === undefined) {

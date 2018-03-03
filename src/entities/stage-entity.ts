@@ -47,12 +47,12 @@ export class StageEntity extends CollectionEntity {
       this.stage = config.stage;
     }
 
-    this.position = new PositionComponent({
+    this.position = new PositionComponent(Object.assign({
       width: this.stage.bounds().right + 1,
       height: this.stage.bounds().bottom + 1,
-    });
+    }, config && config.position));
 
-    this.render = new RenderComponent();
+    this.render = new RenderComponent(config && config.render);
 
     for (let e of this.stage.buildEntities(config)) {
       this.put(e);

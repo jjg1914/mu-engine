@@ -16,13 +16,13 @@ export class ControlComponent implements ControlData {
   jumpCutoff: number;
 
   constructor(options?: Partial<ControlData>) {
-    Object.assign(this, {
-      xAccel: 0,
-      yAccel: 0,
-      xSpeed: 0,
-      ySpeed: 0,
-      jumpSpeed: 0,
-      jumpCutoff: 0,
-    }, options);
+    this.xAccel = 0;
+    this.yAccel = 0;
+    this.xSpeed = 0;
+    this.ySpeed = 0;
+    this.jumpSpeed = 0;
+    this.jumpCutoff = 0;
+
+    Object.assign(this, options);
   }
 }

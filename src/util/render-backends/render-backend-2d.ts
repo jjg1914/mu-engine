@@ -3,17 +3,24 @@ import { RenderBackend, RenderBackendItem } from "../render-backend";
 import { Bounds, Dimensions, Circle, Polygon } from "../shape";
 import { Assets } from "../assets";
 
+export class RenderBackend2DConfig {
+  debug?: boolean;
+  assets?: Assets;
+}
+
 export class RenderBackend2D implements RenderBackend {
   private _depths: number[];
   private _layers: { [ key: number ]: RenderBackendItem[] | undefined };
   private _ctx: CanvasRenderingContext2D;
   private _assets: Assets;
+  private _debug: boolean;
 
-  constructor(ctx: CanvasRenderingContext2D, assets?: Assets) {
+  constructor(ctx: CanvasRenderingContext2D, config?: RenderBackend2DConfig) {
     this._depths = [ 0 ];
     this._layers = { 0: [] };
     this._ctx = ctx;
-    this._assets = assets !== undefined ? assets : new Assets({ assets: {} });
+    this._assets = config && config.assets || new Assets({ assets: {} });
+    this._debug = !!(config && config.debug);
   }
 
   add(data: RenderBackendItem): void {
@@ -38,7 +45,12 @@ export class RenderBackend2D implements RenderBackend {
 
       if (layer !== undefined) {
         for (let j = 0; j < layer.length; ++j) {
-          _render(this._ctx, buffer, layer[j].render, layer[j], this._assets);
+          _render(this._ctx,
+                  buffer,
+                  layer[j].render,
+                  layer[j],
+                  this._assets,
+                  this._debug);
         }
 
         layer.length = 0;
@@ -55,7 +67,8 @@ function _render(ctx: CanvasRenderingContext2D,
                  buffer: HTMLCanvasElement,
                  data: RenderData,
                  root: RenderBackendItem,
-                 assets: Assets): void {
+                 assets: Assets,
+                 debug: boolean): void {
   if (data.visible !== undefined && !data.visible) {
     return;
   }
@@ -217,11 +230,30 @@ function _render(ctx: CanvasRenderingContext2D,
 
   if (data.children !== undefined) {
     for (let i = 0; i < data.children.length; ++i) {
-      _render(ctx, buffer, data.children[i], root, assets);
+      _render(ctx, buffer, data.children[i], root, assets, debug);
     }
   }
 
   ctx.restore();
+
+  if (debug) {
+    ctx.strokeStyle = "#a2ffcb";
+
+    if (data.shape !== undefined) {
+      if ((data.shape instanceof Polygon) ||
+          (data.shape instanceof Circle)) {
+        const path = data.shape.path();
+
+        ctx.stroke(path);
+      } else if (!(data.shape instanceof Path2D)) {
+        const shape = data.shape as Dimensions;
+
+        ctx.strokeRect(root.x, root.y, shape.width, shape.height);
+      }
+    } else {
+      ctx.strokeRect(root.x, root.y, root.width, root.height);
+    }
+  }
 }
 
 function _parseFontset(s?: string): string | void {

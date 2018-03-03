@@ -16,10 +16,10 @@ export class PathComponent implements PathData {
   y: number;
 
   constructor(options?: Partial<PathData>) {
-    Object.assign(this, {
-      repeat: false,
-      x: 0,
-      y: 0,
-    }, options);
+    this.repeat = false;
+    this.x = 0;
+    this.y = 0;
+
+    Object.assign(this, options);
   }
 }
