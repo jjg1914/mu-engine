@@ -51,6 +51,9 @@ export class CanvasBuffer {
     } else {
       this._backend = new RenderBackend2D(backendCtx2D, config);
     }
+
+    this._width = 0;
+    this._height = 0;
   }
 
   emit(): RenderEventData {

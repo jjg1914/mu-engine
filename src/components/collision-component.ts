@@ -12,9 +12,9 @@ export class CollisionComponent implements CollisionData {
   landing?: CollisionEntity;
 
   constructor(options?: Partial<CollisionData>) {
-    Object.assign(this, {
-      solid: false,
-      ignoreSolid: false,
-    }, options);
+    this.solid = false;
+    this.ignoreSolid = false;
+
+    Object.assign(this, options);
   }
 }

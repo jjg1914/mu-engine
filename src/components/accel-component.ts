@@ -18,12 +18,12 @@ export class AccelComponent implements AccelData {
   restrict: boolean;
 
   constructor(options?: Partial<AccelData>) {
-    Object.assign(this, {
-      xAccel: 0,
-      yAccel: 0,
-      nogravity: false,
-      nofriction: false,
-      restrict: true,
-    }, options);
+    this.xAccel = 0;
+    this.yAccel = 0;
+    this.nogravity = false;
+    this.nofriction = false;
+    this.restrict = true;
+
+    Object.assign(this, options);
   }
 }

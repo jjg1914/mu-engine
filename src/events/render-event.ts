@@ -19,6 +19,7 @@ export class RenderEvent implements RenderEventData {
   viewport: Bounds;
 
   constructor(backend: RenderBackend, width: number, height: number) {
+    this.type = "render";
     this.backend = backend;
     this.width = width;
     this.height = height;

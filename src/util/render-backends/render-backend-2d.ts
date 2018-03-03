@@ -45,7 +45,12 @@ export class RenderBackend2D implements RenderBackend {
 
       if (layer !== undefined) {
         for (let j = 0; j < layer.length; ++j) {
-          _render(this._ctx, buffer, layer[j].render, layer[j], this._assets, this._debug);
+          _render(this._ctx,
+                  buffer,
+                  layer[j].render,
+                  layer[j],
+                  this._assets,
+                  this._debug);
         }
 
         layer.length = 0;

@@ -12,11 +12,11 @@ export class AnimationComponent implements AnimationData {
   loop: boolean;
 
   constructor(options?: Partial<AnimationData>) {
-    Object.assign(this, {
-      t: 0,
-      duration: 0,
-      tag: "",
-      loop: true,
-    }, options);
+    this.t = 0;
+    this.duration = 0;
+    this.tag = "";
+    this.loop = true;
+
+    Object.assign(this, options);
   }
 }

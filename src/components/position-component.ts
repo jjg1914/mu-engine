@@ -18,11 +18,11 @@ export class PositionComponent implements PositionData {
   mask?: Shape;
 
   constructor(options?: Partial<PositionData>) {
-    Object.assign(this, {
-      x: 0,
-      y: 0,
-      width: 0,
-      height: 0,
-    }, options);
+    this.x = 0;
+    this.y = 0;
+    this.width = 0;
+    this.height = 0;
+
+    Object.assign(this, options);
   }
 }
