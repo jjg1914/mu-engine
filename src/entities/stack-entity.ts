@@ -41,6 +41,10 @@ export class StackEntity extends BaseEntity {
     });
   }
 
+  size(): number {
+    return this._stack.length;
+  }
+
   push(entity: Entity, config: Partial<Config> = {}): this {
     if (entity.parent === undefined) {
       this._stack.unshift([ entity, config ]);

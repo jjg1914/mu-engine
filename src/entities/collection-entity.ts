@@ -8,7 +8,7 @@ import {
 } from "../events/entity-event";
 
 export class CollectionEntity extends BaseEntity {
-  private _collection: { [id: number ]: Entity | undefined };
+  private _collection: { [id: number ]: Entity };
   private _length: number;
 
   constructor() {
@@ -18,12 +18,8 @@ export class CollectionEntity extends BaseEntity {
 
     this.last((event: string, data: any) => {
       for (let e in this._collection) {
-        const entity = this._collection[e];
-
-        if (entity !== undefined) {
-          if (entity.send(event, data)) {
-            return true;
-          }
+        if (this._collection[e].send(event, data)) {
+          return true;
         }
       }
 
