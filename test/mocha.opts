@@ -1,5 +1,6 @@
 --require source-map-support/register
 --full-trace
 --bail
+--reporter dot
 src/**/*.ts
 test/**/*-test.ts
