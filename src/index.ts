@@ -69,3 +69,4 @@ export * from "./modules/snap";
 export * from "./modules/behavior";
 export * from "./modules/interval";
 export * from "./modules/timeout";
+export * from "./modules/ease";
