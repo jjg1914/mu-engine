@@ -25,6 +25,7 @@ export * from "./entities/collection-entity";
 export * from "./entities/simple-entity";
 export * from "./entities/stack-entity";
 export * from "./entities/stage-entity";
+export * from "./entities/tileset-entity";
 
 export * from "./events/collision-event";
 export * from "./events/control-event";
