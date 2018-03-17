@@ -9,19 +9,19 @@ type Cacheable = Sprite | Tileset | RawImage;
 export type AssetItem = { type: string, data: any };
 export type AssetTable = { [ key: string ]: AssetItem | undefined };
 export interface AssetConfig {
-  preload?: boolean;
+  preload: boolean;
   assets: AssetTable;
 }
 
 export class Assets {
-  private _config: AssetConfig;
+  private _assets: AssetTable;
   private _cache: { [ key: string ]: Cacheable | undefined };
 
-  constructor(config: AssetConfig) {
-    this._config = config;
+  constructor(config?: Partial<AssetConfig>) {
+    this._assets = config && config.assets || {};
     this._cache = {};
 
-    if (this._config.preload !== undefined && this._config.preload) {
+    if (config !== undefined && config.preload) {
       this._preload();
     }
   }
@@ -78,7 +78,7 @@ export class Assets {
   }
 
   load(asset: string): any {
-    const data = this._config.assets[asset];
+    const data = this._assets[asset];
 
     if (data !== undefined) {
       switch (data.type) {
@@ -138,8 +138,8 @@ export class Assets {
   private _filterType(type: string): string[] {
     const rval: string[] = [];
 
-    for (let e in this._config.assets) {
-      const asset = this._config.assets[e];
+    for (let e in this._assets) {
+      const asset = this._assets[e];
 
       if (asset !== undefined && asset.type === type) {
         rval.push(e);
@@ -150,8 +150,8 @@ export class Assets {
   }
 
   private _preload(): void {
-    for (let e in this._config.assets) {
-      const value = this._config.assets[e];
+    for (let e in this._assets) {
+      const value = this._assets[e];
 
       if (value !== undefined && this._cache[e] === undefined) {
         switch (value.type) {
