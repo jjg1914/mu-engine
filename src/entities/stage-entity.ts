@@ -1,6 +1,9 @@
-import { Assets } from "../util/assets";
 import { Stage } from "../util/stage";
-import { RenderEventData } from "../events/render-event";
+
+import {
+  StageData,
+  StageComponent,
+} from "../components/stage-component";
 
 import {
   PositionData,
@@ -17,68 +20,44 @@ import { CollectionEntity } from "./collection-entity";
 import { MoveMediatorSystem } from "../systems/move-mediator-system";
 import { CollisionMediatorSystem } from "../systems/collision-mediator-system";
 import { RenderSystem } from "../systems/render-system";
-import { RenderBackendItem } from "../util/render-backend";
 
 export interface StageConfig {
-  assets: Assets;
-  stage?: string | Stage;
-  gravity?: number;
+  stage?: Partial<StageData>;
   position?: Partial<PositionData>;
   render?: Partial<RenderData>;
 }
 
 export class StageEntity extends CollectionEntity {
+  stage: StageData;
   position: PositionData;
   render: RenderData;
-
-  protected stage: Stage;
-  protected layers: RenderBackendItem[];
 
   constructor(config: StageConfig) {
     super();
 
-    if (config.stage === undefined) {
-      const width = config.position && config.position.width || 0;
-      const height = config.position && config.position.height || 0;
-      this.stage = new Stage(width, height);
-    } else if (typeof config.stage === "string") {
-      this.stage = config.assets.load(config.stage);
-    } else {
-      this.stage = config.stage;
-    }
+    const width = config && config.position && config.position.width || 0;
+    const height = config && config.position && config.position.height || 0;
+
+    this.stage = new StageComponent(Object.assign({
+      stage: new Stage(width, height),
+    }, config && config.stage));
 
     this.position = new PositionComponent(Object.assign({
-      width: this.stage.bounds().right + 1,
-      height: this.stage.bounds().bottom + 1,
+      width: this.stage.stage.bounds().right + 1,
+      height: this.stage.stage.bounds().bottom + 1,
     }, config && config.position));
 
     this.render = new RenderComponent(config && config.render);
 
-    for (let e of this.stage.buildEntities(config)) {
+    for (let e of this.stage.stage.buildEntities(this.stage)) {
       this.put(e);
     }
 
     MoveMediatorSystem(this, {
-      gravity: config.gravity || 0,
-      bounds: this.stage.bounds(),
+      gravity: this.stage.gravity || 0,
+      bounds: this.stage.stage.bounds(),
     });
-    CollisionMediatorSystem(this, { bounds: this.stage.bounds() });
+    CollisionMediatorSystem(this, { bounds: this.stage.stage.bounds() });
     RenderSystem(this);
-
-    this.layers = this.stage.buildLayers(config).map((e) => {
-      return {
-        x: 0,
-        y: 0,
-        width: 0,
-        height: 0,
-        render: e,
-      };
-    });
-
-    this.on("render", (event: RenderEventData) => {
-      for (let e of this.layers) {
-        event.backend.add(e);
-      }
-    });
   }
 }
