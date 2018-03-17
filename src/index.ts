@@ -20,6 +20,7 @@ export * from "./behaviors/sequence-behavior";
 export * from "./behaviors/whilst-behavior";
 
 export * from "./entities/entity";
+export * from "./entities/background-entity";
 export * from "./entities/base-entity";
 export * from "./entities/collection-entity";
 export * from "./entities/simple-entity";
@@ -38,8 +39,9 @@ export * from "./events/render-event";
 export * from "./events/resolution-event";
 
 export * from "./systems/accel-system";
-export * from "./systems/behavior-system";
 export * from "./systems/animation-system";
+export * from "./systems/background-system";
+export * from "./systems/behavior-system";
 export * from "./systems/camera-system";
 export * from "./systems/collision-system";
 export * from "./systems/collision-mediator-system";
@@ -56,14 +58,17 @@ export * from "./systems/render-mediator-system";
 export * from "./systems/restrict-system";
 
 export * from "./components/accel-component";
-export * from "./components/behavior-component";
 export * from "./components/animation-component";
+export * from "./components/background-component";
+export * from "./components/behavior-component";
 export * from "./components/collision-component";
 export * from "./components/control-component";
 export * from "./components/movement-component";
 export * from "./components/path-component";
 export * from "./components/position-component";
 export * from "./components/render-component";
+export * from "./components/stage-component";
+export * from "./components/tileset-component";
 
 export * from "./modules/shape";
 export * from "./modules/snap";
