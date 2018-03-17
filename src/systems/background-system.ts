@@ -39,7 +39,7 @@ export function BackgroundSystem(entity: BackgroundSystemEntity): void {
       entity.position.y +=
         (yT / entity.background.yPeriod) * entity.background.yAmp;
 
-      f();
+      return f();
     } else {
       const xSave = entity.position.x;
       const ySave = entity.position.y;
@@ -50,7 +50,7 @@ export function BackgroundSystem(entity: BackgroundSystemEntity): void {
         entity.position.y =
           ySave + (yT / entity.background.yPeriod) * entity.background.yAmp;
 
-        f();
+        return f();
       } finally {
         entity.position.x = xSave;
         entity.position.y = ySave;
