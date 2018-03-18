@@ -1,8 +1,14 @@
+import { Assets } from "../util/assets";
 import { Transform } from "../util/matrix";
 import { Shape, Dimensions } from "../util/shape";
 
+export interface PaintFunction {
+  (ctx: CanvasRenderingContext2D, assets: Assets): void;
+}
+
 export interface RenderData {
   visible?: boolean;
+  paint?: PaintFunction;
   wraparound?: boolean;
   stroke?: string;
   fill?: string;
@@ -19,6 +25,7 @@ export interface RenderData {
 
 export class RenderComponent implements RenderData {
   visible?: boolean;
+  paint?: PaintFunction;
   wraparound?: boolean;
   stroke?: string;
   fill?: string;
