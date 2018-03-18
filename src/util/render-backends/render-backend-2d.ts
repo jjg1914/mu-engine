@@ -36,7 +36,7 @@ export class RenderBackend2D implements RenderBackend {
   }
 
   render(viewport: Bounds, buffer: HTMLCanvasElement): void {
-    this._depths.sort();
+    this._depths.sort(_layerCompare);
     (this._ctx as any).resetTransform();
     this._ctx.translate(-viewport.left, -viewport.top);
 
@@ -268,4 +268,8 @@ function _parseFontset(s?: string): string | void {
       return s.substr(i + 1);
     }
   }
+}
+
+function _layerCompare(a: number, b: number) {
+  return -Math.sign(b - a);
 }
