@@ -7,6 +7,7 @@ import {
   PARTICLE_FIELDS,
 } from "../components/particle-component";
 import { PositionData } from "../components/position-component";
+import { RenderData } from "../components/render-component";
 import { IntervalEventData } from "../events/interval-event";
 import { ParticleEventData } from "../events/particle-event";
 import { RenderEventData } from "../events/render-event";
@@ -16,6 +17,7 @@ import { accelerate } from "../modules/movement";
 export interface ParticleSystemEntity extends Entity {
   particle: ParticleData;
   position: PositionData;
+  render?: RenderData;
 }
 
 export function ParticleSystem(entity: ParticleSystemEntity): void {
@@ -132,6 +134,7 @@ export function ParticleSystem(entity: ParticleSystemEntity): void {
       height: 0,
       render: {
         paint: paintf,
+        depth: entity.render && entity.render.depth || 0,
       },
     })
   });
