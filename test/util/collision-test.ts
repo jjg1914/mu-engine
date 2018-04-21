@@ -1,7 +1,7 @@
 import "../test_helper";
 
-import { expect } from "chai";
-import * as sinon from "sinon";
+// import { expect } from "chai";
+// import * as sinon from "sinon";
 
 import { BaseEntity } from "../../src/entities/base-entity";
 import {
