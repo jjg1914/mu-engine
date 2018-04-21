@@ -45,7 +45,9 @@ export function easeCubeBezier(entity: Entity,
   });
 }
 
-export function easeBase(entity: Entity, duration: number, cb: EaseAssign): void {
+export function easeBase(entity: Entity,
+                         duration: number,
+                         cb: EaseAssign): void {
   let t = 0;
 
   const f = function(event: IntervalEventData) {
@@ -57,7 +59,7 @@ export function easeBase(entity: Entity, duration: number, cb: EaseAssign): void
     } else {
       cb(t / duration);
     }
-  }
+  };
 
   entity.on("interval", f);
 }

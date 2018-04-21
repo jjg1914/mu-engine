@@ -86,7 +86,7 @@ export type StageTMXObjectChild = StageTMXProperties |
                                   StageTMXPolygon |
                                   StageTMXEllipse ;
 
-export interface  StageTMXObject {
+export interface StageTMXObject {
   "#name": "object";
   $: {
     type?: string;
@@ -204,7 +204,7 @@ export class Stage {
 
           components.tileset = {
             tileset: this.prop("tileset") || "",
-            assets: config.assets, 
+            assets: config.assets,
           };
         }
 
@@ -305,7 +305,7 @@ function _isTMXPolygon(e: StageTMXObjectChild): e is StageTMXPolygon {
   return e["#name"] === "polygon";
 }
 
-function _isTMXEllipse(e: StageTMXObjectChild): e is StageTMXEllipse{
+function _isTMXEllipse(e: StageTMXObjectChild): e is StageTMXEllipse {
   return e["#name"] === "ellipse";
 }
 
@@ -363,7 +363,7 @@ function _fromTMXLayer(stage: Stage, layer: StageTMXLayer): void {
   const width = Number(layer.$.width);
   const height = Number(layer.$.height);
 
-  const data = layer.$$[0]._
+  const data = layer.$$[0]._;
   const dataRows = data !== undefined ? data.trim().split("\n") : [];
 
   const tiles = new Array(height) as number[][];

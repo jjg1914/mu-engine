@@ -48,7 +48,7 @@ export function ParticleSystem(entity: ParticleSystemEntity): void {
 
       const j = entity.particle.length;
       entity.particle.length += 1;
-      
+
       _set(entity, j, "LIFETIME", _randomRange(event.lifetime));
       _set(entity, j, "X",
            Math.floor(_randomRange(event.xOffset)) + entity.position.x);
@@ -136,7 +136,7 @@ export function ParticleSystem(entity: ParticleSystemEntity): void {
         paint: paintf,
         depth: entity.render && entity.render.depth || 0,
       },
-    })
+    });
   });
 }
 

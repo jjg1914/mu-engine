@@ -1,7 +1,7 @@
 import { Entity } from "../entities/entity";
 
-import { IntervalEventData } from "../events/interval-event"
-import { RenderEventData } from "../events/render-event"
+import { IntervalEventData } from "../events/interval-event";
+import { RenderEventData } from "../events/render-event";
 
 import { PositionData } from "../components/position-component";
 
