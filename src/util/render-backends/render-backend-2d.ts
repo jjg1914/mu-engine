@@ -36,7 +36,7 @@ export class RenderBackend2D implements RenderBackend {
   }
 
   render(viewport: Bounds, buffer: HTMLCanvasElement): void {
-    this._depths.sort();
+    this._depths.sort(_layerCompare);
     (this._ctx as any).resetTransform();
     this._ctx.translate(-viewport.left, -viewport.top);
 
@@ -73,168 +73,172 @@ function _render(ctx: CanvasRenderingContext2D,
     return;
   }
 
-  ctx.save();
-  if (data.transform !== undefined) {
-    ctx.transform(data.transform[0],
-                  data.transform[3],
-                  data.transform[1],
-                  data.transform[4],
-                  data.transform[2],
-                  data.transform[5]);
-  }
+  try {
+    ctx.save();
+    if (data.transform !== undefined) {
+      ctx.transform(data.transform[0],
+                    data.transform[3],
+                    data.transform[1],
+                    data.transform[4],
+                    data.transform[2],
+                    data.transform[5]);
+    }
 
-  if (data.sprite !== undefined) {
-    const sprite = assets.loadSprite(data.sprite);
-    const frame = data.spriteFrame !== undefined && !isNaN(data.spriteFrame) ?
-                  data.spriteFrame : 0;
-    sprite.drawFrame(ctx, frame, root.x, root.y);
-  } else if (data.image !== undefined) {
-    const image = (typeof data.image === "string") ?
-                  assets.loadRawimage(data.image) : data.image;
+    if (data.paint !== undefined) {
+      data.paint(ctx, assets);
+    } else if (data.sprite !== undefined) {
+      const sprite = assets.loadSprite(data.sprite);
+      const frame = data.spriteFrame !== undefined && !isNaN(data.spriteFrame) ?
+                    data.spriteFrame : 0;
+      sprite.drawFrame(ctx, frame, root.x, root.y);
+    } else if (data.image !== undefined) {
+      const image = (typeof data.image === "string") ?
+                    assets.loadRawimage(data.image) : data.image;
 
-    ctx.drawImage(image, 0, 0,
-                  image.width, image.height,
-                  root.x, root.y,
-                  image.width, image.height);
+      ctx.drawImage(image, 0, 0,
+                    image.width, image.height,
+                    root.x, root.y,
+                    image.width, image.height);
 
-    if (data.wraparound) {
-      if (root.y + image.height >= buffer.height) {
-        ctx.drawImage(image, 0, 0,
-                      image.width, image.height,
-                      root.x, root.y - image.height,
-                      image.width, image.height);
+      if (data.wraparound) {
+        if (root.y + image.height >= buffer.height) {
+          ctx.drawImage(image, 0, 0,
+                        image.width, image.height,
+                        root.x, root.y - image.height,
+                        image.width, image.height);
+
+          if (root.x + image.width >= buffer.width) {
+            ctx.drawImage(image, 0, 0,
+                          image.width, image.height,
+                          root.x - image.width, root.y - image.height,
+                          image.width, image.height);
+          } else if (root.x < 0) {
+            ctx.drawImage(image, 0, 0,
+                          image.width, image.height,
+                          root.x + image.width, root.y - image.height,
+                          image.width, image.height);
+          }
+        } else if (root.y < 0) {
+          ctx.drawImage(image, 0, 0,
+                        image.width, image.height,
+                        root.x, root.y + image.height,
+                        image.width, image.height);
+
+          if (root.x + image.width >= buffer.width) {
+            ctx.drawImage(image, 0, 0,
+                          image.width, image.height,
+                          root.x - image.width, root.y + image.height,
+                          image.width, image.height);
+          } else if (root.x < 0) {
+            ctx.drawImage(image, 0, 0,
+                          image.width, image.height,
+                          root.x + image.width, root.y + image.height,
+                          image.width, image.height);
+          }
+        }
 
         if (root.x + image.width >= buffer.width) {
           ctx.drawImage(image, 0, 0,
                         image.width, image.height,
-                        root.x - image.width, root.y - image.height,
+                        root.x - image.width, root.y,
                         image.width, image.height);
         } else if (root.x < 0) {
           ctx.drawImage(image, 0, 0,
                         image.width, image.height,
-                        root.x + image.width, root.y - image.height,
-                        image.width, image.height);
-        }
-      } else if (root.y < 0) {
-        ctx.drawImage(image, 0, 0,
-                      image.width, image.height,
-                      root.x, root.y + image.height,
-                      image.width, image.height);
-
-        if (root.x + image.width >= buffer.width) {
-          ctx.drawImage(image, 0, 0,
-                        image.width, image.height,
-                        root.x - image.width, root.y + image.height,
-                        image.width, image.height);
-        } else if (root.x < 0) {
-          ctx.drawImage(image, 0, 0,
-                        image.width, image.height,
-                        root.x + image.width, root.y + image.height,
+                        root.x + image.width, root.y,
                         image.width, image.height);
         }
       }
-
-      if (root.x + image.width >= buffer.width) {
-        ctx.drawImage(image, 0, 0,
-                      image.width, image.height,
-                      root.x - image.width, root.y,
-                      image.width, image.height);
-      } else if (root.x < 0) {
-        ctx.drawImage(image, 0, 0,
-                      image.width, image.height,
-                      root.x + image.width, root.y,
-                      image.width, image.height);
-      }
-    }
-  } else if (data.shape !== undefined) {
-    if (data.shape instanceof Path2D) {
-      if (data.stroke !== undefined) {
-        ctx.strokeStyle = data.stroke;
-        ctx.stroke(data.shape);
-      }
-
-      if (data.fill !== undefined) {
-        ctx.fillStyle = data.fill;
-        ctx.fill(data.shape as any); // TODO
-      }
-    } else if ((data.shape instanceof Polygon) ||
-              (data.shape instanceof Circle)) {
-      const path = data.shape.path();
-
-      if (data.stroke !== undefined) {
-        ctx.strokeStyle = data.stroke;
-        ctx.stroke(path);
-      }
-
-      if (data.fill !== undefined) {
-        ctx.fillStyle = data.fill;
-        ctx.fill(path as any); // TODO
-      }
-    } else {
-      const shape = data.shape as Dimensions;
-
-      if (data.stroke !== undefined) {
-        ctx.strokeStyle = data.stroke;
-        ctx.strokeRect(root.x, root.y, shape.width, shape.height);
-      }
-
-      if (data.fill !== undefined) {
-        ctx.fillStyle = data.fill;
-        ctx.fillRect(root.x, root.y, shape.width, shape.height);
-      }
-    }
-  } else if (data.text !== undefined) {
-    const fontset = _parseFontset(data.font);
-
-    if (fontset !== undefined) {
-      ctx.save();
-      try {
-        const tileset = assets.loadTileset(fontset);
-        ctx.translate(root.x, root.y);
-
-        for (let i = 0; i < data.text.length; ++i) {
-          const c = data.text.charCodeAt(i) + 1;
-          tileset.drawTile(ctx, c, i, 0);
+    } else if (data.shape !== undefined) {
+      if (data.shape instanceof Path2D) {
+        if (data.stroke !== undefined) {
+          ctx.strokeStyle = data.stroke;
+          ctx.stroke(data.shape);
         }
-      } finally {
-        ctx.restore();
-      }
-    } else {
-      if (data.font !== undefined) {
-        ctx.font = data.font;
+
+        if (data.fill !== undefined) {
+          ctx.fillStyle = data.fill;
+          ctx.fill(data.shape as any); // TODO
+        }
+      } else if ((data.shape instanceof Polygon) ||
+                (data.shape instanceof Circle)) {
+        const path = data.shape.path();
+
+        if (data.stroke !== undefined) {
+          ctx.strokeStyle = data.stroke;
+          ctx.stroke(path);
+        }
+
+        if (data.fill !== undefined) {
+          ctx.fillStyle = data.fill;
+          ctx.fill(path as any); // TODO
+        }
       } else {
-        ctx.font = "8pt monospace";
-      }
+        const shape = data.shape as Dimensions;
 
+        if (data.stroke !== undefined) {
+          ctx.strokeStyle = data.stroke;
+          ctx.strokeRect(root.x, root.y, shape.width, shape.height);
+        }
+
+        if (data.fill !== undefined) {
+          ctx.fillStyle = data.fill;
+          ctx.fillRect(root.x, root.y, shape.width, shape.height);
+        }
+      }
+    } else if (data.text !== undefined) {
+      const fontset = _parseFontset(data.font);
+
+      if (fontset !== undefined) {
+        ctx.save();
+        try {
+          const tileset = assets.loadTileset(fontset);
+          ctx.translate(root.x, root.y);
+
+          for (let i = 0; i < data.text.length; ++i) {
+            const c = data.text.charCodeAt(i) + 1;
+            tileset.drawTile(ctx, c, i, 0);
+          }
+        } finally {
+          ctx.restore();
+        }
+      } else {
+        if (data.font !== undefined) {
+          ctx.font = data.font;
+        } else {
+          ctx.font = "8pt monospace";
+        }
+
+        if (data.stroke !== undefined) {
+          ctx.strokeStyle = data.stroke;
+          ctx.strokeText(data.text, root.x, root.y);
+        }
+
+        if (data.fill !== undefined) {
+          ctx.fillStyle = data.fill;
+          ctx.fillText(data.text, root.x, root.y);
+        }
+      }
+    } else {
       if (data.stroke !== undefined) {
         ctx.strokeStyle = data.stroke;
-        ctx.strokeText(data.text, root.x, root.y);
+        ctx.strokeRect(root.x, root.y, root.width, root.height);
       }
 
       if (data.fill !== undefined) {
         ctx.fillStyle = data.fill;
-        ctx.fillText(data.text, root.x, root.y);
+        ctx.fillRect(root.x, root.y, root.width, root.height);
       }
     }
-  } else {
-    if (data.stroke !== undefined) {
-      ctx.strokeStyle = data.stroke;
-      ctx.strokeRect(root.x, root.y, root.width, root.height);
-    }
 
-    if (data.fill !== undefined) {
-      ctx.fillStyle = data.fill;
-      ctx.fillRect(root.x, root.y, root.width, root.height);
+    if (data.children !== undefined) {
+      for (let i = 0; i < data.children.length; ++i) {
+        _render(ctx, buffer, data.children[i], root, assets, debug);
+      }
     }
+  } finally {
+    ctx.restore();
   }
-
-  if (data.children !== undefined) {
-    for (let i = 0; i < data.children.length; ++i) {
-      _render(ctx, buffer, data.children[i], root, assets, debug);
-    }
-  }
-
-  ctx.restore();
 
   if (debug) {
     ctx.strokeStyle = "#a2ffcb";
@@ -264,4 +268,8 @@ function _parseFontset(s?: string): string | void {
       return s.substr(i + 1);
     }
   }
+}
+
+function _layerCompare(a: number, b: number) {
+  return -Math.sign(b - a);
 }

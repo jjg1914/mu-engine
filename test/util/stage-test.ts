@@ -2,8 +2,6 @@ import "../test_helper";
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-//@ts-ignore
-const jsdom = require("mocha-jsdom");
 
 import { Stage } from "../../src/util/stage";
 
@@ -11,109 +9,204 @@ describe("Stage", function() {
   describe(".fromTMX", function() {
     it("should assign all values", function() {
       const stage = Stage.fromTMX({
-        map: {
-          $: {
-            width: "10",
-            height: "8",
-            tilewidth: "16",
-            tileheight: "12",
-          },
-          tileset: [
-            {
-              $: { source: "tileset-value" },
-            },
-          ],
-          properties: [
-            {
-              property: [
-                { $: { name: "name1", type: "", value: "value-1" } },
-                { $: { name: "name2", type: "", value: "[ 1, 2 ]" } },
-                { $: { name: "name3", type: "file", value: "path/value-3" } },
-              ],
-            },
-            {
-              property: [
-                { $: { name: "name4", type: "bool", value: "true" } },
-                { $: { name: "name5", type: "bool", value: "false" } },
-                { $: { name: "name6", type: "color", value: "#ff123456" } },
-              ],
-            },
-          ],
-          layer: [
-            {
-              $: { width: "4", height: "3" },
-              data: [
-                { _: "1,2,3,1\n" },
-                { _: "4,5,6,1\n" },
-                { _: "7,8,9,1\n" },
-              ],
-            },
-          ],
-          objectgroup: [
-            {
-              object: [
-                {
-                  $: {
-                    type: "type-1",
-                    x: "1",
-                    y: "2",
-                    width: "16",
-                    height: "32",
-                  },
-                  properties: [
-                    {
-                      property: [
-                        { $: { name: "comp1.prop1", type: "", value: "value-1" } },
-                        { $: { name: "comp1.prop2", type: "", value: "value-2" } },
-                        { $: { name: "comp2.prop3", type: "", value: "value-3" } },
-                      ],
-                    },
-                    {},
-                  ],
-                },
-                {
-                  $: {
-                    type: "type-2",
-                    x: "3",
-                    y: "4",
-                    width: "12",
-                    height: "24",
-                    visible: "0"
-                  },
-                },
-              ]
-            },
-            {
-              object: [
-                {
-                  $: {
-                    type: "type-3",
-                    x: "5",
-                    y: "6",
-                    width: "8",
-                    height: "19",
-                  },
-                  ellipse: [ {} ],
-                },
-                {
-                  $: {
-                    x: "5",
-                    y: "5",
-                    width: "10",
-                    height: "10",
-                  },
-                  polygon: [ { $: { points: "1,2 3,4 5,6" } } ],
-                },
-              ]
-            },
-          ],
+        "#name": "map",
+        $: {
+          width: "10",
+          height: "8",
+          tilewidth: "16",
+          tileheight: "12",
         },
+        $$: [
+          {
+            "#name": "tileset",
+            $: { source: "tileset-value" },
+          },
+          {
+            "#name": "properties",
+            $$: [
+              {
+                "#name": "property",
+                $: { name: "name1", type: "", value: "value-1" },
+              },
+              {
+                "#name": "property",
+                $: { name: "name2", type: "", value: "[ 1, 2 ]" },
+              },
+              {
+                "#name": "property",
+                $: { name: "name3", type: "file", value: "path/value-3" },
+              },
+            ],
+          },
+          {
+            "#name": "properties",
+            $$: [
+              {
+                "#name": "property",
+                $: { name: "name4", type: "bool", value: "true" },
+              },
+              {
+                "#name": "property",
+                $: { name: "name5", type: "bool", value: "false" },
+              },
+              {
+                "#name": "property",
+                $: { name: "name6", type: "color", value: "#ff123456" },
+              },
+            ],
+          },
+          {
+            "#name": "imagelayer",
+            $$:  [
+              {
+                "#name": "image",
+                $: {
+                  source: "path/to/background.png",
+                  width: "321",
+                  height: "654",
+                },
+              },
+            ],
+          },
+          {
+            "#name": "layer",
+            $: { width: "4", height: "3" },
+            $$: [
+              {
+                "#name": "data",
+                $: { encoding: "csv" },
+                _: "1,2,3,1\n4,5,6,1\n7,8,9,1",
+              }
+            ],
+          },
+          {
+            "#name": "objectgroup",
+            $$: [
+              {
+                "#name": "object",
+                $: {
+                  type: "type-1",
+                  x: "1",
+                  y: "2",
+                  width: "16",
+                  height: "32",
+                },
+                $$: [
+                  {
+                    "#name": "properties",
+                    $$: [
+                      {
+                        "#name": "property",
+                        $: { name: "comp1.prop1", type: "", value: "value-1" },
+                      },
+                      {
+                        "#name": "property",
+                        $: { name: "comp1.prop2", type: "", value: "value-2" },
+                      },
+                      {
+                        "#name": "property",
+                        $: { name: "comp2.prop3", type: "", value: "value-3" },
+                      },
+                    ],
+                  },
+                  {
+                    "#name": "junk",
+                  } as any,
+                ],
+              },
+              {
+                "#name": "object",
+                $: {
+                  type: "type-2",
+                  x: "3",
+                  y: "4",
+                  width: "12",
+                  height: "24",
+                  visible: "0",
+                },
+              },
+            ],
+          },
+          {
+            "#name": "layer",
+            $: { width: "3", height: "4" },
+            $$: [
+              {
+                "#name": "data",
+                $: { encoding: "csv" },
+              }
+            ],
+          },
+          {
+            "#name": "objectgroup",
+            $$: [
+              {
+                "#name": "object",
+                $: {
+                  type: "type-3",
+                  x: "5",
+                  y: "6",
+                  width: "8",
+                  height: "19",
+                },
+                $$: [ { "#name": "ellipse" }, { "#name": "properties" } ],
+              },
+              {
+                "#name": "object",
+                $: {
+                  x: "5",
+                  y: "5",
+                  width: "10",
+                  height: "10",
+                },
+                $$: [
+                  {
+                    "#name": "polygon",
+                    $: { points: "1,2 3,4 5,6" } ,
+                  }
+                ],
+              },
+            ],
+          },
+          {
+            "#name": "junk"
+          } as any,
+        ],
       });
 
       expect(stage).to.deep.equal({
         _width: 160,
         _height: 96,
         _entities: [
+          {
+            type: "background",
+            components: {
+              position: {
+                x: { type: "value", value: 0 },
+                y: { type: "value", value: 0 },
+                width: { type: "value", value: 321 },
+                height: { type: "value", value: 654 },
+              },
+              render: {
+                image: { type: "asset", value: "background.png" },
+              },
+            }
+          },
+          {
+            type: "tileset",
+            components: {
+              tileset: {
+                data: {
+                  type: "value",
+                  value: [
+                    [ 1, 2, 3, 1 ],
+                    [ 4, 5, 6, 1 ],
+                    [ 7, 8, 9, 1 ],
+                  ],
+                },
+              },
+            }
+          },
           {
             type: "type-1",
             components: {
@@ -123,7 +216,9 @@ describe("Stage", function() {
                 width: { type: "value", value: 16 },
                 height: { type: "value", value: 32 },
               },
-              render: {},
+              render: {
+                visible: { type: "value", value: true },
+              },
               comp1: {
                 prop1: { type: "value", value: "value-1" },
                 prop2: { type: "value", value: "value-2" },
@@ -141,6 +236,25 @@ describe("Stage", function() {
                 y: { type: "value", value: 4 },
                 width: { type: "value", value: 12 },
                 height: { type: "value", value: 24 },
+              },
+              render: {
+                visible: { type: "value", value: false },
+              },
+            }
+          },
+          {
+            type: "tileset",
+            components: {
+              tileset: {
+                data: {
+                  type: "value",
+                  value: [
+                    [ 0, 0, 0 ],
+                    [ 0, 0, 0 ],
+                    [ 0, 0, 0 ],
+                    [ 0, 0, 0 ],
+                  ],
+                },
               },
             }
           },
@@ -161,7 +275,9 @@ describe("Stage", function() {
                   },
                 },
               },
-              render: {},
+              render: {
+                visible: { type: "value", value: true },
+              },
             }
           },
           {
@@ -183,22 +299,12 @@ describe("Stage", function() {
                   },
                 },
               },
-              render: {},
+              render: {
+                visible: { type: "value", value: true },
+              },
             }
           },
         ],
-        _tiles: [
-          {
-            width: 4,
-            height: 3,
-            data: [
-              [ 1, 2, 3, 1 ],
-              [ 4, 5, 6, 1 ],
-              [ 7, 8, 9, 1 ],
-            ],
-          }
-        ],
-        _tileset: "tileset-value",
         _props: {
           name1: "value-1",
           name2: [ 1, 2 ],
@@ -206,19 +312,19 @@ describe("Stage", function() {
           name4: true,
           name5: false,
           name6: "#123456",
+          tileset: "tileset-value",
         },
       })
     });
 
     it("should assign empty values", function() {
       const stage = Stage.fromTMX({
-        map: {
-          $: {
-            width: "9",
-            height: "7",
-            tilewidth: "13",
-            tileheight: "8",
-          },
+        "#name": "map",
+        $: {
+          width: "9",
+          height: "7",
+          tilewidth: "13",
+          tileheight: "8",
         },
       });
 
@@ -226,58 +332,33 @@ describe("Stage", function() {
         _width: 117,
         _height: 56,
         _entities: [],
-        _tiles: [],
         _props: {},
       });
     });
 
     it("should assign empty inner values", function() {
       const stage = Stage.fromTMX({
-        map: {
-          $: {
-            width: "9",
-            height: "7",
-            tilewidth: "13",
-            tileheight: "8",
-          },
-          properties: [ {} ],
-          layer: [
-            {
-              $: { width: "3", height: "2" },
-            },
-            {
-              $: { width: "5", height: "4" },
-              data: [ {} ],
-            },
-          ],
-          objectgroup: [ {} ],
+        "#name": "map",
+        $: {
+          width: "9",
+          height: "7",
+          tilewidth: "13",
+          tileheight: "8",
         },
+        $$: [
+          {
+            "#name": "properties",
+          },
+          {
+            "#name": "objectgroup",
+          },
+        ],
       });
 
       expect(stage).to.deep.equal({
         _width: 117,
         _height: 56,
         _entities: [],
-        _tiles: [
-          {
-            width: 3,
-            height: 2,
-            data: [
-              [ 0, 0, 0 ],
-              [ 0, 0, 0 ],
-            ],
-          },
-          {
-            width: 5,
-            height: 4,
-            data: [
-              [ 0, 0, 0, 0, 0 ],
-              [ 0, 0, 0, 0, 0 ],
-              [ 0, 0, 0, 0, 0 ],
-              [ 0, 0, 0, 0, 0 ],
-            ],
-          },
-        ],
         _props: {},
       });
     });
@@ -285,36 +366,41 @@ describe("Stage", function() {
     it("should throw empty path error", function() {
       expect(function() {
         Stage.fromTMX({
-          map: {
-            $: {
-              width: "9",
-              height: "7",
-              tilewidth: "13",
-              tileheight: "8",
-            },
-            objectgroup: [
-              {
-                object: [
-                  {
-                    $: {
-                      type: "type-1",
-                      x: "1",
-                      y: "2",
-                      width: "16",
-                      height: "32",
-                    },
-                    properties: [
-                      {
-                        property: [
-                          { $: { name: "comp1", type: "", value: "value-1" } },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
+          "#name": "map",
+          $: {
+            width: "9",
+            height: "7",
+            tilewidth: "13",
+            tileheight: "8",
           },
+          $$: [
+            {
+              "#name": "objectgroup",
+              $$: [
+                {
+                  "#name": "object",
+                  $: {
+                    type: "type-1",
+                    x: "1",
+                    y: "2",
+                    width: "16",
+                    height: "32",
+                  },
+                  $$: [
+                    {
+                      "#name": "properties",
+                      $$: [
+                        {
+                          "#name": "property",
+                          $: { name: "comp1", type: "", value: "value-1" },
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
         });
       }).to.throw();
     });
@@ -323,73 +409,33 @@ describe("Stage", function() {
   describe(".unserialize", function() {
     it("should call fromTMX", function() {
       const mock = sinon.mock(Stage);
-      mock.expects("fromTMX").once().withArgs("data-value");
+      mock.expects("fromTMX").once().withArgs("data-value").returns("rval");
 
-      Stage.unserialize("data-value");
+      expect(Stage.unserialize({ map: "data-value" })).to.equal("rval");
       mock.verify();
-    });
-
-    it("should return fromTMX value", function() {
-      sinon.stub(Stage, "fromTMX").returns("rval");
-
-      expect(Stage.unserialize("data-value")).to.equal("rval");
-    });
-  });
-
-  describe("#constructor", function() {
-    it("should assgin values", function() {
-      expect(new Stage(123, 456, "path/to/tileset-v")).to.deep.equal({
-        _entities: [],
-        _tiles: [],
-        _width: 123,
-        _height: 456,
-        _tileset: "tileset-v",
-        _props: {},
-      });
-    });
-
-    it("should allow optional tileset", function() {
-      expect(new Stage(123, 456)).to.deep.equal({
-        _entities: [],
-        _tiles: [],
-        _width: 123,
-        _height: 456,
-        _props: {},
-      });
     });
   });
 
   describe("#prop", function() {
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
+    it("should return undefined property", function() {
+      const stage = new Stage(123, 456);
+
+      expect(stage.prop("keyk")).to.be.undefined;
     });
 
     it("should assign property", function() {
-      this.stage.prop("keyv", "valuev")
+      const stage = new Stage(123, 456);
+      stage.prop("keyk", "valuev")
 
-      expect(this.stage).to.deep.equal({
-        _width: 123,
-        _height: 456,
-        _entities: [],
-        _tiles: [],
-        _props: { keyv: "valuev" },
-      });
-    });
-
-    it("should return property", function() {
-      this.stage._props = { keyk: "valuek" };
-
-      expect(this.stage.prop("keyk")).to.equal("valuek");
+      expect(stage.prop("keyk")).to.equal("valuev");
     });
   });
 
   describe("#bounds", function() {
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
-    });
-
     it("should return bounds", function() {
-      expect(this.stage.bounds()).to.deep.equal({
+      const stage = new Stage(123, 456);
+
+      expect(stage.bounds()).to.deep.equal({
         left: 0,
         top: 0,
         right: 122,
@@ -398,147 +444,39 @@ describe("Stage", function() {
     });
   });
 
-  describe("#buildLayers", function() {
-    jsdom();
-
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
-    });
-
-    it("should return empty array", function() {
-      const assets = { load: () => {} };
-      const mock = sinon.mock(assets);
-      mock.expects("load").never();
-
-      expect(this.stage.buildLayers({ assets: assets })).to.deep.equal([]);
-      mock.verify();
-    });
-
-    it("should return layer array", function() {
-      this.stage._tileset = "tileset-v"
-      this.stage._tiles.push({
-        width: 2,
-        height: 2,
-        data: [
-          [ 0, 1 ],
-          [ 2, 3 ],
-        ],
-      })
-
-      const assets = { load: () => {} };
-      const canvas = { getContext: () => {}, width: 0, height: 0 };
-      const tileset = { ready: () => {}, drawTile: () => {} };
-
-      const mockTileset = sinon.mock(tileset);
-      mockTileset.expects("ready")
-        .once()
-        .withArgs(sinon.match.func)
-        .callsArg(0);
-      mockTileset.expects("drawTile").once().withArgs("ctx", 0, 0, 0);
-      mockTileset.expects("drawTile").once().withArgs("ctx", 1, 1, 0);
-      mockTileset.expects("drawTile").once().withArgs("ctx", 2, 0, 1);
-      mockTileset.expects("drawTile").once().withArgs("ctx", 3, 1, 1);
-
-      const mockCanvas = sinon.mock(canvas);
-      mockCanvas.expects("getContext").once().withArgs("2d").returns("ctx");
-
-      const mockAssets = sinon.mock(assets);
-      mockAssets.expects("load").once().withArgs("tileset-v").returns(tileset);
-
-      const mockDocument = sinon.mock(document);
-      mockDocument.expects("createElement")
-        .once()
-        .withArgs("canvas")
-        .returns(canvas);
-
-      expect(this.stage.buildLayers({ assets: assets })).to.deep.equal([
-        { image: canvas },
-      ]);
-      expect(canvas.width).to.equal(123);
-      expect(canvas.height).to.equal(456);
-      mockDocument.verify();
-      mockTileset.verify();
-      mockCanvas.verify();
-      mockAssets.verify();
-    });
-
-    it("should throw error", function() {
-      this.stage._tileset = "tileset-v"
-      this.stage._tiles.push({
-        width: 2,
-        height: 2,
-        data: [
-          [ 0, 1 ],
-          [ 2, 3 ],
-        ],
-      })
-
-      const assets = { load: () => {} };
-      const canvas = { getContext: () => {}, width: 0, height: 0 };
-      const tileset = { ready: () => {}, drawTile: () => {} };
-
-      const mockTileset = sinon.mock(tileset);
-      mockTileset.expects("ready").never();
-      mockTileset.expects("drawTile").never();
-
-      const mockCanvas = sinon.mock(canvas);
-      mockCanvas.expects("getContext").once().withArgs("2d").returns(null);
-
-      const mockAssets = sinon.mock(assets);
-      mockAssets.expects("load").once().withArgs("tileset-v").returns(tileset);
-
-      const mockDocument = sinon.mock(document);
-      mockDocument.expects("createElement")
-        .once()
-        .withArgs("canvas")
-        .returns(canvas);
-
-      const self = this;
-      expect(function() {
-        self.stage.buildLayers({ assets: assets })
-      }).to.throw();
-
-      expect(canvas.width).to.equal(0);
-      expect(canvas.height).to.equal(0);
-
-      mockDocument.verify();
-      mockTileset.verify();
-      mockCanvas.verify();
-      mockAssets.verify();
-    });
-  });
-
   describe("#buildEntities", function() {
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
-    });
-
     it("should return empty array", function() {
+      const stage = new Stage(123, 456);
+
       const assets = { load: () => {} };
       const mock = sinon.mock(assets);
       mock.expects("load").never();
 
-      expect(this.stage.buildEntities({ assets: assets })).to.deep.equal([]);
+      expect(stage.buildEntities({ assets: assets })).to.deep.equal([]);
       mock.verify();
     });
 
     it("should return entity array", function() {
-      this.stage._entities.push({
+      const stage = new Stage(123, 456);
+
+      stage.prop("tileset", "tileset-v")
+
+      stage.addEntity({
         type: "test0",
         components: {},
       });
 
-      this.stage._entities.push({
+      stage.addEntity({
         type: "test1",
         components: {},
       });
 
-      this.stage._entities.push({
+      stage.addEntity({
         type: "test2",
         components: { comp1: {} },
       });
 
-      this.stage._entities.push({
+      stage.addEntity({
         type: "test3",
         components: {
           comp1: {
@@ -548,6 +486,21 @@ describe("Stage", function() {
         },
       });
 
+      stage.addEntity({
+        type: "tileset",
+        components: {
+          tileset: {
+            data: {
+              type: "value",
+              value: [
+                [ 0, 1 ],
+                [ 2, 3 ],
+              ],
+            },
+          },
+        },
+      })
+
       const assets = { load: () => {} };
 
       const stub1 = sinon.stub();
@@ -556,18 +509,22 @@ describe("Stage", function() {
       stub2.returns({ entity: 2 });
       const stub3 = sinon.stub();
       stub3.returns({ entity: 3 });
+      const stub4 = sinon.stub();
+      stub4.returns({ entity: 4 });
 
       const mock = sinon.mock(assets);
       mock.expects("load").once().withArgs("test0-entity").returns(undefined);
       mock.expects("load").once().withArgs("test1-entity").returns(stub1);
       mock.expects("load").once().withArgs("test2-entity").returns(stub2);
       mock.expects("load").once().withArgs("test3-entity").returns(stub3);
+      mock.expects("load").once().withArgs("tileset-entity").returns(stub4);
       mock.expects("load").once().withArgs("asset-name-1").returns("asset-1");
 
-      expect(this.stage.buildEntities({ assets: assets })).to.deep.equal([
+      expect(stage.buildEntities({ assets: assets })).to.deep.equal([
         { entity: 1 },
         { entity: 2 },
         { entity: 3 },
+        { entity: 4 },
       ]);
 
       expect(stub1).to.have.been.calledWith({});
@@ -578,47 +535,68 @@ describe("Stage", function() {
           prop2: "asset-1",
         },
       });
+      expect(stub4).to.have.been.calledWith({
+        position: {
+          width: 123,
+          height: 456,
+        },
+        tileset: {
+          tileset: "tileset-v",
+          assets: sinon.match.same(assets),
+          data: [
+            [ 0, 1 ],
+            [ 2, 3 ],
+          ],
+        },
+      });
       mock.verify();
     });
-  });
 
-  describe("#addEntity", function() {
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
-    });
+    it("should return default tileset", function() {
+      const stage = new Stage(123, 456);
 
-    it("should push entities", function() {
-      this.stage.addEntity("entity1");
-      this.stage.addEntity("entity2");
-      this.stage.addEntity("entity3");
+      stage.addEntity({
+        type: "tileset",
+        components: {
+          tileset: {
+            data: {
+              type: "value",
+              value: [
+                [ 0, 1 ],
+                [ 2, 3 ],
+              ],
+            },
+          },
+        },
+      })
 
-      expect(this.stage).to.deep.equal({
-        _entities: [ "entity1", "entity2", "entity3" ],
-        _tiles: [],
-        _width: 123,
-        _height: 456,
-        _props: {},
+      const assets = { load: () => {} };
+
+      const stub1 = sinon.stub();
+      stub1.returns({ entity: 1 });
+
+      const mock = sinon.mock(assets);
+      mock.expects("load").once().withArgs("tileset-entity").returns(stub1);
+
+      expect(stage.buildEntities({ assets: assets })).to.deep.equal([
+        { entity: 1 },
+      ]);
+
+      expect(stub1).to.have.been.calledWith({
+        position: {
+          width: 123,
+          height: 456,
+        },
+        tileset: {
+          tileset: "",
+          assets: sinon.match.same(assets),
+          data: [
+            [ 0, 1 ],
+            [ 2, 3 ],
+          ],
+        },
       });
-    })
-  });
-
-  describe("#addLayer", function() {
-    beforeEach(function() {
-      this.stage = new Stage(123, 456);
+      mock.verify();
     });
-
-    it("should push entities", function() {
-      this.stage.addLayer("entity1");
-      this.stage.addLayer("entity2");
-      this.stage.addLayer("entity3");
-
-      expect(this.stage).to.deep.equal({
-        _entities: [],
-        _tiles: [ "entity1", "entity2", "entity3" ],
-        _width: 123,
-        _height: 456,
-        _props: {},
-      });
-    })
   });
 });

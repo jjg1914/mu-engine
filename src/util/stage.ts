@@ -1,7 +1,5 @@
 import { Entity } from "../entities/entity";
-import { Tileset } from "./tileset";
 import { Bounds, Circle, Polygon } from "./shape";
-import { RenderData } from "../components/render-component";
 
 export interface BuildableProperty {
   value: any;
@@ -27,211 +25,135 @@ export interface BuildConfig {
   assets: { load(asset: string): any };
 }
 
-export interface StageTMX {
-  map: {
-    $: {
-      width: string;
-      height: string;
-      tilewidth: string;
-      tileheight: string;
-    };
-    tileset?: ({ $: { source: string } })[];
-    properties?: ({
-      property?: ({
-        $: {
-          name: string;
-          type: string;
-          value: string;
-        };
-      })[];
-    })[];
-    layer?: ({
-      $: {
-        width: string;
-        height: string;
-      };
-      data?: ({ _?: string; })[];
-    })[];
-    objectgroup?: ({
-      object?: ({
-        $: {
-          type?: string;
-          x: string;
-          y: string;
-          width: string;
-          height: string;
-          visible?: string;
-        };
-        ellipse?: {}[];
-        polygon?: ({ $: { points: string; } })[];
-        properties?: ({
-          property?: ({
-            $: {
-              name: string;
-              type: string;
-              value: string;
-            };
-          })[];
-        })[];
-      })[];
-    })[];
+export interface StageTMXProperty {
+  "#name": "property";
+  $: {
+    name: string;
+    type: string;
+    value: string;
   };
+}
+
+export interface StageTMXProperties {
+  "#name": "properties";
+  $$?: StageTMXProperty[];
+}
+
+export interface StageTMXTileset {
+  "#name": "tileset";
+  $: { source: string };
+}
+
+export interface StageTMXLayerData {
+  "#name": "data";
+  $: { encoding: string };
+  _?: string;
+}
+
+export interface StageTMXLayer {
+  "#name": "layer";
+  $: {
+    width: string;
+    height: string;
+  };
+  $$: [ StageTMXLayerData ];
+}
+
+export interface StageTMXImage {
+  "#name": "image";
+  $: {
+    source: string;
+    width: string;
+    height: string;
+  };
+}
+
+export interface StageTMXImageLayer {
+  "#name": "imagelayer";
+  $$: [ StageTMXImage ];
+}
+
+export interface StageTMXEllipse {
+  "#name": "ellipse";
+}
+
+export interface StageTMXPolygon {
+  "#name": "polygon";
+  $: { points: string };
+}
+
+export type StageTMXObjectChild = StageTMXProperties |
+                                  StageTMXPolygon |
+                                  StageTMXEllipse ;
+
+export interface StageTMXObject {
+  "#name": "object";
+  $: {
+    type?: string;
+    x: string;
+    y: string;
+    width: string;
+    height: string;
+    visible?: string;
+  };
+  $$?: StageTMXObjectChild[];
+}
+
+export interface StageTMXObjectGroup {
+  "#name": "objectgroup";
+  $$?: StageTMXObject[];
+}
+
+export type StageTMXChild = StageTMXProperties |
+                            StageTMXImageLayer |
+                            StageTMXObjectGroup |
+                            StageTMXTileset |
+                            StageTMXLayer;
+
+export interface StageTMX {
+  "#name": "map";
+  $: {
+    width: string;
+    height: string;
+    tilewidth: string;
+    tileheight: string;
+  };
+  $$?: StageTMXChild[];
 }
 
 export class Stage {
   private _width: number;
   private _height: number;
   private _entities: BuildableEntity[];
-  private _tiles: BuildableTileLayer[];
-  private _tileset?: string;
   private _props: { [key: string]: any };
 
-  constructor(width: number, height: number, tileset?: string) {
+  constructor(width: number, height: number) {
     this._entities = [];
-    this._tiles = [];
     this._width = width;
     this._height = height;
-    if (tileset !== undefined) {
-      this._tileset = tileset.split("/").reverse()[0];
-    }
     this._props = {};
   }
 
-  static fromTMX(data: StageTMX): Stage {
-    const width = Number(data.map.$.width) * Number(data.map.$.tilewidth);
-    const height = Number(data.map.$.height) * Number(data.map.$.tileheight);
+  static fromTMX(map: StageTMX): Stage {
+    const width = Number(map.$.width) * Number(map.$.tilewidth);
+    const height = Number(map.$.height) * Number(map.$.tileheight);
 
-    const stage = (data.map.tileset !== undefined &&
-                   data.map.tileset.length > 0) ?
-      new Stage(width, height, data.map.tileset[0].$.source) :
-      new Stage(width, height);
+    const stage = new Stage(width, height);
 
-    if (data.map.properties !== undefined) {
-      for (let e of data.map.properties) {
-        if (e.property !== undefined) {
-          for (let f of e.property) {
-            stage.prop(f.$.name, _valueForProperty(f.$.type, f.$.value).value);
-          }
-        }
-      }
-    }
+    if (map.$$ !== undefined) {
+      for (let i = 0; i < map.$$.length; i += 1) {
+        const e = map.$$[i];
 
-    if (data.map.layer !== undefined) {
-      for (let e of data.map.layer) {
-        const width = Number(e.$.width);
-        const height = Number(e.$.height);
-
-        let data = "";
-        if (e.data !== undefined) {
-          for (let f of e.data) {
-            if (f._ !== undefined) {
-              data += f._;
-            }
-          }
-        }
-        const dataRows = data.trim().split("\n");
-
-        const tiles = new Array(height) as number[][];
-        for (let i = 0; i < height; ++i) {
-          tiles[i] = new Array(width);
-          tiles[i].fill(0);
-
-          if (i < dataRows.length) {
-            const row = dataRows[i].split(",");
-
-            for (let j = 0; j < Math.min(row.length, tiles[i].length); ++j) {
-              tiles[i][j] = Number(row[j]);
-            }
-          }
-        }
-
-        stage.addLayer({
-          width: width,
-          height: height,
-          data: tiles,
-        });
-      }
-    }
-
-    if (data.map.objectgroup !== undefined) {
-      for (let e of data.map.objectgroup) {
-        if (e.object !== undefined) {
-          for (let f of e.object) {
-            const entity = {
-              type: (f.$.type !== undefined ? f.$.type : "default"),
-              components: {},
-            } as BuildableEntity;
-
-            let x = Number(f.$.x);
-            let y = Number(f.$.y);
-            let width = Number(f.$.width);
-            let height = Number(f.$.height);
-            let mask = undefined as BuildableProperty | undefined;
-
-            if (f.ellipse) {
-              const r = Number(f.$.width) / 2;
-              mask = {
-                value: new Circle(r, 0, 0),
-                type: "value",
-              };
-            } else if (f.polygon) {
-              const pairs = f.polygon[0].$.points.split(" ");
-              const points = pairs.map((e: string) => {
-                return e.split(",", 2).map((e) => Number(e));
-              }) as ([ number, number ])[];
-
-              let left = Infinity;
-              let top = Infinity;
-              let right = -Infinity;
-              let bottom = -Infinity;
-
-              for (let e of points) {
-                left = Math.min(e[0], left);
-                top = Math.min(e[1], top);
-                right = Math.max(e[0], right);
-                bottom = Math.max(e[1], bottom);
-              }
-
-              x += left;
-              y += top;
-              width = right - left + 1;
-              height = bottom - top + 1;
-
-              mask = {
-                type: "value",
-                value: new Polygon(points.map((e) => {
-                  return [ e[0] - left, e[1] - top ] as [ number, number ];
-                })),
-              };
-            }
-
-            entity.components.position = {
-              x: { value: x, type: "value" },
-              y: { value: y, type: "value" },
-              width: { value: width, type: "value" },
-              height: { value: height, type: "value" },
-            };
-
-            if (mask !== undefined) {
-              entity.components.position.mask = mask;
-            }
-
-            if (f.$.visible === undefined || Number(f.$.visible) !== 0) {
-              entity.components.render = {};
-            }
-
-            if (f.properties !== undefined) {
-              for (let g of f.properties) {
-                if (g.property !== undefined) {
-                  for (let h of g.property) {
-                    _set(entity, h.$.name, h.$.value, h.$.type);
-                  }
-                }
-              }
-            }
-
-            stage.addEntity(entity);
-          }
+        if (_isTMXTileset(e)) {
+          _fromTMXTileset(stage, e);
+        } else if (_isTMXProperties(e)) {
+          _fromTMXProperties(stage, e);
+        } else if (_isTMXImageLayer(e)) {
+          _fromTMXImageLayer(stage, e);
+        } else if (_isTMXLayer(e)) {
+          _fromTMXLayer(stage, e);
+        } else if (_isTMXObjectGroup(e)) {
+          _fromTMXObjectGroup(stage, e);
         }
       }
     }
@@ -240,7 +162,7 @@ export class Stage {
   }
 
   static unserialize(data: any): Stage {
-    return Stage.fromTMX(data) ;
+    return Stage.fromTMX(data.map) ;
   }
 
   prop(name: string): any;
@@ -263,39 +185,6 @@ export class Stage {
     };
   }
 
-  buildLayers(config: BuildConfig): RenderData[] {
-    const rval = [] as RenderData[];
-
-    if (this._tileset !== undefined) {
-      const tileset = config.assets.load(this._tileset) as Tileset;
-
-      for (let e of this._tiles) {
-        const layer = document.createElement("canvas");
-        const layerCtx = layer.getContext("2d");
-        if (layerCtx === null) {
-          throw new Error("Failed to create 2d context");
-        }
-
-        layer.width = this._width;
-        layer.height = this._height;
-
-        tileset.ready(() => {
-          for (let j = 0; j < e.data.length; j += 1) {
-            for (let i = 0; i < e.data[j].length; i += 1) {
-              tileset.drawTile(layerCtx, e.data[j][i], i, j);
-            }
-          }
-        });
-
-        rval.push({
-          image: layer,
-        });
-      }
-    }
-
-    return rval;
-  }
-
   buildEntities(config: BuildConfig): Entity[] {
     const rval = [];
 
@@ -307,10 +196,22 @@ export class Stage {
           [key: string]: { [key: string ]: any } | undefined
         };
 
+        if (e.type === "tileset") {
+          components.position = {
+            width: this._width,
+            height: this._height,
+          };
+
+          components.tileset = {
+            tileset: this.prop("tileset") || "",
+            assets: config.assets,
+          };
+        }
+
         for (let f in e.components) {
           const component = e.components[f];
 
-          const dest = {} as BuildableComponent;
+          const dest = components[f] || ({} as BuildableComponent);
           components[f] = dest;
 
           for (let g in component) {
@@ -338,10 +239,6 @@ export class Stage {
 
   addEntity(entity: BuildableEntity): void {
     this._entities.push(entity);
-  }
-
-  addLayer(layer: BuildableTileLayer): void {
-    this._tiles.push(layer);
   }
 }
 
@@ -397,4 +294,191 @@ function _valueForProperty(type: string, value: string): BuildableProperty {
         };
       }
   }
+}
+
+function _isTMXProperties (e: StageTMXChild | StageTMXObjectChild)
+: e is StageTMXProperties {
+  return e["#name"] === "properties";
+}
+
+function _isTMXPolygon(e: StageTMXObjectChild): e is StageTMXPolygon {
+  return e["#name"] === "polygon";
+}
+
+function _isTMXEllipse(e: StageTMXObjectChild): e is StageTMXEllipse {
+  return e["#name"] === "ellipse";
+}
+
+function _isTMXImageLayer(e: StageTMXChild): e is StageTMXImageLayer {
+  return e["#name"] === "imagelayer";
+}
+
+function _isTMXObjectGroup(e: StageTMXChild): e is StageTMXObjectGroup {
+  return e["#name"] === "objectgroup";
+}
+
+function _isTMXTileset(e: StageTMXChild): e is StageTMXTileset {
+  return e["#name"] === "tileset";
+}
+
+function _isTMXLayer(e: StageTMXChild): e is StageTMXLayer {
+  return e["#name"] === "layer";
+}
+
+function _fromTMXTileset(stage: Stage, tileset: StageTMXTileset): void {
+  stage.prop("tileset", tileset.$.source.split("/").reverse()[0]);
+}
+
+function _fromTMXProperties(stage: Stage, props: StageTMXProperties): void {
+  if (props.$$ !== undefined) {
+    for (let i = 0; i < props.$$.length; i += 1) {
+      const e = props.$$[i];
+
+      stage.prop(e.$.name, _valueForProperty(e.$.type, e.$.value).value);
+    }
+  }
+}
+
+function _fromTMXImageLayer(stage: Stage, layer: StageTMXImageLayer): void {
+  stage.addEntity({
+    type: "background",
+    components: {
+      position: {
+        x: { type: "value", value: 0 },
+        y: { type: "value", value: 0 },
+        width: { type: "value", value: Number(layer.$$[0].$.width) },
+        height: { type: "value", value: Number(layer.$$[0].$.height) },
+      },
+      render: {
+        image: {
+          type: "asset",
+          value: layer.$$[0].$.source.split("/").reverse()[0],
+        },
+      },
+    },
+  });
+}
+
+function _fromTMXLayer(stage: Stage, layer: StageTMXLayer): void {
+  const width = Number(layer.$.width);
+  const height = Number(layer.$.height);
+
+  const data = layer.$$[0]._;
+  const dataRows = data !== undefined ? data.trim().split("\n") : [];
+
+  const tiles = new Array(height) as number[][];
+  for (let i = 0; i < height; ++i) {
+    tiles[i] = new Array(width);
+    tiles[i].fill(0);
+
+    if (i < dataRows.length) {
+      const row = dataRows[i].split(",");
+
+      for (let j = 0; j < Math.min(row.length, tiles[i].length); ++j) {
+        tiles[i][j] = Number(row[j]);
+      }
+    }
+  }
+
+  stage.addEntity({
+    type: "tileset",
+    components: {
+      tileset: {
+        data: {
+          type: "value",
+          value: tiles,
+        },
+      },
+    },
+  });
+}
+
+function _fromTMXObjectGroup(stage: Stage, group: StageTMXObjectGroup): void {
+  if (group.$$ !== undefined) {
+    for (let i = 0; i < group.$$.length; i += 1) {
+      const e = group.$$[i];
+
+      const entity = {
+        type: (e.$.type !== undefined ? e.$.type : "default"),
+        components: {},
+      } as BuildableEntity;
+
+      entity.components.position = {
+        x: { value: Number(e.$.x), type: "value" },
+        y: { value: Number(e.$.y), type: "value" },
+        width: { value: Number(e.$.width), type: "value" },
+        height: { value: Number(e.$.height), type: "value" },
+      };
+
+      entity.components.render = {
+        visible: {
+          value: (e.$.visible === undefined || Number(e.$.visible) !== 0),
+          type: "value",
+        },
+      };
+
+      if (e.$$ !== undefined) {
+        for (let j = 0; j < e.$$.length; j += 1) {
+          const f = e.$$[j];
+
+          if (_isTMXProperties(f)) {
+            _fromTMXObjectProperties(entity, f);
+          } else if (_isTMXEllipse(f)) {
+            entity.components.position.mask = _ellipseForTMX(e);
+          } else if (_isTMXPolygon(f)) {
+            const mask = _polygonForTMX(f);
+            const bounds = mask.value.bounds();
+
+            entity.components.position.x.value += bounds.left;
+            entity.components.position.y.value += bounds.top;
+            entity.components.position.width.value =
+              bounds.right - bounds.left + 1;
+            entity.components.position.height.value =
+              bounds.bottom - bounds.top + 1;
+
+            mask.value.translate(-bounds.left, -bounds.top);
+
+            entity.components.position.mask = mask;
+          }
+        }
+      }
+
+      stage.addEntity(entity);
+    }
+  }
+}
+
+function _fromTMXObjectProperties(object: BuildableEntity,
+                                  props: StageTMXProperties)
+: void {
+  if (props.$$ !== undefined) {
+    for (let i = 0; i < props.$$.length; i += 1) {
+      const e = props.$$[i];
+
+      _set(object, e.$.name, e.$.value, e.$.type);
+    }
+  }
+}
+
+function _ellipseForTMX(object: StageTMXObject): BuildableProperty {
+  const r = Number(object.$.width) / 2;
+  return {
+    value: new Circle(r, 0, 0),
+    type: "value",
+  };
+}
+
+function _polygonForTMX(polygon: StageTMXPolygon)
+: BuildableProperty {
+  const pairs = polygon.$.points.split(" ");
+  const points = pairs.map((e: string) => {
+    return e.split(",", 2).map((e) => Number(e));
+  }) as ([ number, number ])[];
+
+  return {
+    type: "value",
+    value: new Polygon(points.map((e) => {
+      return [ e[0], e[1] ] as [ number, number ];
+    })),
+  };
 }
