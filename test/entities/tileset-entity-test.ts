@@ -2,16 +2,12 @@ import "../test_helper";
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-//@ts-ignore
-const jsdom = require("mocha-jsdom");
 
 import { TilesetEntity } from "../../src/entities/tileset-entity";
 
 const sandbox = sinon.createSandbox();
 
 describe("TilesetEntity", function() {
-  jsdom();
-
   afterEach(function() {
     sandbox.restore();
   });

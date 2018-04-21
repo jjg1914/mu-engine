@@ -2,10 +2,7 @@ import "../test_helper";
 
 import { expect } from "chai";
 import * as sinon from "sinon";
-//@ts-ignore
-const jsdom = require("mocha-jsdom");
 
-import { TilesetEntity } from "../../src/entities/tileset-entity";
 import { Stage } from "../../src/util/stage";
 
 describe("Stage", function() {
