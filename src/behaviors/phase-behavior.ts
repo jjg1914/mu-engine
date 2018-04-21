@@ -6,6 +6,7 @@ import {
 
 export interface PhaseBehaviorConfig {
   period: number | (() => number);
+  leading?: boolean;
 }
 
 export class PhaseBehavior implements Behavior {
@@ -17,6 +18,14 @@ export class PhaseBehavior implements Behavior {
     this._t = 0;
     this._child = child;
     this._config = config;
+
+    if (this._config.leading) {
+      if (typeof this._config.period === "function") {
+        this._t = this._config.period();
+      } else {
+        this._t = this._config.period;
+      }
+    }
   }
 
   reset(): void {
