@@ -21,7 +21,9 @@ export function RenderMediatorSystem(entity: Entity,
 
   buffer.resize();
 
-  entity.after("interval", () => {
+  entity.around("interval", (f: Function) => {
+    let rval = f();
+
     const ev = buffer.emit();
 
     ev.type = "prerender";
@@ -36,5 +38,7 @@ export function RenderMediatorSystem(entity: Entity,
     entity.send("postrender", ev);
 
     buffer.flip();
+
+    return rval;
   });
 }
