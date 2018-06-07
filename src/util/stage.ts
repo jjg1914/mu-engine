@@ -1,28 +1,17 @@
 import { Entity } from "../entities/entity";
 import { Bounds, Circle, Polygon } from "./shape";
 
-export interface BuildableProperty {
-  value: any;
-  type: "value" | "asset";
-}
-
-export interface BuildableComponent {
-  [key: string]: BuildableProperty;
-}
-
-export interface BuildableEntity {
-  type: string;
-  components: { [key: string]: BuildableComponent };
-}
+import {
+  BuildableProperty,
+  BuildableEntity,
+  BuildConfig,
+  buildEntities,
+} from "../modules/build";
 
 export interface BuildableTileLayer {
   width: number;
   height: number;
   data: number[][];
-}
-
-export interface BuildConfig {
-  assets: { load(asset: string): any };
 }
 
 export interface StageTMXProperty {
@@ -186,55 +175,22 @@ export class Stage {
   }
 
   buildEntities(config: BuildConfig): Entity[] {
-    const rval = [];
-
-    for (let e of this._entities) {
-      const ctor = config.assets.load(e.type + "-entity");
-
-      if (ctor !== undefined) {
-        const components = {} as {
-          [key: string]: { [key: string ]: any } | undefined
+    return buildEntities(this._entities.map((e) => {
+      if (e.type === "tileset") {
+        e.components.position = {
+          width: { type: "value", value: this._width },
+          height: { type: "value", value: this._height },
         };
 
-        if (e.type === "tileset") {
-          components.position = {
-            width: this._width,
-            height: this._height,
-          };
-
-          components.tileset = {
-            tileset: this.prop("tileset") || "",
-            assets: config.assets,
-          };
-        }
-
-        for (let f in e.components) {
-          const component = e.components[f];
-
-          const dest = components[f] || ({} as BuildableComponent);
-          components[f] = dest;
-
-          for (let g in component) {
-            const value = component[g];
-
-            switch (value.type) {
-              case "asset":
-                dest[g] = config.assets.load(value.value);
-                break;
-              case "value":
-              default:
-                dest[g] = value.value;
-                break;
-            }
-          }
-        }
-
-        const entity = new ctor(components);
-        rval.push(entity);
+        e.components.tileset = {
+          data: e.components.tileset.data,
+          tileset: { type: "value", value: this.prop("tileset") || "" },
+          assets: { type: "value", value: config.assets }
+        };
       }
-    }
 
-    return rval;
+      return e;
+    }), config);
   }
 
   addEntity(entity: BuildableEntity): void {
