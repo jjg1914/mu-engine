@@ -1,3 +1,5 @@
+import { Dimensions } from "./shape";
+
 export class Tileset {
   private _image: HTMLImageElement;
   // private _width: number;
@@ -76,5 +78,9 @@ export class Tileset {
   ready(f: Function) {
     // tslint:disable-next-line:no-floating-promises
     this._ready.then(() => { f(); });
+  }
+
+  tileDimensions(): Dimensions {
+    return { width: this._tileHeight, height: this._tileHeight };
   }
 }
